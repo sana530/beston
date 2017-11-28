@@ -1,0 +1,31 @@
+<div class="mainScAdd ">
+    <div class="tableBox">
+        <form target="baocms_frm" action="<{:U('articlecate/edit',array('cate_id'=>$detail['cate_id']))}>" method="post">
+            <table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;" >
+                <tr>
+                    <td class="lfTdBt">所属版块：</td>
+                    <td class="rgTdBt">
+                        <select name="data[cate_type]">
+                            <option value="0" <if condition="$detail.cate_type eq 0">selected="selected"</if> >普通文章</option>
+                            <option value="1" <if condition="$detail.cate_type eq 1">selected="selected"</if> >用户使用手册</option>
+                            <option value="2" <if condition="$detail.cate_type eq 2">selected="selected"</if> >商家使用手册</option>
+                            <option value="3" <if condition="$detail.cate_type eq 3">selected="selected"</if>>管理员使用手册</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">目录分类：</td>
+                    <td class="rgTdBt"><input type="text" name="data[cate_name]" value="<{$detail.cate_name|default=''}>" class="manageInput" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">排序：</td>
+                    <td class="rgTdBt"><input type="text" name="data[orderby]" value="<{$detail.orderby|default=''}>" class="manageInput" />
+                        <code>数字越小越高</code>
+                    </td>
+                </tr>
+            </table>
+            <div class="smtQr"><input type="submit" value="确认添加" class="smtQrIpt" /></div>
+        </form>
+    </div>
+</div>

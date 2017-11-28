@@ -1,0 +1,414 @@
+<php>$mobile_title = $detail['title'];</php>
+
+    <include  file='public:header'/>
+    <style>
+    #pay-video{overflow: hidden; position: relative;display: initial;}
+    #video{ width:100%;height:auto;margin:auto;}
+    </style>
+    
+        <header class="top-fixed bg-yellow bg-inverse">
+    
+            <div class="top-back">
+                <a class="top-addr" href="<{:U('news/index',array('cat'=>$detail['cate_id']))}>"><i class="icon-angle-left"></i></a>
+            </div>
+    
+            <div class="top-title">
+                <{$cate[cate_name]}>
+            </div>
+    
+            <div  class="top-share">
+                <button class="share-button" data-theme="slide-top">分享</button>
+            </div>
+    
+        </header>
+    
+        <div class="share-content">
+        <!--MOB SHARE BEGIN-->
+        <div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+            <ul class="-mob-share-list">
+                <li class="-mob-share-weixin"><p>微信</p></li>
+                <li class="-mob-share-facebook"><p>Facebook</p></li>
+                <li class="-mob-share-twitter"><p>Twitter</p></li>
+                <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+                <li class="-mob-share-douban"><p>豆瓣网</p></li>
+            </ul>
+            <div class="-mob-share-close">取消</div>
+        </div>
+        
+        <div class="-mob-share-ui-bg"></div>
+        
+        <script>
+            // 同一网页下只能有一种分享效果，否则会冲突
+            // 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+            var ui = getElementsByClassName("-mob-share-ui")[0];
+            var uiTemplate = ui.cloneNode(true);
+            var uiCurrent = ui;
+    
+            var buttons = getElementsByClassName("share-button" );
+            for( var i = 0, len = buttons.length; i < len; i++ ) {
+                var btn = buttons[ i ];
+                btn.onclick = function() {
+                    if( uiCurrent ) {
+                        uiCurrent.parentNode.removeChild( uiCurrent );
+                    }
+                    uiCurrent = uiTemplate.cloneNode(true);
+                    var dataTheme = this.getAttribute( "data-theme" );
+                    var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+                    addClass( uiCurrent, theme );
+                    if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+                        getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+                    }
+                    document.body.appendChild( uiCurrent );
+                    mobShare.ui.init();
+                    mobShare.ui.open();
+                };
+            }
+    
+            function getElementsByClassName( classname, main ) {
+                var main = main || document;
+                if( main.getElementsByClassName ) {
+                    return main.getElementsByClassName( classname );
+                }
+                var a = [];
+                var re = new RegExp( '(^| )' + classname + '( |$)' );
+                var els = main.getElementsByTagName( "*" );
+                for( var i = 0, j = els.length; i < j; i++ ) {
+                    if( re.test( els[i].className ) ) {
+                        a.push( els[i] );
+                    }
+                }
+                return a;
+            };
+    
+            function hasClass( ele, cls ) {
+                return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+            }
+    
+            function addClass( ele, cls ) {
+                if (!hasClass(ele, cls)) {
+                    ele.className += " " + cls;
+                }
+            }
+        </script>
+        
+        <script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script>
+        <!--MOB SHARE END-->
+        </div>
+    
+    
+        <div class="detail">
+    
+            <div class="blank-10"></div>
+    
+            <h1><{$detail.title}></h1>
+            <p class="detail-des">
+                <span><{$detail.create_time|date='Y-m-d',###}></span>
+                <span><{$detail['source']}></span>
+                <span>总浏览:<{$detail.views}></span>
+            </p>
+               <p class="detail-des" id="pay-video">
+                <if condition="!empty($detail['video'])"><!--如果有-->
+                    <video id="video" controls="" preload="none" mediagroup="myVideoGroup" poster="<{:config_img($detail['video_photo'])}>"> 
+                          <source id="mp4" src="<{$detail['video']}>" type="video/mp4"> 
+                    </video> 
+                </if>
+                <script> 
+                        document.addEventListener("WeixinJSBridgeReady", function () { 
+                        document.getElementById('video').play(); 
+                    }, false); 
+                </script> 
+               </p>
+    
+    
+            <div class="detail-read">
+                <{$detail.details}>
+            </div>
+        </div>
+    
+        <style>
+        .form-button{ padding-right: 10px;padding-bottom: 10px; text-align: right;}
+        .form-button a{ margin-right:10px; text-align:center; width: 41.66666667%;}
+        .container .form-button {padding: 5px 10px;text-align: center;}
+        .container p {text-align:center;color: #e33;}
+        .layui-layer-page .layui-layer-content{ padding:20px;}
+        .layui-layer-page .layui-layer-content input[type='text']{ width:100%; height:36px; border:1px solid #ccc; background:#fff; margin-bottom:10px; text-indent:10px; font-size:14px;}
+        .layui-layer-page .layui-layer-content input[type='button']{ width:100%; height:40px; border:none; background:#33b095; color:#fff; font-size:16px;}
+        .layui-layer-page .layui-layer-content p{ line-height:28px; color:#999;}
+        .layui-layer-page .layui-layer-content .check_box{ overflow:hidden; margin-bottom:5px;}
+        .layui-layer-page .layui-layer-content .check_box label{ display:block; float:left; margin-right:20px; margin-bottom:10px;}
+        </style>
+    
+    
+    
+        <div class="container" style="padding:10px 0;">
+            <p>T_T小编那么拼,点个赞或者打赏下呗?</p>
+            <div class="x12 form-button">
+                <a class=" button button-small bg-blue" target="x-frame"  href="<{:U('news/zan',array('article_id'=>$detail['article_id']))}>">赞(<{$detail.zan}>)</a >
+                <a  href="javascript:void(0);" class=" button button-small bg-dot das">打赏(<{$detail.donate_num}>)</a>
+            </div>
+        </div>
+    
+        <div class="blank-10 bg"></div>
+    
+    
+         <script>
+    
+            $(document).ready(function(){
+    
+                $(".das").click(function(){
+    
+                    layer.open({
+    
+                        type: 1,
+    
+                        title:'请选择打赏金额',
+    
+                        skin: 'layui-layer-rim', //加上边框
+    
+                        area: ['90%', '340px'], //宽高
+    
+                        content: '<div class="check_box"><label><input type="radio" name="donate" value="1"/>打赏1NZD</label><label><input type="radio" name="donate" value="2"/>打赏2NZD</label><label><input type="radio" name="donate" value="5"/>打赏5NZD</label><label><input type="radio" name="donate" value="10"/>打赏10NZD</label><label><input type="radio" class="other-amount" name="donate" value=""/>其他金额</label></div><input type="text" class="donate2" style="visibility:hidden;" name="donate2" placeholder="请输入打赏金额" value=""/><input type="button" class="sure_das" value="确认打赏"/><p>打赏不可取消，请慎重操作</p>',
+    
+                      });
+    
+                })
+                $( document ).on( "click", ".check_box input", function() {
+                    $('.donate2').css('visibility', 'hidden');
+                });       
+                $( document ).on( "click", ".other-amount", function() {
+                    $('.donate2').css('visibility', 'visible');
+                });
+                
+    
+                $(document).on('click','.sure_das',function(){
+    
+                    var url = "<{:U('news/donate')}>";
+    
+                    var article_id = "<{$detail.article_id}>";
+    
+                    var money1 = $("input[name='donate']:checked").val();
+    
+                    var money2 = $(".donate2").val();
+    
+                    var money = 0;
+    
+                    (money2>0) ? money=money2:money=money1;
+    
+                    layer.confirm('您确认要打赏帖子吗？', {
+    
+                        btn: ['是的','不了'] //按钮
+    
+                      }, function(){
+    
+                        $.post(url,{article_id:article_id,money:money},function(data){
+    
+                            if(data.status == 'login'){
+    
+                                ajaxLogin();
+    
+                            }else if(data.status == 'error'){
+    
+                                layer.msg(data.msg);
+    
+                            }else{
+    
+                                layer.msg(data.msg);
+    
+                                setTimeout(function(){
+    
+                                    window.location.reload(true);
+    
+                                },1000)
+    
+                            }
+    
+                        },'json')
+    
+                      });
+    
+                })
+    
+                
+    
+            })
+    
+        </script>
+    
+    
+    
+        
+    
+        <div class="sec-title">	
+            <div class="divider"></div>
+            <span>推荐文章</span>
+        </div>
+    
+        <div class="list-media-x" id="list-media">
+            <ul>
+            <foreach name="rands" item="var">
+                <li class="line" onclick="location='<{:U('news/detail',array('article_id'=>$var['article_id']))}>'">
+                    <dd class="zhong">
+                        <div class="x3">
+                            <img src="<{:config_img($var['photo'])}>" style="width:90%;">
+                        </div>
+    
+                        <div class="x9">
+                         <p class="text-small"><{:bao_Msubstr($var['title'],0,30)}>..</p>
+    
+                         <p class="text-small">
+                             <i class="icon-commenting-o"></i> <em><{$var.views}></em>
+                             <i class="icon-clock-o"></i> <em><{$var.create_time|date='Y-m-d',###}></em></p>
+                        </div>
+                    </dd>
+                </li>
+            </foreach>
+    
+         </ul>
+    
+        </div>
+    
+        
+        <div class="blank-10 bg"></div>
+        <div class="blank-10"></div>
+        <if condition="$detail.valuate eq 0"><!--是0才开启评论-->
+            <div class="tab" data-toggle="click">
+                <div class="tab-head">
+                    <!--<span class="tab-more padding-right"><a href="<{:U('news/replay',array('article_id'=>$detail['article_id']))}>">查看全部评论</a></span>-->
+                    <ul class="tab-nav padding-left">
+                        <li class="active"><a href="#tab-list">网友评论</a></li>
+                        <li><a href="#tab-post">我要回复</a></li>
+                    </ul>
+                </div>
+    
+        
+    
+            <div class="tab-body">
+    
+                <div class="tab-panel active" id="tab-list">
+    
+                    <div class="comm-list">
+    
+                        <if condition="empty($list)">
+    
+                            <p>暂时还没有评论，赶紧来抢沙发把！</p>
+    
+                        </if>
+    
+                        <volist name="list" id="data">
+    
+                        <div class="media media-x level-1">
+    
+                            <a class="float-left" href="#"><img  class="radius" src="<{:config_img($users[$data['user_id']]['face'])}> " /></a>
+    
+                            <div class="media-body">
+    
+                                <strong><{:config_user_name($data['nickname'])}></strong>
+    
+                                <{$data.content}>
+    
+                                <p><{:formatTime($data['create_time'])}>
+    
+                                <a class="zan" target="x-frame" href="<{:U('news/zans',array('comment_id'=>$data['comment_id']))}>" >
+    
+                                    <i class="icon-thumbs-up"></i>赞(<em><{$data.zan}></em>)
+    
+                                </a>
+    
+                                <a class="cai" target="x-frame" href="<{:U('news/cai',array('comment_id'=>$data['comment_id']))}>" >
+    
+                                    <i class="icon-thumbs-down"></i>踩(<em><{$data.cai}></em>)
+                                </a>
+                                </p>
+                            </div>
+                        </div>
+                        </volist>
+                    </div>
+                    <div class="blank-20"></div>
+                </div>
+    
+    
+                <div class="tab-panel" id="tab-post">
+    
+                    <form class="form padding-left padding-right" action="<{:U('news/post')}>"  method="post">
+    
+                        <input type="hidden" value="0" name="data[parent_id]" />
+    
+                        <input type="hidden" value="<{$detail.article_id}>" name="data[post_id]" />
+    
+                        <div class="blank-10"></div>
+    
+                        <div class="form-group">
+    
+                            <div class="field">
+    
+                                <textarea class="input" name="data[content]" row="5" placeholder="输入评论内容"></textarea>
+    
+                            </div>
+    
+                        </div>
+    
+                        <div class="blank-10"></div>
+    
+                        <div class="form-button"><button class="button  bg-blue" type="submit">提交回复</button></div>
+    
+                    </form>
+    
+                    <div class="blank-20"></div>
+    
+                </div>
+    
+            </div>
+    
+        </div>
+    
+        
+    
+        <script>
+    
+        //点击"回复"按钮显示或隐藏回复输入框
+    
+        $("body").delegate(".comment-reply","click",function(){
+    
+            var uid = "<{$MEMBER[user_id]}>";
+    
+            if(uid==""){
+    
+                location.href = "<{:U('passport/login')}>";
+    
+            }else{
+    
+                if($(this).next().length>0){//判断出回复div已经存在,去除掉
+    
+                    $(this).next().remove();
+    
+                 }else{//添加回复div
+    
+                    $(".comment-reply").next().remove();//删除已存在的所有回复div	
+    
+                    //添加当前回复div
+    
+                    var parent_id = $(this).attr("comment_id");//要回复的评论id
+    
+                    
+    
+                    var divhtml = "";
+    
+                    if('off'!=$(this).attr("replyswitch")){//二级评论回复后三级评论不再提供回复功能,将关闭属性附加到"提交回复"按钮"
+    
+                        divhtml = "<form class='form margin-small' action='/mobile/news/post.html'  method='post'><input type='hidden' value='"+<{$detail.article_id}>+"' name='data[post_id]' ><input type='hidden' value='"+parent_id+"' name='data[parent_id]' ><div class='div-reply-txt'><textarea name='data[content]' class='input'></textarea><div style='margin-top:5px;text-align:right;'><button class='comment-submit button' type='submit' >提交回复</button></div></div></form>";
+    
+                    }		 	
+    
+                    $(this).after(divhtml);
+    
+                 }
+    
+            }
+    
+        });
+        </script>	
+    
+        <else/>
+        </if>
+
+    <include  file='public:footer'/>

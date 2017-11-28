@@ -1,0 +1,305 @@
+<php>$mobile_title = $detail['title'];</php>
+<include  file='public:header'/>
+
+   <header class="top-fixed bg-yellow bg-inverse">
+
+		<div class="top-back">
+
+			<a class="top-addr" href="<{:U('tieba/index',array('cat'=>$detail['cate_id']))}>"><i class="icon-angle-left"></i></a>
+
+		</div>
+
+		<div class="top-title">
+
+			同城贴吧
+
+		</div>
+
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+
+	</header>
+
+	<div class="share-content">
+		<!--MOB SHARE BEGIN-->
+		<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+			<ul class="-mob-share-list">
+				<li class="-mob-share-weixin"><p>微信</p></li>
+				<li class="-mob-share-facebook"><p>Facebook</p></li>
+				<li class="-mob-share-twitter"><p>Twitter</p></li>
+				<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+				<li class="-mob-share-douban"><p>豆瓣网</p></li>
+			</ul>
+			<div class="-mob-share-close">取消</div>
+		</div>
+		
+		<div class="-mob-share-ui-bg"></div>
+		
+		<script>
+			// 同一网页下只能有一种分享效果，否则会冲突
+			// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+			var ui = getElementsByClassName( "-mob-share-ui" )[0];
+			var uiTemplate = ui.cloneNode( true );
+			var uiCurrent = ui;
+	
+			var buttons = getElementsByClassName("share-button" );
+			for( var i = 0, len = buttons.length; i < len; i++ ) {
+				var btn = buttons[ i ];
+				btn.onclick = function() {
+					if( uiCurrent ) {
+						uiCurrent.parentNode.removeChild( uiCurrent );
+					}
+					uiCurrent = uiTemplate.cloneNode( true );
+					var dataTheme = this.getAttribute( "data-theme" );
+					var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+					addClass( uiCurrent, theme );
+					if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+						getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+					}
+					document.body.appendChild( uiCurrent );
+					mobShare.ui.init();
+					mobShare.ui.open();
+				};
+			}
+	
+			function getElementsByClassName( classname, main ) {
+				var main = main || document;
+				if( main.getElementsByClassName ) {
+					return main.getElementsByClassName( classname );
+				}
+				var a = [];
+				var re = new RegExp( '(^| )' + classname + '( |$)' );
+				var els = main.getElementsByTagName( "*" );
+				for( var i = 0, j = els.length; i < j; i++ ) {
+					if( re.test( els[i].className ) ) {
+						a.push( els[i] );
+					}
+				}
+				return a;
+			};
+	
+			function hasClass( ele, cls ) {
+				return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+			}
+	
+			function addClass( ele, cls ) {
+				if (!hasClass(ele, cls)) {
+					ele.className += " " + cls;
+				}
+			}
+		</script>
+		
+		<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+		<!--MOB SHARE END-->
+	
+		
+	</div>
+
+
+	<div class="tie-from">
+
+		<span class="text-gray">话题来自：</span> <a href="<{:U('tieba/index',array('cat'=>$cate['cate_id']))}>"><{$cate['cate_name']}></a>
+
+		<i class="float-right icon-angle-right"></i>
+
+	</div>
+
+	<div class="tie-detail">
+
+		<div class="tie-item">
+
+			<div class="item-head line">
+
+				<span class="avatar x2">
+					
+                    
+            <!--手机贴吧头像调用-->
+            <?php if(strstr($puser['face'],"http")){ ?>
+            <img src="<{$puser['face']|default='default.jpg'}>" />
+            <?php }else{ ?>
+            <img src="__ROOT__/attachs/<{$puser['face']|default='default.jpg'}>" />
+            <?php }?>
+            
+
+				</span>
+
+				<span class="info x10">
+
+					<em><{$puser['nickname']}></em>
+
+					<span class="float-right"><{$detail.create_time|date="Y-m-d",###}></span>
+
+					<p class="title"><{:msubstr($detail['title'],0,25)}></p>
+
+				</span>
+
+				<span class="coner"></span>
+
+			</div>
+
+			<div class="item-body">
+
+				<php>
+
+					if($detail['pic'] ==''){
+
+						$pic = getImgs($detail['details']);
+
+					}else{
+
+						$pic = explode(',',$detail['pic']);
+
+					}
+
+					  $content = $detail['details'];
+
+				</php>
+
+				<p><{$content}></p>
+
+				<div class="blank-10"></div>
+
+				<div class="ctrl">
+
+					<a class="ctrl-zan" id="zan-<{$detail.post_id}>" data="<{$detail.post_id}>"><i class="icon-thumbs-up"></i> <em><{$detail['zan_num']}></em></a>
+
+					<a class="ctrl-reply"><i class="icon-comments"></i> <em><{$detail['reply_num']}></em></a>
+
+				</div>
+
+			</div>
+
+			<if condition="!empty($item['reply'])">
+
+			<div class="item-foot">
+
+				<foreach name="item.reply" item="var">
+
+					<p><em><{$var[user][nickname]}> :</em> <{:msubstr($var['contents'],0,50)}></p>
+
+				</foreach>
+
+			</div>
+
+			</if>
+
+		</div>
+
+	</div>
+
+	<div class="blank-10"></div>
+
+	<div class="reply-title">
+
+		<h3><i class="icon-commenting-o"></i> 全部回复</h3>
+
+	</div>
+
+	<ul id="reply-list" class="reply-list"></ul>
+
+	<script>
+
+		$(document).ready(function () {
+
+			loaddata('<{$nextpage}>', $("#reply-list"), true);
+
+			//点击"赞"按钮
+
+			$("body").delegate(".ctrl-zan","click",function(){
+
+				var postid = $(this).attr("data");
+
+				var url = "/mobile/tieba/zan/post_id/" + postid + ".html";
+
+			    $.get(url,function(data){
+
+					if( data == '-1'){
+
+						layer.msg('你已经赞过该帖了！');
+
+					}else if( data == '-2'){
+
+						layer.msg('您还没有登录！');
+
+					}else{
+
+						$("#zan-" + postid).find("em").html(data);
+
+					}
+
+				},'html');
+
+			});
+
+			layer.config({extend: 'extend/layer.ext.js'});
+
+			layer.ready(function(){ 
+
+				layer.photos({
+
+					photos: '#layer-photo'
+
+				});
+
+			});  
+
+		});
+
+	</script>
+
+<nav class="foot-bar">
+
+	<div class="line">
+
+		<div class="x2">
+
+			<a class="left-icon" href="<{:U('tieba/index')}>"><i class="icon-angle-left"></i></a>
+
+		</div>
+
+		<div class="x8">
+
+			<div class="line">
+
+				<span class="x6">
+
+					<a class="post-icon" href="<{:U('tieba/main')}>">
+
+						<i class="icon-reorder"></i>
+
+						分类
+
+					</a>
+
+				</span>
+
+				<span class="x6">
+
+					<a class="post-icon" href="<{:U('tieba/reply',array('post_id'=>$detail['post_id']))}>">
+
+						<i class="icon-pencil-square"></i>
+
+						回复
+
+					</a>
+
+				</span>
+
+			</div>
+
+		</div>
+
+		<div class="x2">
+
+			<a class="right-icon" href="<{:U('mcenter/index/index')}>"><i class="icon-ellipsis-v"></i></a>
+
+		</div>
+
+	</div>
+
+</nav>
+
+</body>
+
+</html>

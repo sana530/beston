@@ -1,0 +1,124 @@
+<include file='public:headnear'/>     
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			智慧小区
+		</div>
+		<div class="top-share">
+			<a href="javascript:void(0);" id="cate-btn"><i class="icon-bars"></i></a>
+		</div>
+	</header>
+    
+<!--定位开始-
+<div class="line">
+		<div class="blank-10"></div>
+		<div class="padding">
+			<i class="icon-map-marker"></i> <span id="local-addr"></span> (<a href="javascript:reset();" class="text-gray" id="local-reset">重新定位</a>)
+		</div>
+	</div>
+
+<!--定位结束-->	
+    <div class="serch-bar-mask" id="cate_menu" style="display:none;top:50px;">
+		<div class="serch-bar-mask-list">
+			<ul>
+            <li><a <if condition="$area_id  eq null">class="on"</if> href="<{:LinkTo('community/index',array('change'=>1))}>">All</a></li>
+            <volist name="areas" id="var" key="index">
+            <php>if($var['city_id'] == $city_id){</php>
+                <li <if condition="$index%3 eq 2">class="area_spe"</if> ><a <if condition="$var.area_id eq $area_id">class="on"</if>  href="<{:LinkTo('community/index',array('area'=>$var['area_id'],'change'=>1))}>"><{$var.area_name}></a></li>
+                <php>}</php>
+            </volist>
+            
+			</ul>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function () {
+			$("#cate-btn").click(function () {
+				$("#cate_menu").toggle();
+			});
+			
+			$("#cate_menu ul li a").click(function () {
+				$("#cate_menu").toggle();
+			});
+
+		});
+	</script>
+	
+	<div class="line xiaoqu-search">
+		<form method="post"  action="<{:U('community/index',array('change'=>1))}>" id="form1" class="form1">
+			<div class="form-group">
+				<div class="field">
+					<div class="input-group">
+						<span class="addbtn"><button type="button" class="button icon-search"></button></span>
+						<input type="text" class="input" name="keyword" size="50" value="<{$keyword}>" placeholder="输入小区名"  />
+						<span class="addbtn"><button type="submit" class="button">Search</button></span>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	
+	<div class="xiaoqu-list">
+		<ul id="xiaoqu-list"></ul>  
+	</div>
+
+    <script>
+		$(document).ready(function () {
+			loaddata('<{$nextpage}>', $("#xiaoqu-list"), true);
+		});
+    </script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&callback=initMap"></script>
+	<script>
+		$(document).ready(function () {
+			TouchSlide({ 
+				slideCell:"#focus",
+				titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+				mainCell:".bd", 
+				effect:"left", 
+				autoPlay:false,//自动播放
+				autoPage:true, //自动分页
+			});
+			$("#search-btn").click(function(){
+				if($(".top-search").css("display")=='block'){
+					$(".top-search").hide();
+					$(".top-title").show(200);
+				}
+				else{
+					$(".top-search").show();
+					$(".top-title").hide(200);
+				}
+			});
+			
+		});
+        function initMap() {
+            var addr = $("#local-addr").html();
+            $("#local-addr").html("定位中……");
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {lat: position.coords.latitude,lng: position.coords.longitude};
+                    var map = new google.maps.Map(document.getElementById('allmap'), {center: pos,zoom: 14});
+                    var geocoder = new google.maps.Geocoder();
+                    var coordsss = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    var marker = new google.maps.Marker({position: coordsss});
+
+                    marker.setMap(map);
+                    google.maps.event.addListener(marker,'click',function() {map.setZoom(15); map.setCenter(marker.getPosition());});
+                    geocoder.geocode({'latLng': coordsss }, function(results, status) {
+                        if (status === google.maps.GeocoderStatus.OK) {
+                            if (results) {
+                                $("#local-addr").html(results[0].formatted_address);
+                            }
+                        }
+                        else {
+                            alert("Reverse Geocoding failed because: " + status);
+                        }
+                    });
+                });
+            }
+        }
+	</script>
+    
+		
+<include file="public:footer"/>

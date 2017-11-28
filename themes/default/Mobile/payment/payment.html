@@ -1,0 +1,66 @@
+<include  file='public:header'/>   
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="javascript:history.back();"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			订单支付
+		</div>
+	</header>  
+	
+	<div class="tuan-order">
+		<div class="blank-10 bg"></div>
+		<div class="line border-top border-bottom">
+			<div class="container">
+				<div class="x12 row border-bottom">
+					<span class="float-left">
+						支付编号
+					</span>
+					<span class="float-right">
+						<{$logs.log_id}>
+					</span>
+				</div>
+				<div class="x12 row border-bottom">
+					<span class="float-left">
+						付款缘由
+					</span>
+					<span class="float-right">
+					<if condition="$logs['type'] eq 'goods' ">
+						<em ><{$types[$logs['type']]}>(含运费)</em>
+						<else/>
+						<em class="float-right"><{$types[$logs['type']]}></em>
+					</if>
+					</span>
+				</div>
+				
+				<if condition="$logs['type'] eq 'goods' ">
+					<if condition="$logs['use_integral'] gt 0 ">
+						<div class="x12 row border-bottom">
+							<span class="float-left">
+								使用积分抵现
+							</span>
+							<span class="float-right">
+								<em class="float-right"><{:round($logs['use_integral']/100,2)}>NZD</em>
+							</span>
+						</div>
+					</if>
+				</if>
+				
+				<div class="x12 row">
+					<span class="float-left">
+						支付金额
+					</span>
+					<span class="float-right">
+						<{:round($logs['need_pay']/100,2)}>NZD
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="blank-50"></div>
+	<div class="container">
+	<{$button}>
+	</div>
+	<div class="blank-20"></div>
+<include file='public:footer'/>    

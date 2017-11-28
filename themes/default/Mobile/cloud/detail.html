@@ -1,0 +1,310 @@
+<include  file='public:header'/>
+
+<script src="/static/default/wap/other/roll.js"></script> 
+	<header class="top-fixed bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('cloud/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			云购详情
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>  
+    <div class="share-content">
+        <!--MOB SHARE BEGIN-->
+        <div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+            <ul class="-mob-share-list">
+                <li class="-mob-share-weixin"><p>微信</p></li>
+                <li class="-mob-share-facebook"><p>Facebook</p></li>
+                <li class="-mob-share-twitter"><p>Twitter</p></li>
+                <li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+                <li class="-mob-share-douban"><p>豆瓣网</p></li>
+            </ul>
+            <div class="-mob-share-close">取消</div>
+        </div>
+        
+        <div class="-mob-share-ui-bg"></div>
+        
+        <script>
+            // 同一网页下只能有一种分享效果，否则会冲突
+            // 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+            var ui = getElementsByClassName( "-mob-share-ui" )[0];
+            var uiTemplate = ui.cloneNode( true );
+            var uiCurrent = ui;
+    
+            var buttons = getElementsByClassName("share-button" );
+            for( var i = 0, len = buttons.length; i < len; i++ ) {
+                var btn = buttons[ i ];
+                btn.onclick = function() {
+                    if( uiCurrent ) {
+                        uiCurrent.parentNode.removeChild( uiCurrent );
+                    }
+                    uiCurrent = uiTemplate.cloneNode( true );
+                    var dataTheme = this.getAttribute( "data-theme" );
+                    var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+                    addClass( uiCurrent, theme );
+                    if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+                        getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+                    }
+                    document.body.appendChild( uiCurrent );
+                    mobShare.ui.init();
+                    mobShare.ui.open();
+                };
+            }
+    
+            function getElementsByClassName( classname, main ) {
+                var main = main || document;
+                if( main.getElementsByClassName ) {
+                    return main.getElementsByClassName( classname );
+                }
+                var a = [];
+                var re = new RegExp( '(^| )' + classname + '( |$)' );
+                var els = main.getElementsByTagName( "*" );
+                for( var i = 0, j = els.length; i < j; i++ ) {
+                    if( re.test( els[i].className ) ) {
+                        a.push( els[i] );
+                    }
+                }
+                return a;
+            };
+    
+            function hasClass( ele, cls ) {
+                return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+            }
+    
+            function addClass( ele, cls ) {
+                if (!hasClass(ele, cls)) {
+                    ele.className += " " + cls;
+                }
+            }
+        </script>
+        
+        <script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+        <!--MOB SHARE END-->
+    
+      
+    </div>
+<div class="tuan-detail">   
+    <div class="line banner">	
+	<div id="focus" class="focus">
+		<div class="hd">
+			<ul></ul>
+		</div>
+		<div class="bd">
+			<ul>
+          		<li><a href="javascript:void(0);"><img src="__ROOT__/attachs/<{$detail.photo}>"  width="100%"/></a></li>
+                <php>$i=0;</php>
+                <foreach name="thumb" item="item">
+                <if condition="$a elt 4">
+                <li><a href="javascript:void(0);"><img src="__ROOT__/attachs/<{$item}>" width="100%"/></a></li>
+                 </if>
+                 <php>$a++;</php>
+                </foreach>
+                
+			</ul>
+		</div>
+	</div>
+			<div class="title">
+				<h1><{:bao_msubstr($detail['title'],0,30)}></h1>
+				<p><{:bao_msubstr($detail['intro'],0,50)}></p>
+			</div>	
+		</div>
+</div>            
+            
+  
+	<script type="text/javascript">
+		TouchSlide({ 
+			slideCell:"#focus",
+			titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+			mainCell:".bd ul", 
+			effect:"left", 
+			autoPlay:true,//自动播放
+			autoPage:true, //自动分页
+			switchLoad:"_src" //切换加载，真实图片路径为"_src" 
+		});
+	</script>
+    
+	
+	<div class="hd-detail tuan-detail">
+		<div class="detail-ctrl">
+			<span>总需要：<{$detail.price}>人次</span>
+            <a class="btn-sign float-right btn-long yiyuan_buynum_btn">立即云购</a>	
+		</div>
+		<div class="blank-10 bg"></div>
+        
+		<div class="detail-info">
+			<h1>云购说明</h1>
+			<p style=" border-bottom:none;">总需要：<{$detail.price}>人次</p>
+			<php>$lefts = $detail['price'] - $detail['join']; $tt = round($detail['join']/$detail['price']*100,2);</php>
+            <div class="yiyuan_progres"><span class="yiyuan_progres_bar" style="width:<{$tt}>%;"></span></div>
+            <p><{$detail.join}>已参与 剩余 <span class="maincl"><{$lefts}>次</span></p>
+            
+		</div>
+        
+        <if condition="$detail['status'] eq 1">
+        <div class="blank-10 bg"></div>
+        <div class="detail-info">
+			<h1>获奖详情</h1>
+			<p>获奖者：<span class="orange"><{$users[$detail['win_user_id']]['nickname']}></p>
+           <!--<p>用户IP：<{$zhong.create_ip}></p>-->
+			<p>本期参与：<span class="fontcl1"><{$total}></span>人次</p>
+            <p>接晓时间：<{$detail.lottery_time|date='Y-m-d H:i:s',###}></p>
+            <p>获奖号码： <a style="color:#F00; font-weight:bold"><{$detail.win_number}></a></p>
+            
+		</div>
+        </if>
+      
+        
+		<div class="blank-10 bg"></div>
+		<div class="detail-info1">
+			<h1>云购详情</h1>
+            <div class="line banner">	
+                <div id="focus" class="focus">
+                    <{$detail.details}>
+                </div>
+            </div>
+        </div>
+        
+		<div class="blank-10 bg"></div>
+		<div class="detail-info1">
+			<h1>所参与记录</h1>
+            <div id="coupon-list" class="coupon-list2" style=" margin-top:0px">
+            <foreach name="list" item="item">
+                    <div class="item">	
+                    <div class="line">
+                        <div class="x2">
+                            <img class="pic" src="__ROOT__/attachs/<{$users[$item['user_id']]['face']}>">
+                        </div>
+                          <div class="x10">
+                            <h5><{$users[$item['user_id']]['nickname']}></span></h5> 
+                            <p class="intro">参与了<span class="fontcl1"><{$item.num}></span>人次&nbsp;&nbsp;<{$item.create_time|date='Y-m-d H:i:s',###}></p>
+                           
+                          </div>
+                    </div>
+                    </div>
+                 </foreach>
+              </div>
+		</div>
+		<div class="blank-10 bg"></div>
+        
+      
+
+
+
+<div class="yiyuan_buynum_mask">
+        <div class="cont">
+            <div class="title1">人数期次选择<a href="javascript:void(0);" class="closs fr">×</a></div>
+            <div class="nr">
+                <p>参与人次</p>
+                <div class="yiyuan_buynum_int">
+                    <ul>
+                        <li>
+                            <span class="minus" type="button">－</span>
+                        </li>
+                        <li>
+                            <input class="inp" type="text" value="<{$types[$detail['type']]['num']}>">
+                        </li>
+                        <li>
+                            <span class="add" type="button">＋</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="btn_box"><a href="javascript:void(0);" id="jq_join" class="btn">确定云购</a></div>
+            </div>
+        </div>
+    </div>
+<if condition="$detail['status'] eq 0">
+    <footer class="footer-cart">
+        <div class="btn-long yiyuan_buynum_btn" style="margin-top:0.17rem;">立即云购</div>
+    </footer>
+    <else/>
+    <footer class="footer-cart">
+        <div class="btn-long" style="margin-top:0.17rem;">已揭晓</div>
+    </footer>
+</if>
+<script>
+    $(document).ready(function () {
+        var left = parseInt("<{$left}>");
+        var lefts = parseInt("<{$lefts}>");
+        var limit = 0;
+        (left <= lefts) ? limit = left : limit = lefts;
+
+        var num = parseInt("<{$types[$detail['type']]['num']}>");
+        $(".minus").click(function () {
+            var v = parseInt($(".inp").val());
+            if (v > num) {
+                v = v - num;
+                $(".inp").val(v);
+            } else {
+                layer.msg('不能再少了');
+            }
+        });
+        $(".add").click(function () {
+            var v = parseInt($(".inp").val());
+            if (v < limit) {
+                v = v + num;
+                $(".inp").val(v);
+            } else {
+                layer.msg('您最多还能购买' + limit + '人次');
+            }
+        });
+        $(".inp").keyup(function () {
+            var v = parseInt($(this).val());
+            if (isNaN(v)) {
+                $(this).val(num);
+            } else {
+                if (v < num) {
+                    $(this).val(num);
+                    layer.msg('最少为' + num + '人次');
+                } else if (v > limit) {
+                    $(this).val(limit);
+                    layer.msg('您最多还能购买' + limit + '人次');
+                } else {
+                    var n = v - v % num;
+                    $(this).val(n);
+                }
+            }
+        });
+
+        $("#jq_join").click(function () {
+            var goods_id = "<{$detail.goods_id}>";
+            var num = $(".inp").val();
+            layer.confirm('您确定要云购该商品？', {
+                area: ['200px', '150px'], //宽高
+                btn: ['是的', '不'], //按钮
+                shade: false //不显示遮罩
+            }, function () {
+                $.post("<{:U('cloud/cloudbuy')}>", {goods_id: goods_id, num: num}, function (result) {
+                    if (result.status == "login") {
+                        ajaxLogin();
+                    } else if (result.status == "success") {
+                        layer.msg(result.msg);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        layer.msg(result.msg);
+                        if (result.url) {
+                            setTimeout(function () {
+                                window.location.href = result.url;
+                            }, 1000);
+                        }
+                    }
+                }, 'json');
+            });
+            $('.layui-layer-btn0').css('background', '#2fbdaa');
+        });
+
+        /*底部一元抢购部分*/
+        $(".yiyuan_buynum_btn").click(function () {
+            $(".yiyuan_buynum_mask").show();
+        });
+        $(".yiyuan_buynum_mask").find(".closs").click(function () {
+            $(".yiyuan_buynum_mask").hide();
+        });
+        /*底部一元抢购部分*/
+
+    });
+</script>

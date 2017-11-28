@@ -1,0 +1,154 @@
+<include  file='public:header'/>
+<div class="mainBt">
+    <ul>
+        <li class="li1">频道</li>
+        <li class="li2">配送员管理</li>
+        <li class="li2 li3">新增配送员</li>
+    </ul>
+</div>
+<p class="attention"><span>注意： </span> 后台添加商户管理员ID请默认选择您自己的常用登录账户的id，目的是方便用户前台认领，如果用户被占用，请到回收站删除</p>
+<form  target="baocms_frm" action="<{:U('delivery/create')}>" method="post">
+    <div class="mainScAdd">
+        <div class="tableBox">
+            <table  bordercolor="#dbdbdb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;" >
+                <tr>
+                    <td class="lfTdBt">申请者：</td>
+                    <td class="rgTdBt">
+                        <div class="lt">
+                            <input class="scAddTextName w210 sj" type="hidden" id="user_id" name="data[user_id]" value="<{$detail.user_id|default=''}>" />
+                            <input class="scAddTextName w210 sj" type="text" name="nickname" id="nickname"  value="" />
+                        </div>
+                        <a mini="select"  w="800" h="600" href="<{:U('user/select')}>" class="seleSj">选择用户</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">名字：</td>
+                    <td class="rgTdBt"><input type="text" name="data[first_name]" value="<{$detail.first_name|default=''}>" class="scAddTextName w210" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">姓氏：</td>
+                    <td class="rgTdBt"><input type="text" name="data[last_name]" value="<{$detail.last_name|default=''}>" class="scAddTextName w210" />
+                </tr>
+                <tr>
+                    <td class="lfTdBt">身份证明：</td>
+                    <td class="rgTdBt">
+                        <div class="lt">
+                            <select name="data[identity]" id="select" class="seleFl w210" onchange="identity()">
+                                <option value="0" selected="selected">请选择</option>
+                                <option value="1">新西兰/澳大利亚驾照号</option>
+                                <option value="2">护照号</option>
+                            </select>
+                        </div>
+                        <div class="lt" id="license" style="display:none">
+                            &nbsp;<input  type="text" class="seleFl w210" name="data[license]" placeholder="请输入驾照号"/>
+                            <input  type="text" class="seleFl w210" name="data[license_version]" placeholder="请输入驾照 版本号"/>
+                        </div>
+                        <div class="lt" id="passport" style="display:none">
+                            &nbsp;<input type="text" class="seleFl w210" name="data[passport]" placeholder="请输入护照号"/>
+                            <code>未持有新西兰/澳大利亚驾照者提供</code>
+                        </div>
+                    </td>
+                    <script type="text/javascript">
+                        function identity(){
+                            document.getElementById('license').style.display='none';
+                            document.getElementById('passport').style.display='none';
+                            if (document.getElementById('select').value == 1) {
+                                var value = 'license';
+                            } else if (document.getElementById('select').value == 2)  {
+                                var value = 'passport';
+                            }
+                            document.getElementById(value).style.display='block';
+                            ;
+                        }
+                    </script>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">是否是驿站站长：</td>
+                    <td class="rgTdBt">
+                        <select name="data[is_zhanzhang]" id="is_zhanzhang" class="seleFl w210" onchange="identity()">
+                            <option value="0" selected="selected">否</option>
+                            <option value="1">是</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">邮箱：</td>
+                    <td class="rgTdBt"><input type="text" id="email" name="data[email]" value="<{$detail.email|default=''}>" class="manageInput sj" /></td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">手机：</td>
+                    <td class="rgTdBt"><input type="text" id="mobile" name="data[mobile]" value="<{$detail.mobile|default=''}>" class="manageInput sj" /></td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">地址：</td>
+                    <td class="rgTdBt"><input id="addr" type="text" name="data[addr]" value="<{$detail.addr|default=''}>" class="manageInput" /></td>
+                    <script>
+                        function Autocomplete() {
+                            new google.maps.places.Autocomplete((document.getElementById('addr')),{types: ['geocode']});
+                        }
+                    </script>
+                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&libraries=places&callback=Autocomplete" async defer></script>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">
+                        身份证明上传：
+                    </td>
+                    <td class="rgTdBt">
+                        <js file='__PUBLIC__/js/uploadify/jquery.uploadify.min.js'/>
+                        <link rel="stylesheet" href="__PUBLIC__/js/uploadify/uploadify.css">
+                        <div style="width: 300px;height: 100px; float: left;">
+                            <input type="hidden" name="data[photo_id]" value="<{$detail.photo_id}>" id="data_logo" />
+                            <input id="photo_id" name="photo_id" type="file" multiple="true" value="" />
+                        </div>
+                        <div style="width: 300px;height: 100px; float: left;">
+                            <div id="photo_id_img">
+                                <eq name="photo_id" value="pdf">
+                                    <iframe width="80" height="80" src="__ROOT__/attachs/<{$detail.photo_id|default='default.jpg'}>" /></iframe>
+                                    <else/>
+                                    <img width="80" height="80" src="__ROOT__/attachs/<{$detail.photo_id|default='default.jpg'}>" />
+                                </eq>
+                            </div>
+                            <code>身份证明缩略图</code>
+                        </div>
+                        <script>
+                            $("#photo_id").uploadify({
+                                'swf': '__PUBLIC__/js/uploadify/uploadify.swf?t=<{$nowtime}>',
+                                'uploader': '<{:U("app/upload/uploadify",array("model"=>"photo_id"))}>',
+                                'cancelImg': '__PUBLIC__/js/uploadify/uploadify-cancel.png',
+                                'buttonText': '上传身份证明',
+                                'fileTypeExts': '*.gif;*.jpg;*.png;*.pdf',
+                                'queueSizeLimit': 1,
+                                'onUploadSuccess': function (file, data, response) {
+                                    if (data.slice(-3) == 'pdf'){
+                                        $("#photo_id_img").html('<iframe width="80" height="80" />');
+                                    } else {
+                                        $("#photo_id_img").html('<img width="80" height="80"/>');
+                                    }
+                                    $("#data_photo_id").val(data);
+                                    $("#photo_id_img").children().attr('src', '__ROOT__/attachs/' + data).show();
+                                }
+                            });
+                        </script>
+                    </td>
+                </tr>
+                <link rel="stylesheet" href="__PUBLIC__/umeditor/themes/default/css/umeditor.min.css" type="text/css">
+                <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+                <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+                <script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+                <script>
+                    um = UM.getEditor('data_details', {
+                        imageUrl: "<{:U('app/upload/editor')}>",
+                        imagePath: '__ROOT__/attachs/editor/',
+                        lang: 'zh-cn',
+                        langPath: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + "lang/",
+                        focus: false
+                    });
+                </script>
+            </table>
+            <input type="submit" value="确认添加" class="smtQrIpt" />
+        </div>
+    </div>
+</form>
+
+<include  file='public:footer'/>

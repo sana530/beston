@@ -1,0 +1,74 @@
+<include file="public:header"/>
+<header class="top-fixed bg-yellow bg-inverse">
+	<div class="top-back">
+		<a class="top-addr" href="<{:U('information/index')}>"><i class="icon-angle-left"></i></a>
+	</div>
+		<div class="top-title">
+			基本设置
+		</div>
+	<div class="top-signed">
+		<include file="public:message"/>
+	</div>
+</header>
+<style>
+.line {padding:0 10px;}
+.line .x4{height:40px;line-height:40px;color:#999;}
+.line .x8{position:relative;height:40px;}
+.line .x8 input{border:none;padding:10px;position:absolute;bottom:0;}
+</style>
+<form action="<{:U('info/set')}>" method="post" target="x-frame">
+	<div class="line border-bottom">
+		<span class="x4">职业</span>
+		<span class="x8"><input name="job"  type="text" placeholder="" value="<{$usersex.job}>"></span>
+	</div>
+	<div class="line border-bottom">
+		<span class="x4">性别</span>
+		<span class="x4">
+			<input class="radio" name="sex" type="radio" <if condition="$usersex['sex'] eq 1">
+			checked="checked"</if> value="1" />男&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="radio" name="sex" type="radio"
+			<if condition="$usersex['sex'] eq 2">checked="checked"</if> value="2" />女</span>
+	</div>
+	<div class="line border-bottom">
+		<span class="x4">出生日期</span>
+		<span class="x4">
+			<div class="lef select_box">
+				<select class="sel_year" name="born_year" rel="<{$usersex.born_year|default='2000'}>"></select>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<select class="sel_month" name="born_month" rel="<{$usersex.born_month|default='2'}>"></select>月&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<select class="sel_day" name="born_day" rel="<{$usersex.born_day|default='15'}>"></select>日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</div>
+		</span>
+	</div>
+
+	<div class="line border-bottom">
+		<span class="x4">星座</span>
+		<span class="x4">
+			<div class="lef select_box">
+				<select name="star_id">
+					<php>$i = 1;</php>
+					<foreach name="stars" item="item">
+						<option value="<{$i}>" <eq name="usersex.star_id" value="$i">selected="selected"</eq> ><{$item}></option>
+						<php>$i++;</php>
+					</foreach>
+				</select>
+			</div>
+		</span>
+	</div>
+
+	<div class="blank-30"></div>
+	<div class="container">
+		<button class="button button-block button-big bg-dot" type="submit">立刻修改</button>
+	</div>
+
+</form>
+<script type="text/javascript" src="__TMPL__statics/js/birthday.js"></script>
+<script>
+	$(function () {
+		$.ms_DatePicker({
+			YearSelector: ".sel_year",
+			MonthSelector: ".sel_month",
+			DaySelector: ".sel_day"
+		});
+		$.ms_DatePicker();
+	});
+</script> 
+<include  file='public:footer'/>  

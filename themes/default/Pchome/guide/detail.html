@@ -1,0 +1,87 @@
+<include  file='public:header'/> 
+<include  file='public:top'/> 
+<include  file='public:nav2'/>
+
+<style>
+.tribeDelt_nr { margin-left:0px; border-left:0px;border-right: 1px solid #e6e6e6;}
+.tribeEvlt_box .tribeDelt_box {border-top: none;margin-left: 280px;}
+.tribeDelt_nr2 {margin-left:279px;height: auto; padding: 30px 40px;}
+.tribeEvlt_box .tribeDelt_box { margin-left: 0px;}
+.tribeDelt_from {border-right: 1px solid #e6e6e6;}
+.zixun_r{ float:right; width:250px; margin:0 20px;}
+.tribeEvlt_box .tribeDelt_from .box { padding-top: 30px;}
+.tribeDelt_from .pub_wz .name {font-size: 18px;}
+.tribe_topic_fabiao .uploadImg {overflow: hidden;}
+h4 { font-size: 17px;margin-bottom: 21px;color: #3e3e3e;}
+.crumbs {border-bottom: 1px solid #e5e5e5;color: #666;margin-bottom: 20px;}
+</style>
+
+<div class="pagewd">
+    <!--页面位置-->
+    <div class="spxq_loca">
+    <a href="<{:U('index/index')}>">首页</a>&gt;&gt;
+        <a href="<{$back}>"><if condition="$cate_type eq 1">会员手册<elseif condition="$cate_type eq 2"/>商家手册
+            <else/>管理员手册</if></a>&gt;&gt;
+    <if condition="!empty($catstr)">
+        <if condition="empty($catestr)">
+        	<a href="<{:U($back,array('cat'=>$detail['cate_id']))}>"><{$catstr}></a>&gt;&gt;
+        <else/>
+            <a href="<{:U($back,array('cat'=>$detail['cate_id']))}>"><{$catestr}></a>&gt;&gt;
+        </if>
+    </if>
+    
+    <a href="javascript:void(0);"><{$detail.title}></a></div>
+    <!--页面位置end-->
+    <!--详情-->
+    <div class="tribeDelt_box">
+        <div class="tribeDelt_nr">
+            <div class="crumbs">
+        	<h1><{$detail.title}></h1>
+            <p class="graycl mb20">查看：<{$detail.views}><span class="ml10"></p>
+            </div>
+            <div class="nr" id="para">
+                <p><{$detail['details']}></p>
+                <foreach name="pics" item="item">
+                    <div class="txt_center mb10"><img src="__ROOT__/attachs/<{$item.photo}>" width="740" height="460" /></div>
+                </foreach>
+                <div class="share bdsharebuttonbox spxq_qgFx tongji_num" data-tag="share_1" >
+                    <h4>该解决方案靠谱,点个赞</h4>
+                <a class="zan_btn" href="javascript:void(0);"><em class="ico ico_1"></em>(<{$detail.zan}>)</a>
+                </div>              
+            </div>
+            <script>window._bd_share_config = {share: [{"tag": "share_1", 'bdCustomStyle': '__TMPL__statics/empty.css'}]};
+                with (document)
+                    0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = '/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+            </script>
+          </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $(".zan_btn").click(function(){
+                var article_id = "<{$detail.article_id}>";
+                var url = "<{:U('guide/zan')}>";
+                
+                $.post(url,{article_id:article_id},function(data){
+                    if(data.status == 'login'){
+                       ajaxLogin();
+                    }else if(data.status == 'success'){
+                        layer.msg(data.msg);
+                        setTimeout(function(){
+                            window.location.reload(true);
+                        },1000)
+                    }else{
+                        layer.msg(data.msg);
+                    }
+                },'json')
+            })
+        })
+    </script>
+    <!--详情end-->
+    <!--页码-->
+    <div class="x">
+        <{$page_comment}>
+    </div>
+    <!--页码end-->
+
+</div>
+<include file="public:footer"/>

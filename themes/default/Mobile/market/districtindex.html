@@ -1,0 +1,273 @@
+<include file="public:header"/>
+
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('market/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			<{$detail.market_name}>
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>
+	<div class="share-content">
+		<!--MOB SHARE BEGIN-->
+		<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+			<ul class="-mob-share-list">
+				<li class="-mob-share-weixin"><p>微信</p></li>
+				<li class="-mob-share-facebook"><p>Facebook</p></li>
+				<li class="-mob-share-twitter"><p>Twitter</p></li>
+				<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+				<li class="-mob-share-douban"><p>豆瓣网</p></li>
+			</ul>
+			<div class="-mob-share-close">取消</div>
+		</div>
+		
+		<div class="-mob-share-ui-bg"></div>
+		
+		<script>
+			// 同一网页下只能有一种分享效果，否则会冲突
+			// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+			var ui = getElementsByClassName( "-mob-share-ui" )[0];
+			var uiTemplate = ui.cloneNode( true );
+			var uiCurrent = ui;
+	
+			var buttons = getElementsByClassName("share-button" );
+			for( var i = 0, len = buttons.length; i < len; i++ ) {
+				var btn = buttons[ i ];
+				btn.onclick = function() {
+					if( uiCurrent ) {
+						uiCurrent.parentNode.removeChild( uiCurrent );
+					}
+					uiCurrent = uiTemplate.cloneNode( true );
+					var dataTheme = this.getAttribute( "data-theme" );
+					var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+					addClass( uiCurrent, theme );
+					if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+						getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+					}
+					document.body.appendChild( uiCurrent );
+					mobShare.ui.init();
+					mobShare.ui.open();
+				};
+			}
+	
+			function getElementsByClassName( classname, main ) {
+				var main = main || document;
+				if( main.getElementsByClassName ) {
+					return main.getElementsByClassName( classname );
+				}
+				var a = [];
+				var re = new RegExp( '(^| )' + classname + '( |$)' );
+				var els = main.getElementsByTagName( "*" );
+				for( var i = 0, j = els.length; i < j; i++ ) {
+					if( re.test( els[i].className ) ) {
+						a.push( els[i] );
+					}
+				}
+				return a;
+			};
+	
+			function hasClass( ele, cls ) {
+				return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+			}
+	
+			function addClass( ele, cls ) {
+				if (!hasClass(ele, cls)) {
+					ele.className += " " + cls;
+				}
+			}
+		</script>
+		
+		<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+		<!--MOB SHARE END-->
+	
+		
+	</div>
+	
+
+	<div id="focus" class="focus">
+		<div class="hd">
+			<ul></ul>
+		</div>
+		<div class="bd">
+			<ul>
+                <volist name="marketpic" id="item">
+                <li><a href="javascript:void(0);"><img src="__ROOT__/attachs/<{$item.pic}>" /></a></li>
+                </volist>
+			</ul>
+		</div>
+	</div>
+	<script type="text/javascript">
+		TouchSlide({ 
+			slideCell:"#focus",
+			titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+			mainCell:".bd ul", 
+			effect:"left", 
+			autoPlay:true,//自动播放
+			autoPage:true, //自动分页
+			switchLoad:"_src" //切换加载，真实图片路径为"_src" 
+		});
+	</script>
+	
+	<div class="market-detail">
+							<php>
+                                $tags = $detail['tags'];
+                                $tagsarray = array();
+                                if(!empty($tags)){
+                                    $tagsarray = explode(',',$tags);
+                                }
+                            </php>
+		<div class="line border-bottom">
+			<div class="x8">
+				<div class="margin-top margin-bottom margin-left">
+				<h5><{$detail.market_name}>&nbsp; <{$detail.fans_num}>粉丝 &nbsp; <if condition="$detail['favo'] eq 0"><a href="<{:U('market/favorites',array('market_id'=>$detail['market_id']))}>" class="text-little  badge bg-yellow margin-small-top">+关注</a><else/><a href="javascript:void(0);" class="text-little  badge bg-yellow margin-small-top">已关注</a></if></h5>
+				<p><if condition="$tagsarray eq null"><a class="tag" href="javascript:void(0);">暂无标签</a> <else/>
+                
+              
+                
+                <php>$aa=0;</php>
+                <volist name="tagsarray" id="item">
+                <php>$aa++;</php>
+                <a class="tag"  href="javascript:void(0);" class="cl_<{$aa}>"><{$item}></a>
+                </volist>
+                                
+                                
+                                
+                </if></p>
+				</div>
+			</div>
+			<div class="x4">
+				<div class="margin-top margin-bottom border-left text-center">
+					<a class="button bg-yellow" href="<{:U('market/gps',array('market_id'=>$detail['market_id']))}>"><i class="icon-location-arrow"></i> 到这去</a>
+				</div>
+			</div>
+		</div>
+		
+		
+        
+        
+        
+  <div class="blank-10 bg"></div>      
+        
+        
+<div class="index-guide margin-top">
+<div class="line">           
+<span><a class="col" href="<{:U('market/marketshop',array('market_id'=>$detail['market_id']))}>">	<img src="/static/default/wap/image/index/app-shop.png" /><p>找店</p></a></span>
+<span><a class="col" href="<{:U('market/event',array('market_id'=>$detail['market_id']))}>">	<img src="/static/default/wap/image/index/app-hdmobile.png" /><p>商场活动</p></a></span>
+<span><a class="col" href="<{:U('market/detail',array('market_id'=>$detail['market_id']))}>">	<img src="/static/default/wap/image/index/app-mall.png" /><p>商场详情</p></a></span>
+<span><a class="col" href="<{:U('store/index/index')}>">	<img src="/static/default/wap/image/index/app-extend.png" /><p>商家入驻</p></a></span>
+</div>
+</div>
+
+		
+		
+		<div class="blank-10 bg"></div>
+
+		
+	</div>
+	
+	<div class="main-title">
+		<div class="line">
+			<div class="x4"><hr /></div>
+			<div class="x4">
+				<h2>最新抢购</h2>
+				<p>JOINED SHOP</p>
+			</div>
+			<div class="x4"><hr /></div>
+		</div>
+	</div>
+	<div class="container">
+    
+     <script>
+                        function daojishi(id){
+                            var t = Math.floor($("#"+id).attr('rel'));
+                            t--;
+                            var d = Math.floor(t/ 60 / 60 / 24);
+                            var h = Math.floor(t / 60 / 60 % 24);
+                            var m = Math.floor(t / 60 % 60);
+                            var s = Math.floor(t % 60);
+                            $("#"+id).attr('rel',t);
+                            $("#"+id).html(d+':'+h+':'+m+':'+s);
+                        }
+                        
+                    </script>
+                    
+                    
+		<div class="tuan-list" id="tuan-list">
+         
+
+
+<div class="main-tuan">
+		<ul>		
+                              
+                            
+       <foreach name="tuans" item="item"> 
+       <php>
+                                if($item['bg_date'] <= $today && $item['end_date'] > $today){
+                                   
+                                    $tt = strtotime($item['end_date'])-time();
+                                    $item['djs_time'] = $tt;
+                                    $item['djs_str'] = '距结束';
+                                   
+                                }elseif($item['bg_date'] >$today){
+                                        $tt = strtotime($item['bg_date'])-time();
+                                        $item['djs_time'] = $tt;
+                                        $item['djs_str'] = '距开始';
+    
+                                }
+                            </php>
+                            <script type="text/javascript" language="javascript">
+                        setInterval(function () {
+                            daojishi("daojishi_<{$item.tuan_id}>");
+                        }, 1000);
+                    </script>
+                    
+                    
+                                       	
+        <li>
+			<a target="_blank" class="line" href="<{:U('tuan/detail',array('tuan_id'=>$item['tuan_id']))}>">
+				<div class="container">
+					<img class="x4" src="__ROOT__/attachs/<{$item.photo}>">	
+					<div class="des x8">
+						<h5><{$item.title}></h5>
+						<p class="intro">
+							<{$item['djs_str']}>
+                           <span id="daojishi_<{$item.tuan_id}>"  rel="<{$item['djs_time']}>" >00:00:00:00</span>
+						</p>
+						<p class="info">
+							<span>$ <em><{:round($item['tuan_price']/100,2)}></em></span> <del>$ <{:round($item['price']/100,2)}></del>
+                            
+							<span class="text-little float-right badge bg-yellow margin-small-top padding-right">已售<{$item.sold_num}></span>
+						</p>
+					</div>
+				</div>
+			</a>
+		</li>		
+        </foreach>
+        
+        
+        </ul>		
+        </div>
+
+
+        </div>
+	</div>
+	
+ <div class="blank-10 bg"></div>   
+    
+    <div class="main-title">
+		<div class="line">
+			<div class="x4"><hr /></div>
+			<div class="x4">
+				<h2><a href="<{:U('tuan/index')}>" class="button bg-yellow">更多抢购<i></i></a></h2>
+			</div>
+			<div class="x4"><hr /></div>
+		</div>
+	</div>
+
+    
+    
+
+<include file="public:footer"/>

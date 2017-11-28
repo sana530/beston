@@ -1,0 +1,32 @@
+<foreach name="list" item="item">
+		<li class="line tuan-card">
+			<div class="x8">
+				<div class="card-l">
+					<p>商店名称: <{:bao_Msubstr($shops[$item['shop_id']]['shop_name'],0,16,false)}></p>
+					<p>是否已使用:
+						<if condition="$item['is_used'] eq 1">
+							已使用<p>红包金额: <{:round($item['hongbao_price']/100,2)}>NZD</p>
+						<elseif condition="($hongbao[$item['hongbao_id']]['expire_date'] gt $today) AND ($hongbao[$item['hongbao_id']]['closed'] eq 0)"/>
+							<span class="text-green">未使用</span>
+							<p>红包金额: <{:round($item['hongbao_price']/100,2)}>NZD</p>
+						<else />
+							已失效   <a class="margin-left text-dot"  href="<{:u('hongbao/hongbaodel',array('receive_id'=>$item['receive_id']))}>">删除</a>
+						</if>
+					</p>
+				</div>
+
+			</div>
+			<div class="x4">
+				<div class="card-r">
+					<a href="<{:U('hongbao/give',array('receive_id'=>$item['receive_id']))}>">
+						<if condition="($item['is_used'] eq 0) AND ($hongbao[$item['hongbao_id']]['expire_date'] gt $today) AND ($hongbao[$item['hongbao_id']]['closed'] eq 0)">
+						<p>赠送给好友</p>
+						<else/>
+						<a class="margin-left text-dot"  href="<{:u('hongbao/hongbaodel',array('receive_id'=>$item['receive_id']))}>">删除</a>
+						</if>
+					</a>
+				</div>
+			</div>
+		</li>
+	<div class="blank-10 bg"></div>
+</foreach>

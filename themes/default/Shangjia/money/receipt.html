@@ -1,0 +1,131 @@
+<include  file='public:header'/>
+
+<div class="sjgl_lead">
+
+    <ul>
+
+        <li><a href="">资金管理</a> > <a>商家收款</a></li>
+
+    </ul>
+
+</div>
+
+<div class="tuan_content">
+
+    <div class="radius5 tuan_top">
+
+        <div class="tuan_top_t">
+
+            <div class="left tuan_topser_l">商家收款 </div>
+
+        </div>
+
+    </div> 
+
+    <include  file='shop:nav'/>
+
+    <div class="tabnr_change  show">
+
+    	<form method="post"  action="<{:U('money/receipt')}>" target="baocms_frm">
+
+            <table class="tuanfabu_table" width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                <tr>
+
+                    <td><p class="tuanfabu_t">金额:</p></td>
+
+                    <td><div class="tuanfabu_nr">
+
+                        <input type="text" name="amount" class="tuanfabu_int tuanfabu_intw2" />
+
+                    </div></td>
+
+                </tr>
+
+                <tr>
+
+                    <td width="120"><p class="tuanfabu_t">条形码:</p></td>
+
+                    <td><div class="tuanfabu_nr">
+
+                    <input type="text" name="barcode" class="tuanfabu_int tuanfabu_intw2" />
+
+                    </div></td>
+
+                </tr>
+
+            </table>
+
+            <div class="tuanfabu_an">
+
+                <input type="submit" class="radius3 sjgl_an tuan_topbt" value="确认提交" />
+
+            </div>
+
+        </form>
+
+        <input type="hidden" id="token" value="<{$token}>" />
+
+    </div> 
+
+</div>
+
+<include  file='public:footer'/>
+
+<style>
+    .waiting_box {
+
+    }
+</style>
+
+<if condition="$token">
+    <script>
+        //打开等待窗口
+        layer.open({
+            type: 1,
+            title:'请等待客人支付',
+            skin: 'layui-layer-rim', //加上边框
+            area: ['360px', '160px'], //宽高
+            content: '<div class="waiting_box" style="text-align:center;margin:20px;">' +
+            '<img src="__ROOT__/static/default/wap/other/skin/default/loading-0.gif">' +
+            '<input type="button" value="取消等待" style="width: 90%;" class="tuan_topbt"/></div>'
+        });
+
+        $(document).ready(function(){
+            var count = 0;
+            var token = $('#token').val();
+            get_paid_act();
+            function get_paid_act() {
+                $.post('<{:U("money/paidCheck")}>', {token: token}, function(data) {
+
+                    var json = data;
+                    if (json.error == -1) {
+                        count ++;
+                        if (count < 600) {
+                            setTimeout(function(){ get_paid_act() }, 500);
+                        } else {
+                            layer.msg('等待超时', {icon:2});
+                        }
+                    } else {
+                        layer.closeAll('page')
+                    }
+                    if (json.error == 0) {
+                        layer.msg('客人已成功支付', {icon:1});
+                    } else if (json.error == 1 && json.code == 12) {
+                        layer.msg(json.msg, {icon:2});
+                        setTimeout( function(){location.href = "<{:U('money/receipt')}>";}, 2000 );
+                    } else if (json.error == 1) {
+                        layer.msg(json.msg, {icon:2});
+                        setTimeout( function(){location.href = "<{:U('money/receipt')}>";}, 2000 );
+                    }
+
+                }, 'JSON');
+            }
+
+            $( document ).on( "click", ".tuan_topbt,.layui-layer-close1", function() {
+                layer.closeAll('page');
+                location.href = "<{:U('money/receipt')}>";
+            });
+        });
+    </script>
+</if>

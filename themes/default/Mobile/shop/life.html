@@ -1,0 +1,28 @@
+<include  file='public:header'/>   
+<header class="top-fixed bg-yellow bg-inverse">
+	<div class="top-back">
+		<a class="top-addr" href="<{:U('shop/detail',array('shop_id'=>$detail['shop_id']))}>"><i class="icon-angle-left"></i></a>
+	</div>
+	<div class="top-title">
+		分类信息
+	</div>
+	<div class="top-share">
+		<a href="<{:U('life/index')}>" class="share-btn"><i class="icon-pencil-square-o"></i></a>
+	</div>
+</header>
+
+<style>
+.life-list { margin-top:0rem;}
+ul{ padding-left:0px;}
+</style>
+<include file="shop:header"/>
+
+
+<div class="blank-40"></div>
+<div class="life-list" id="life-list"></div>
+<script>
+	$(document).ready(function () {
+		loaddata('<{$nextpage}>', $("#life-list"), true);
+	});
+</script>
+<include file="public:footer"/>

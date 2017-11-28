@@ -1,0 +1,40 @@
+<html>
+<foreach name="poi" item="item">
+    <li>
+        <h5><{$item.shop_name}></h5>
+        <img src="<{$item.photo}>" style="width: 300px; height:300px;"/>
+        <p>地址: <{$item.addr}> </p>
+        <span class="ui-starbar"><span style="width:<{:round($item['score']*2,2)}>%"></span></span>
+        <if condition="!empty($item[tel])">
+            <php>$tel = explode(',',$item['tel']);</php>
+            <p class="tel">
+                电话：<foreach name="tel" item="var"><a href="tel:<{$var}>"><{$var}></a></foreach>
+            </p>
+        </if>
+    </li>
+    <form class="index-search" action="<{:U('caiji/save')}>" method="post">
+        <input type="hidden" name="uid" value="<{$item.uid}>" />
+        <input type="hidden" name="shop_name" value="<{$item.shop_name}>" />
+        <input type="hidden" name="type" value="<{$item.type}>" />
+        <input type="hidden" name="lat" value="<{$item.lat}>" />
+        <input type="hidden" name="lng" value="<{$item.lng}>" />
+        <input type="hidden" name="addr" value="<{$item.addr}>" />
+        <input type="hidden" name="tags" value="<{$item.tags}>" />
+        <input type="hidden" name="score" value="<{$item.score}>" />
+        <input type="hidden" name="city_id" value="<{$item.city_id}>" />
+        <input type="hidden" name="photo" value="<{$item.photo}>" />
+        <input type="hidden" name="logo" value="<{$item.logo}>" />
+        <input type="hidden" name="tel" value="<{$item.tel}>" />
+        <input type="hidden" name="province" value="<{$item.province}>" />
+        <input type="hidden" name="city" value="<{$item.city}>" />
+        <input type="hidden" name="distinct" value="<{$item.distinct}>" />
+        <input type="hidden" name="business_time" value="<{$item.business_time}>" />
+        <input type="hidden" name="exist" value="<{$item.exist}>" />
+        <if condition="$item.exist eq 0">
+        <input type="submit" value="保存" />
+        <else/>
+        <input type="submit" value="更新" />
+        </if>
+    </form>
+</foreach>
+</html>

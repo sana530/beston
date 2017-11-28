@@ -1,0 +1,27 @@
+<script> var BAO_PUBLIC = '__PUBLIC__'; var BAO_ROOT = '__ROOT__'; var BAO_SURL = '<{$CONFIG['site']['host']}>__SELF__'</script>
+<script>
+$(function(){
+	var newurl = BAO_SURL.replace(/\?\S+/,'');
+	var stitle = "<{$config['title']}>"; 
+	var sdesc = "<{$config['title']}>"; 
+	//alert(stitle);
+	var surl = newurl+'?fuid=<{:getuid()}>';	
+	var catchpic = $('img');
+	var lcatchpic = "<{$CONFIG['site']['host']}>" + $('img').eq(0).attr("src");
+	$('img').each(function(){
+		if($(this).width() >= 60){
+			lcatchpic = $(this).attr("src");
+			if(lcatchpic.indexOf("http://") < 0){
+				lcatchpic = "<{$CONFIG['site']['host']}>" + lcatchpic;
+			}
+			return false;
+		};
+	});
+	
+	var spic = "<{$CONFIG['site']['host']}>"+BAO_PUBLIC+'/img/logo.jpg';
+	if(catchpic.length > 0){
+		spic = lcatchpic;
+		
+	}
+})	
+</script>	

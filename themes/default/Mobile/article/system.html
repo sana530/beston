@@ -1,0 +1,56 @@
+<php>$mobile_title = $detail['title'];</php>
+<include  file='public:header'/>
+<style>
+#header {
+            width: 100%;
+            margin-bottom: 0;
+            background-color: #538FD0;
+            box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;
+        }
+		#header-main {
+            max-width: 960px;
+			margin: 0 auto;
+        }
+
+</style>
+
+
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="#" onClick="javascript:history.go(-1);"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+				<{$detail[title]}>
+		</div>
+	</header>
+
+	<div class="detail">
+		<div class="blank-10"></div>
+		<div class="detail-read">
+				<{$detail[contents]}>
+		</div>
+	</div>
+    <style>
+
+	.form-button{ padding:5px 10px;}
+
+	.form-button a.x5{ margin-right:10px;}
+
+	.layui-layer-page .layui-layer-content{ padding:20px;}
+
+    .layui-layer-page .layui-layer-content input[type='text']{ width:100%; height:36px; border:1px solid #ccc; background:#fff; margin-bottom:10px; text-indent:10px; font-size:14px;}
+
+    .layui-layer-page .layui-layer-content input[type='button']{ width:100%; height:40px; border:none; background:#33b095; color:#fff; font-size:16px;}
+
+    .layui-layer-page .layui-layer-content p{ line-height:28px; color:#999;}
+
+    .layui-layer-page .layui-layer-content .check_box{ overflow:hidden; margin-bottom:5px;}
+
+    .layui-layer-page .layui-layer-content .check_box label{ display:block; float:left; margin-right:20px; margin-bottom:10px;}
+
+	</style>
+
+    <div class="blank-10 bg"></div>        
+	<div class="blank-10"></div>
+
+<include  file='public:footer'/> 

@@ -1,0 +1,90 @@
+<include file="public:header"/>
+<header class="top-fixed bg-yellow bg-inverse">
+	<div class="top-back">
+		<a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+	</div>
+		<div class="top-title">
+			商家收款
+		</div>
+	<div class="top-signed">
+	</div>
+</header>
+<div class="panel-list">
+	<ul>
+		<li>
+			<a>付款用户名<em class="text-gray"><{$nickname}></em></a>
+		</li>
+	</ul>
+</div>
+<div class="container">
+	<div class="blank-10"></div>
+	<p class="text-small text-dot">请输入收费金额:</p>
+	<form target="x-frame" id="nick-form" method="post" action="<{:U('money/receipt',array('token'=>$token))}>">
+	<div class="form-group">
+		<div class="field">
+			<div class="input-group">
+				<input type="text" id="amount" class="input" name="amount" size="50" value="" placeholder="收取金额" />
+			</div>
+		</div>
+	</div>
+	<div class="blank-20"></div>
+	<button id="check-form" type="submit" class="button button-block button-big bg-dot text-center">确认</button>
+	</form>
+	<input type="hidden" id="token" value="<{$token}>" />
+</div>
+
+
+<include file='public:footer'/>
+
+<if condition="$wait">
+	<script>
+        //打开等待窗口
+        layer.open({
+            type: 1,
+            title:'请等待客人支付',
+            skin: 'layui-layer-rim', //加上边框
+            area: ['360px', '200px'], //宽高
+            content: '<div class="waiting_box" style="text-align:center;margin:20px;">' +
+            '<img src="__ROOT__/static/default/wap/other/skin/default/loading-0.gif">' +
+            '<button id="check-form" class="button button-block button-big bg-dot text-center tuan_topbt">取消等待</button></div>'
+        });
+
+        $(document).ready(function(){
+            var count = 0;
+            var token = $('#token').val();
+            get_paid_act();
+            function get_paid_act() {
+                $.post('<{:U("money/paidCheck")}>', {token: token}, function(data) {
+
+                    var json = data;
+                    if (json.error == -1) {
+                        count ++;
+                        if (count < 600) {
+                            setTimeout(function(){ get_paid_act() }, 500);
+                        } else {
+                            layer.msg('等待超时', {icon:2});
+                        }
+                    } else {
+                        layer.closeAll('page')
+                    }
+                    if (json.error == 0) {
+                        layer.msg('客人已成功支付', {icon:1});
+                        setTimeout( function(){location.href = "<{:U('index/index')}>";}, 2000 );
+                    } else if (json.error == 1 && json.code == 12) {
+                        layer.msg(json.msg, {icon:2});
+                        setTimeout( function(){location.href = "<{:U('index/index')}>";}, 2000 );
+                    } else if (json.error == 1) {
+                        layer.msg(json.msg, {icon:2});
+                        setTimeout( function(){location.href = "<{:U('index/index')}>";}, 2000 );
+                    }
+
+                }, 'JSON');
+            }
+
+            $( document ).on( "click", ".tuan_topbt,.layui-layer-close1", function() {
+                layer.closeAll('page');
+                location.href = "<{:U('index/index')}>";
+            });
+        });
+	</script>
+</if>

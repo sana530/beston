@@ -1,0 +1,17 @@
+
+    <foreach name="lifes" item="item">
+
+	<div class="container1" onclick="location='<{:U('life/detail',array('life_id'=>$item['life_id']))}>'">
+		<img class="x2" src="<{:config_img($item['photo'])}>">
+		<div class="des x8">
+			<h5><{$item.title}></h5>
+			<p class="intro">描述：<{:msubstr($item['contact'],0,20)}></p>
+			<p class="info">联系电话：<{$item.mobile}> </p>
+		</div>
+		<div class="des x2">
+			<div class="intro2" style="width: auto; padding:0 3px;"><{$item.d}></div>
+		</div>
+	</div>
+
+	</foreach>
+

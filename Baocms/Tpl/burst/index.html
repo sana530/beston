@@ -1,0 +1,61 @@
+<include  file='public:header'/>
+<div class="mainBt">
+    <ul>
+        <li class="li1">设置</li>
+        <li class="li2">Burst 模板管理</li>
+        <li class="li2 li3">Burst 模板</li>
+    </ul>
+</div>
+<div class="main-jsgl">
+    <p class="attention"><span>注意：</span>当只有 Burst 模版开启的时候才会发送短信！</p>
+    <div class="jsglNr">
+        <div class="selectNr" style="margin: 10px 20px;">
+            <div class="left">
+                <{:BA('burst/create','','添加内容')}>
+            </div>
+        </div>
+        <form target="baocms_frm" method="post">
+            <div class="tableBox">
+                <table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;"  >
+                    <tr>
+                        <td class="w50"><input type="checkbox" class="checkAll" rel="burst_id" /></td>
+                        <td class="w50">ID</td>
+                        <td>标签</td>
+                        <td>说明</td>
+                        <td>模版</td>
+                        <td class="w80">是否开启</td>
+                        <td class="w120">操作</td>
+                    </tr>
+                    <foreach name="tag" item="var">
+                        <tr>
+                            <td><input class="child_burst_id" type="checkbox" name="burst_id[]" value="<{$var.burst_id}>" /></td>
+                            <td><{$var.burst_id}></td>
+                            <td><{$var.burst_key}></td>
+                            <td><{$var.burst_explain}></td>
+                            <td><{$var.burst_tmpl}></td>
+                            <td><eq name="var.is_open" value="1" >是<else/>否</eq></td>
+                            <td>
+                                <{:BA('burst/edit',array("burst_id"=>$var["burst_id"]),'编辑','','remberBtn')}>
+                                
+                        <eq name="var.is_open" value="0"> <{:BA('burst/audit',array("burst_id"=>$var["burst_id"]),'开启','act','remberBtn')}>
+                        <else />
+                        <{:BA('burst/delete',array("burst_id"=>$var["burst_id"]),'关闭','act','remberBtn')}>
+                        </eq>
+                        
+                            </td>
+                        </tr>
+                    </foreach>
+                </table>
+                <{$page}>
+            </div>
+            <div class="selectNr">
+                <div class="left">
+                    <{:BA('burst/delete','','批量关闭','list','a2')}>
+                    <{:BA('burst/audit','','批量开启','list','remberBtn')}>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<include  file='public:footer'/>       

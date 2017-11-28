@@ -1,0 +1,16 @@
+#################
+
+.idea/workspace.xml
+*temp
+Baocms/Runtime/Cache/*
+*.db
+*.log
+Baocms/Conf/db.php
+Baocms/Runtime/Cache/*.*
+attachs/2017/*
+attachs/weixin/*
+attachs/editor/*
+.htaccess
+.idea/*
+*.zip
+Public/js/google.js

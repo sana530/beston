@@ -1,0 +1,197 @@
+<include file='public:header'/>
+
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			家政预约
+		</div>
+    <div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+        
+	</header>
+	
+   <style>
+   .button-big {
+    padding:3px; 
+    font-size: 12px;
+    line-height: 12px;
+}
+
+   </style>     
+<div class="share-content">
+	<!--MOB SHARE BEGIN-->
+	<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+		<ul class="-mob-share-list">
+			<li class="-mob-share-weixin"><p>微信</p></li>
+			<li class="-mob-share-facebook"><p>Facebook</p></li>
+			<li class="-mob-share-twitter"><p>Twitter</p></li>
+			<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+			<li class="-mob-share-douban"><p>豆瓣网</p></li>
+		</ul>
+		<div class="-mob-share-close">取消</div>
+	</div>
+	
+	<div class="-mob-share-ui-bg"></div>
+	
+	<script>
+		// 同一网页下只能有一种分享效果，否则会冲突
+		// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+		var ui = getElementsByClassName( "-mob-share-ui" )[0];
+		var uiTemplate = ui.cloneNode( true );
+		var uiCurrent = ui;
+
+		var buttons = getElementsByClassName("share-button" );
+		for( var i = 0, len = buttons.length; i < len; i++ ) {
+			var btn = buttons[ i ];
+			btn.onclick = function() {
+				if( uiCurrent ) {
+					uiCurrent.parentNode.removeChild( uiCurrent );
+				}
+				uiCurrent = uiTemplate.cloneNode( true );
+				var dataTheme = this.getAttribute( "data-theme" );
+				var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+				addClass( uiCurrent, theme );
+				if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+					getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+				}
+				document.body.appendChild( uiCurrent );
+				mobShare.ui.init();
+				mobShare.ui.open();
+			};
+		}
+
+		function getElementsByClassName( classname, main ) {
+			var main = main || document;
+			if( main.getElementsByClassName ) {
+				return main.getElementsByClassName( classname );
+			}
+			var a = [];
+			var re = new RegExp( '(^| )' + classname + '( |$)' );
+			var els = main.getElementsByTagName( "*" );
+			for( var i = 0, j = els.length; i < j; i++ ) {
+				if( re.test( els[i].className ) ) {
+					a.push( els[i] );
+				}
+			}
+			return a;
+		};
+
+		function hasClass( ele, cls ) {
+			return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+		}
+
+		function addClass( ele, cls ) {
+			if (!hasClass(ele, cls)) {
+				ele.className += " " + cls;
+			}
+		}
+	</script>
+	
+	<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+	<!--MOB SHARE END-->
+
+	
+</div>
+
+
+      <div id="filter2" class="filter2">
+    <ul class="tab clearfix">
+      <li class="item">
+        <a href="javascript:void(0);"><span id="str_b_node">选择分类</span><em></em>
+        </a>
+      </li>
+   
+      <li class="item">
+        <a href="javascript:void(0);"><span id="str_e_node">选择排序</span><em></em>
+        </a>
+      </li>
+    </ul>
+    
+    <div class="inner" style=" display:none">
+      <ul>
+           <li><a href="<{:U('mobile/lifeservice/index')}>">人气排序</a></li>
+             <foreach name="housekeepingcates" item="item"> 
+            <li><a href="<{:LinkTo('lifeservice/index',$linkArr,array('cat'=>$item['cate_id']))}>"> <{$item.cate_name}></a> </li>
+          </if>     
+        </foreach>
+      </ul><!--1级end-->
+    
+    </div>
+    
+    
+    
+    <div class="inner" style="display:none;">
+              <ul>
+              <li><a href="<{:LinkTo('mobile/lifeservice/index')}>">默认排行</a></li>    
+                <li><a <if condition="$order eq 1"> style="color:red;"</if> href="<{:LinkTo('lifeservice/index',array('cat'=>$cat,'order'=>1))}>">人气排序</a></li>
+                <li><a <if condition="$order eq 2">style="color:red;"</if> href="<{:LinkTo('lifeservice/index',array('cat'=>$cat,'order'=>2))}>">浏览排序</a></li>
+
+            </ul>
+      </div>
+      
+      <div id="parent_container" class="inner_parent" style="display:none;">
+        <div class="innercontent"></div>
+      </div>
+      <div id="inner_container" class="inner_child" style="display:none;">
+        <div class="innercontent"></div>
+      </div>
+    
+</div>
+<!--end-->    
+
+<div id="fullbg" class="fullbg" style="display: none; height: 250px;">
+<i class="pull2"></i>
+</div>
+
+
+ 	
+    
+    <script>
+		$("#search-bar li").each(function(e){
+			$(this).click(function(){
+				if($(this).hasClass("on")){
+					$(this).parent().find("li").removeClass("on");
+					$(this).removeClass("on");
+					$(".serch-bar-mask").hide();
+				}
+				else{
+					$(this).parent().find("li").removeClass("on");
+					$(this).addClass("on");
+					$(".serch-bar-mask").show();
+				}
+				$(".serch-bar-mask .serch-bar-mask-list").each(function(i){
+					
+					if(e==i){
+						$(this).parent().find(".serch-bar-mask-list").hide();
+						$(this).show();
+					}
+					else{
+						$(this).hide();
+					}
+					$(this).find("li").click(function(){
+						$(this).parent().find("li").removeClass("on");
+						$(this).addClass("on");
+					});
+				});
+			});
+		});
+	</script>  
+
+    <div class="xiaoqu-list">
+
+
+		<ul id="xiaoqu-list">
+        </ul>  
+	</div>
+
+	<script>
+		$(document).ready(function () {
+			showFilter({ibox:'filter2',content1:'parent_container',content2:'inner_container',fullbg:'fullbg'});
+			loaddata('<{$nextpage}>', $("#xiaoqu-list"), true);
+		});
+	</script>
+	
+<include file="public:footer"/>

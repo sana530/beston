@@ -1,0 +1,265 @@
+<include file="public:header"/>
+<header class="top-fixed bg-yellow bg-inverse">
+    <div class="top-back">
+        <a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+    </div>
+    <div class="top-title">
+        个人转账
+    </div>
+    <div class="top-signed">
+        <include file="public:message"/>
+    </div>
+</header>
+<link rel="stylesheet" href="/static/default/wap/css/transfer.css?v=2"/>
+<script src="/static/default/wap/js/jquery.gesture.password.js"></script>
+<div class="content_right">
+<style>
+.password_input .left {width:200px;}
+.password_input .lef code{ margin-left:10px; color:#F00;}
+.password_subm .submit {background-color: #CACACA;}
+.password_subm .active {background-color: #fd8f52;}
+.password_input .lef input.email_lkrz {width: 120px;}
+</style>
+    <div class="tgdd">
+        <iframe id="baocms_frm" name="baocms_frm" style="display:none;"></iframe>
+        <form method="post"  action="<{:U('money/transfer')}>" target="baocms_frm" id="transfer_form">
+            <input type="hidden" id="status" value="0" />
+            <input type="hidden" id="from_scan" value="<if condition='isset($user)'>1<else/>0</if>" />
+            <input type="hidden" id="pay_type" value="<if condition='$MEMBER.pay_type eq 1'>1<else/>0</if>" />
+
+            <div class="password_nr">
+                <div class="password_input">
+                    <if condition="!empty($CONFIG[cash][is_transfer_small])">
+                        最低金额: &#36;<{$CONFIG[cash][is_transfer_small]}> NZD
+                    </if>
+
+                    <if condition="!empty($CONFIG[cash][is_transfer_big])">
+                        最高金额: &#36;<{$CONFIG[cash][is_transfer_big]}> NZD
+                    </if>
+                    <br/>
+                    <if condition="!empty($MEMBER['money'])">
+                        当前余额:&#36;<{:round($MEMBER['money']/100,2)}> NZD
+                        <php>$cha = round($MEMBER['money']/100,2) - $this->_CONFIG['cash']['is_transfer_small'] ; </php>
+                        <if condition="$cha elt 0">
+                        当前余额不足，请充值
+                        </IF>
+                    <else/>
+                        当前余额不足，请充值 <a class="myInfor_sx myInfor_sx_fk" href="<{:U('money/index')}>"> 充值</a>
+                    </if>
+
+                </div>
+                <div class="password_input">
+                    <div class="left">输入对方手机号</div>
+                    <div class="lef">
+                        <input type="text" name="mobile" id="mobile" class="cjinput" value="<{$user.mobile}>" />
+                        <a class="myInfor_sx myInfor_sx_fk"  id="check-nick"> 检查账号</a>
+                        <span id="user_data"></span>
+                    </div>
+                </div>
+
+                <div class="password_input">
+                    <div class="left">输入转账金额</div>
+                    <div class="lef">
+                        <input type="text" name="money" class="cjinput"  />
+                    </div>
+                </div>
+
+
+                <!--<div class="password_input email_rz">
+                    <div class="left">您绑定的手机验证码:</div>
+                    <div class="lef">
+                        <input type="button" class="email_lkrz"  id="jq_send" value="获取验证码"/>
+                        <input class="oldPassw" style="width: 100px;" name="yzm" id="yzm" type="text" />
+                        <code style="margin-left: 20px;"></code>
+                    </div>
+                </div>-->
+
+                <div class="password_subm">
+                    <input  id="check-form"  class="submit" type="button" value="立刻转账" />
+                </div>
+            </div>
+            <if condition="$MEMBER.pay_type eq 1">
+            <div class="theme-popover">
+                <div class="theme-poptit">
+                    <a title="关闭" class="close"></a>
+                    <h3>请输入手势密码</h3>
+                </div>
+                <div class="theme-popbod dform">
+                    <div class="theme-signin" id="gesture_password"></div>
+                    <input type="text" style="display:none;" id="pay_pass" name="pay_pass">
+                </div>
+            </div>
+            <else/>
+            <div class="theme-popover">
+                <div class="theme-poptit">
+                    <a title="close" class="close"></a>
+                    <h3>请输入四位数支付密码</h3>
+                </div>
+                <div class="theme-popbod dform">
+                    <div class="theme-signin" style="width: 200px;">
+                        <input type="password" maxlength="4" name="pay_code" id="pay_code"/>
+                    </div>
+                </div>
+            </div>
+            </if>
+            <div class="theme-popover-mask"></div>
+        </form>
+	</div>
+</div>
+</div>
+<include file="public:footer"/>
+
+
+<script>
+	$(document).ready(function () {
+        //如果页面来自扫一扫转账的，则自动验证收款账户
+	    if ($('#from_scan').val() == 1) {
+            checknick ();
+        }
+        //点击时，验证收款账户是否合法
+		$("#check-nick").click(function(){checknick ()});
+
+	    //验证收款账户是否合法
+	    function checknick () {
+            var mobile = $("#mobile").val();
+            var page = "/mcenter/money/check_mobile/mobile/"+mobile+".html";
+            if(mobile=="" || mobile=="请输入手机号"){
+                layer.msg("手机号不能为空",{icon:2});
+                $("#status").val("0");
+            }else{
+                $.get(page, function (data) {
+                    if(data == "0"){
+                        layer.msg("检测到对方账户不合法",{icon:2});
+                        $("#user_data").html( "" );
+                        $('#check-form').removeClass("active");
+                        $("#status").val("0");
+                    }else{
+                        layer.msg("可以转账到该用户",{icon:1});
+                        $("#user_data").html(data);
+                        $('#check-form').addClass("active");
+                        $("#status").val("1");
+                    }
+
+                }, 'html')
+            }
+        }
+
+        //弹出支付密码弹出框
+		$("#check-form").click(function () {
+            $("#check-form").attr('type','button');
+			var status = $("#status").val();
+			if( status == '0'){
+				layer.msg("手机没有检测通过！",{icon:2});
+			}else{
+                //先检查有无支付密码
+                $.post("<{:U('mobile/passport/payPassword')}>",{type:'<{$MEMBER.pay_type}>'}, function (data) {
+                    if (data == "-1") {
+                        layer.msg("请先设置支付密码",{icon:0});
+                        setTimeout(function(){ location.href = "<{:U('info/paypass')}>" }, 2000);
+                    }else{
+                        $('.theme-popover-mask').fadeIn(100);
+                        $('.theme-popover').slideDown(0);
+                    }
+                }, 'html');
+			}
+		});
+
+        //关闭支付密码弹出框
+        $('.theme-poptit .close').click(function(){
+            $('.theme-popover-mask').fadeOut(100);
+            $('.theme-popover').slideUp(0);
+            $('.theme-signin').find('#pay_code').val('');
+        })
+
+        //哪种支付密码方式（0:4位数支付密码; 1:手势支付密码）
+        var pay_type = "<{$MEMBER.pay_type}>";
+        if (pay_type == 1) {
+            $("#gesture_password").GesturePasswd({
+                backgroundColor:"#FFF",  //背景色
+                color:"#252736",   //主要的控件颜色
+                roundRadii:25,    //大圆点的半径
+                pointRadii:6, //大圆点被选中时显示的圆心的半径
+                space:30,  //大圆点之间的间隙
+                width:240,   //整个组件的宽度
+                height:240,  //整个组件的高度
+                lineColor:"#00aec7",   //用户划出线条的颜色
+            });
+            $("#gesture_password").on("hasPasswd",function(e,passwd){
+                $.post("<{:U('mobile/passport/payPassword')}>",{passwd:passwd, type:1}, function (data) {
+                    if (data == "-1") {
+                        layer.msg("请先设置手势支付密码",{icon:0});
+                        setTimeout(function(){ location.href = "<{:U('info/paypass')}>" }, 2000);
+                    } else if(data == "0"){
+                        $("#gesture_password").trigger("passwdWrong");
+                    }else{
+                        $("#gesture_password").trigger("passwdRight");
+                        layer.msg("正在为您转账",{icon:1});
+                        $('#pay_pass').val(passwd)
+                        $('.theme-popover-mask').fadeOut(100);
+                        $('.theme-popover').slideUp(200);
+                        $("#transfer_form").submit();
+                    }
+                }, 'html')
+            });
+        } else {
+            $('#pay_code').keyup(function(){
+                if ($(this).val().length == 4) {
+                    $.post("<{:U('mobile/passport/payPassword')}>",{passwd:$(this).val(), type:0}, function (data) {
+                        if (data == "-1") {
+                            layer.msg("请先设置四位数支付密码",{icon:0});
+                            setTimeout(function(){ location.href = "<{:U('info/paypass')}>" }, 2000);
+                            $('.theme-popover-mask').fadeOut(100);
+                            $('.theme-popover').slideUp(200);
+                        } else if(data == "0"){
+                            layer.msg("Wrong Password!",{icon:0});
+                        }else{
+                            layer.msg("Paying...",{icon:1});
+                            $('.theme-popover-mask').fadeOut(100);
+                            $('.theme-popover').slideUp(200);
+                            $("#transfer_form").submit();
+                        }
+                    }, 'html')
+                }
+            });
+        }
+
+	});
+</script>
+
+<script type="text/javascript">
+        //发送验证短信
+        var mobile_timeout;
+        var mobile_count = 100;
+        var mobile_lock = 0;
+		var user_mobile = "<{$MEMBER['mobile']}>";
+        $(function () {
+            $("#jq_send").click(function () {
+                if (mobile_lock == 0) {
+                    mobile_lock = 1;
+                    $.post("<{:U('info/sendsms')}>",{mobile:user_mobile},function(data){
+                        if(data.status == 'success'){
+                             mobile_count = 60;
+                            layer.msg(data.msg,{icon:1});
+                            BtnCount();
+                        }else{
+                            mobile_lock = 0;
+                            layer.msg(data.msg,{icon:2});
+                        }
+                    },'json');
+                }
+
+            });
+        });
+        BtnCount = function () {
+            if (mobile_count == 0) {
+                $('#jq_send').val("重新发送");
+                mobile_lock = 0;
+                clearTimeout(mobile_timeout);
+            }
+            else {
+                mobile_count--;
+                $('#jq_send').val(mobile_count.toString() + "s后重发");
+                mobile_timeout = setTimeout(BtnCount, 1000);
+            }
+        };
+    </script>

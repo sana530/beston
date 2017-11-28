@@ -1,0 +1,278 @@
+<include file='public:header'/>
+
+
+<div class="sjgl_lead">
+    <ul>
+        <li><em class="sjgl_leadico sjgl_leadico4"></em><a href="#">美食</a></li>
+        <li>&gt;<a class="sjgl_leadEnd" href="#">入驻申请</a></li>
+    </ul>
+</div>
+<div class="tuan_content">
+    <div class="radius5 tuan_top">
+    	<div class="tuan_top_t">
+            <div class="left tuan_topser_l">注意：商家入驻要在后台审核之后才能显示</div>
+        </div>
+    </div>
+    <div class="tuanfabu_tab">
+        <ul>
+            <li class="tuanfabu_tabli tabli_change on"><a href="#">基本资料</a></li>
+            
+        </ul>
+    </div>
+    <div class="tabnr_change show">
+	  <form  target="baocms_frm" action="<{:U('ele/apply')}>" method="post">
+        <table class="tuanfabu_table" width="100%" border="0" cellspacing="0" cellpadding="0">
+       
+            <tr>
+                <td><p class="tuanfabu_t">店铺名称：</p></td>
+                <td><div class="tuanfabu_nr"><input type="text" class="tuanfabu_int tuanfabu_intw2" name="data[shop_name]" /></div></td>
+            </tr>
+			
+              
+          <tr>
+                    <td class="tuanfabu_t">所在区域：</td>
+                    <td class="tuanfabu_nr">
+                        
+                          <select name="data[city_id]" style="float: left; margin-right: 20px;"  id="city_id" class="tuanfabu_int tuanfabu_intw2"></select>
+                       <select name="data[area_id]" style="float: left;"  id="area_id" class="tuanfabu_int tuanfabu_intw2"></select>
+
+                    </td>
+                </tr>
+                 <script src="<{:U('app/datas/cityarea')}>"></script>
+                <script>
+                    var city_id = <?php echo (int)$detail['city_id'];?>;
+                    var area_id = <?php echo (int)$detail['area_id'];?>;
+                    function changeCity(cid){
+                        var area_str = '<option value="0">请选择.....</option>';
+                        for(a in cityareas.area){
+                           if(cityareas.area[a].city_id ==cid){
+                                if(area_id == cityareas.area[a].area_id){
+                                    area_str += '<option selected="selected" value="'+cityareas.area[a].area_id+'">'+cityareas.area[a].area_name+'</option>';
+                                }else{
+                                     area_str += '<option value="'+cityareas.area[a].area_id+'">'+cityareas.area[a].area_name+'</option>';
+                                }  
+                            }
+                        }
+                        $("#area_id").html(area_str);
+                    }
+                    $(document).ready(function(){
+                        var city_str = '<option value="0">请选择.....</option>';
+                        for(a in cityareas.city){
+                           if(city_id == cityareas.city[a].city_id){
+                               city_str += '<option selected="selected" value="'+cityareas.city[a].city_id+'">'+cityareas.city[a].name+'</option>';
+                           }else{
+                                city_str += '<option value="'+cityareas.city[a].city_id+'">'+cityareas.city[a].name+'</option>';
+                           }  
+                        }
+                        $("#city_id").html(city_str);
+                        if(city_id){
+                            changeCity(city_id);
+                        }
+                        $("#city_id").change(function(){
+                            city_id = $(this).val();
+                            changeCity($(this).val());
+                        });
+                        
+                        $("#area_id").change(function () {
+                            var url = '<{:U("business/child",array("area_id"=>"0000"))}>';
+                            if ($(this).val() > 0) {
+                                var url2 = url.replace('0000', $(this).val());
+                                $.get(url2, function (data) {
+                                    $("#business_id").html(data);
+                                }, 'html');
+                            }
+
+                        });
+                    });
+                </script>
+			<tr>
+                <td><p class="tuanfabu_t">分类：</p></td>
+                <td>
+					<div class="tuanfabu_nr">
+					 <foreach name="getEleCate" item="var" key="index">
+                            <label style="margin-right: 10px;"><input type="checkbox" name="cate[]" value="<{$index}>"/><{$var}></label>
+                        </foreach>   
+					</div>
+				</td>
+            </tr>
+			  <tr>
+                    <td class="tuanfabu_t">是否支持在线付款：</td>
+                    <td class="tuanfabu_nr">
+                        <label> <input type="radio" name="data[is_pay]" value="1" <eq name="detail.is_pay" value="1">checked="checked"</eq>  /> 支持</label>
+                        <label> <input type="radio" name="data[is_pay]" value="0"  <eq name="detail.is_pay" value="0">checked="checked"</eq> /> 不支持</label>
+                    </td>
+                </tr>
+				<tr>
+                    <td class="tuanfabu_t">是否返利：</td>
+                    <td class="tuanfabu_nr">
+                        <label> <input type="radio" name="data[is_fan]" value="1" <eq name="detail.is_fan" value="1">checked="checked"</eq>  /> 支持</label>
+                        <label> <input type="radio" name="data[is_fan]" value="0"  <eq name="detail.is_fan" value="0">checked="checked"</eq> /> 不支持</label>
+                    </td>
+                </tr>
+				 <tr>
+                    <td class="tuanfabu_t">最高返利金额：</td>
+                     <td class="tuanfabu_nr">
+                        <input type="text" name="data[fan_money]" value="<{:round($detail['fan_money']/100,2)}>" class="tuanfabu_int tuanfabu_intw2" />
+                        <code>比如填写的是9元 那么很可能也只会反1元也可能会返现几角几分！如果填写0就不返利</code>
+                    </td>
+                </tr>
+				<tr>
+                    <td class="tuanfabu_t">新客户下单立减：</td>
+                    <td class="tuanfabu_nr">
+                        <label> <input type="radio" name="data[is_new]" value="1" <eq name="detail.is_new" value="1">checked="checked"</eq>  /> 支持</label>
+                        <label> <input type="radio" name="data[is_new]" value="0"  <eq name="detail.is_new" value="0">checked="checked"</eq> /> 不支持</label>
+                    </td>
+                </tr>
+				<tr>
+                    <td class="tuanfabu_t">满多少钱：</td>
+                    <td class="tuanfabu_nr"><input type="text" name="data[full_money]" value="<{:round($detail['full_money']/100,2)}>" class="tuanfabu_int tuanfabu_intw2" />
+
+                    </td>
+                </tr>
+				<tr>
+                    <td class="tuanfabu_t">减多少钱：</td>
+                    <td class="tuanfabu_nr">
+                        <input type="text" name="data[new_money]" value="<{:round($detail['new_money']/100,2)}>" class="tuanfabu_int tuanfabu_intw2" />
+                        <code>每超过满的金额10元将额外增加一NZD</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tuanfabu_t">是否支持送餐：</td>
+                    <td class="tuanfabu_nr">
+                        <label> <input type="radio" name="data[is_delivery]" value="1" <eq name="detail.is_delivery" value="1">checked="checked"</eq>  /> 支持</label>
+                        <label> <input type="radio" name="data[is_delivery]" value="0"  <eq name="detail.is_delivery" value="0">checked="checked"</eq>
+                            <if condition='empty($detail["is_delivery"])'>checked="checked"</if> /> 不支持</label>
+                    </td>
+                </tr>
+				<tr>
+                    <td class="tuanfabu_t">配送费：</td>
+                    <td class="tuanfabu_nr"><input type="text" name="data[logistics]" value="<{:round($detail['logistics']/100,2)}>" class="tuanfabu_int tuanfabu_intw2" />
+
+                    </td>
+                </tr>
+				<tr>
+                    <td class="tuanfabu_t">起送价：</td>
+                    <td class="tuanfabu_nr"><input type="text" name="data[since_money]" value="<{:round($detail['since_money']/100,2)}>" class="tuanfabu_int tuanfabu_intw2" />
+                        <code>满多少钱才能下单！</code>
+                    </td>
+                </tr>
+				<tr>
+                    <td class="tuanfabu_t">配送：</td>
+                    <td class="tuanfabu_nr"><input type="text" name="data[distribution]" value="<{$detail.distribution|default='100'}>" class="tuanfabu_int tuanfabu_intw2" /> 分钟送达
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tuanfabu_t">自主取餐时间：</td>
+                    <td class="tuanfabu_nr"><input type="text" name="data[order_ready]" value="<{$detail.order_ready|default='30'}>" class="tuanfabu_int tuanfabu_intw2" /> 分钟</td>
+                </tr>
+				 <tr style="display: none">
+                    <th >商家坐标：</th>
+                    <td>
+
+                        <span class="mr10"><input type="text" name="data[lng]" id="lng" value="<{$detail.lng|default=''}>" class="tuanfabu_int tuanfabu_intw2" />经度</span>
+                        <span><input type="text" name="data[lat]" id="lat" value="<{$detail.lat|default=''}>" class="tuanfabu_int tuanfabu_intw2" />纬度</span>
+
+                    </td>
+                </tr>
+                <tr>
+                    <th>地图：</th>
+                    <td>
+                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&libraries=places&callback=initAutocomplete" async defer></script>
+                        <div class="top" style="width:700px; margin:20px 0;">
+                            <div id="r-result">请输入<input type="text" id="addr" class="mapinputs tuanfabu_int tuanfabu_intw3" size="20" /></div>
+                        </div>
+                        <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+                        <div id="allmap" style="width: 600px; height:500px;"></div>
+                        <script type="text/javascript">
+                            var autocomplete;
+                            var geolocation;
+                            var map;
+                            var marker;
+                            var infowindow;
+                            var geocoder;
+                            var markersArray = [];
+                            function initAutocomplete() {
+                                geocoder = new google.maps.Geocoder();
+                                autocomplete = new google.maps.places.Autocomplete((document.getElementById('addr')),{types: ['geocode']});
+                                autocomplete.addListener('place_changed', fillInAddress);
+                                geolocate();
+                            }
+                            function fillInAddress() {
+                                geocoder.geocode(
+                                    { address: autocomplete.getPlace().formatted_address },    //設定地址的字串
+                                    function(results, status) {
+                                        if (status == google.maps.GeocoderStatus.OK) {
+                                            geolocation = results[0].geometry.location;
+                                            map = new google.maps.Map(document.getElementById("allmap"), { center: geolocation, zoom: 15 });
+                                            google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+                                            placeMarker(geolocation);
+                                        }
+                                    }
+                                );
+                            }
+                            function geolocate() {
+                                if (navigator.geolocation) {
+                                    navigator.geolocation.getCurrentPosition(function(position) {
+                                        geolocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                                        map = new google.maps.Map(document.getElementById("allmap"), { zoom: 13, center: geolocation });
+                                        google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+                                    });
+                                }
+                            }
+                            function placeMarker(location) {
+                                //clearOverlays
+                                if (markersArray && markersArray.length > 0) {
+                                    for (var i = 0; i < markersArray.length; i++) { markersArray[i].setMap(null); }
+                                    markersArray.length = 0;
+                                }
+                                if (infowindow) { infowindow.close(); }
+
+                                marker = new google.maps.Marker({position: location, map: map});
+                                markersArray.push(marker);
+                                if (geocoder) {
+                                    geocoder.geocode({ 'location': location }, function (results, status) {
+                                        if (status == google.maps.GeocoderStatus.OK && results[0]) {
+                                            var message = "<b>座標:</b>" + results[0].geometry.location.lat() + " , " + results[0].geometry.location.lng() + "<br />" + "<b>地址:</b>" + results[0].formatted_address;
+                                            infowindow = new google.maps.InfoWindow({content: message, size: new google.maps.Size(50, 50)});
+                                            infowindow.open(map, marker);
+                                            document.getElementById("lng").value = results[0].geometry.location.lng();
+                                            document.getElementById("lat").value = results[0].geometry.location.lat();
+                                            document.getElementById("addr").value = results[0].formatted_address;
+                                        } else {
+                                            alert("Geocoder failed due to: " + status);
+                                        }
+                                    });
+                                }
+                            }
+                        </script>
+                    </td>
+                </tr>
+			 
+			
+          
+              <tr>
+                <td><p class="tuanfabu_t">详情：</p></td>
+                <td><div class="tuanfabu_nr">
+                <script type="text/plain" id="data_details" name="data[intro]" style="width:800px;height:360px;"></script>
+                </div></td>
+            </tr>
+			<link rel="stylesheet" href="__PUBLIC__/umeditor/themes/default/css/umeditor.min.css" type="text/css">
+            <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+            <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+            <script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+            <script>
+                um = UM.getEditor('data_details', {
+                    imageUrl: "<{:U('public/editor')}>",
+                    imagePath: '__ROOT__/attachs/editor/',
+                    lang: 'zh-cn',
+                    langPath: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + "lang/",
+                    focus: false
+                });
+            </script>
+        </table>
+        <div class="tuanfabu_an"><input  type="submit" class="radius3 sjgl_an tuan_topbt" value="确认申请" /></div>
+        </form>
+</div>
+
+<include file='public:footer'/>

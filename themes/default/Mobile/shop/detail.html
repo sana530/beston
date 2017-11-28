@@ -1,0 +1,407 @@
+<include file="public:header"/>
+<style>
+ul{ padding-left:0px;}
+li {list-style: none;}
+.container { margin-top:3rem;}
+.container2 {margin: 0 auto; }
+.coupon-list .item {  padding: 5px 0px 0px 5px;}
+.coupon-list .item .intro { height: initial;}
+.panel-head { background-color: #fff;}
+p, .p {margin-bottom: 0px; }
+</style>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('shop/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			<{$detail.shop_name}>
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>
+	  
+	<div class="share-content">
+		<!--MOB SHARE BEGIN-->
+		<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+			<ul class="-mob-share-list">
+				<li class="-mob-share-weixin"><p>微信</p></li>
+				<li class="-mob-share-facebook"><p>Facebook</p></li>
+				<li class="-mob-share-twitter"><p>Twitter</p></li>
+				<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+				<li class="-mob-share-douban"><p>豆瓣网</p></li>
+			</ul>
+			<div class="-mob-share-close">取消</div>
+		</div>
+		
+		<div class="-mob-share-ui-bg"></div>
+		
+		<script>
+			// 同一网页下只能有一种分享效果，否则会冲突
+			// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+			var ui = getElementsByClassName( "-mob-share-ui" )[0];
+			var uiTemplate = ui.cloneNode( true );
+			var uiCurrent = ui;
+	
+			var buttons = getElementsByClassName("share-button" );
+			for( var i = 0, len = buttons.length; i < len; i++ ) {
+				var btn = buttons[ i ];
+				btn.onclick = function() {
+					if( uiCurrent ) {
+						uiCurrent.parentNode.removeChild( uiCurrent );
+					}
+					uiCurrent = uiTemplate.cloneNode( true );
+					var dataTheme = this.getAttribute( "data-theme" );
+					var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+					addClass( uiCurrent, theme );
+					if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+						getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+					}
+					document.body.appendChild( uiCurrent );
+					mobShare.ui.init();
+					mobShare.ui.open();
+				};
+			}
+	
+			function getElementsByClassName( classname, main ) {
+				var main = main || document;
+				if( main.getElementsByClassName ) {
+					return main.getElementsByClassName( classname );
+				}
+				var a = [];
+				var re = new RegExp( '(^| )' + classname + '( |$)' );
+				var els = main.getElementsByTagName( "*" );
+				for( var i = 0, j = els.length; i < j; i++ ) {
+					if( re.test( els[i].className ) ) {
+						a.push( els[i] );
+					}
+				}
+				return a;
+			};
+	
+			function hasClass( ele, cls ) {
+				return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+			}
+	
+			function addClass( ele, cls ) {
+				if (!hasClass(ele, cls)) {
+					ele.className += " " + cls;
+				}
+			}
+		</script>
+		
+		<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+		<!--MOB SHARE END-->
+	</div>
+
+ 	<if condition="!empty($detail['panorama_url'])">
+        <div class="panorama_url">
+            <iframe src="<{$detail.panorama_url}>" width="100%" height="600"></iframe>
+        </div>
+    </if>
+	<include file="shop:header"/>
+ 
+ 	<script>
+		var news = new fz.Scroll('.scroller-news', {
+			scrollY: false,
+			scrollX: true
+		});
+		news.scrollToElement("li:nth-child(1)", 120, true, true);
+		
+		$(document).ready(function () {
+			$("#share-box").hide();
+			$("#share-btn").click(function () {
+				$("#share-box").toggle();
+				$('html,body').animate({scrollTop:0}, 'slow');
+			});
+			$("#mui-card-close").click(function () {
+				$("#share-box").hide();
+			});
+		});
+	</script>
+
+	<div class="container">
+		<div class="line detail-base">
+			<div class="x4">
+				<div class="pic">
+					<a href="<{:U('shop/pic',array('shop_id'=>$detail['shop_id']))}>">
+                    
+                    <img src="<{:config_img($detail['photo'])}>" /></a> 				<if condition="!empty($pic)">
+                    <span class="album"><{$pic}></span>
+                    <else/>
+                    </if>
+				</div>
+			</div>
+			<div class="x5">
+				<h1><{$detail.shop_name}></h1>
+				<p><span class="ui-starbar"><span style="width:<{:round($detail['score']*2,2)}>%"></span></span></p>
+				<p>浏览量: <{$detail.view}> 次</p>
+				<p class="text-small"><span class="text-yellow"><{$ex.business_time}> </span></p>
+			</div>
+			<div class="x3">
+				<gt name="detail.niu_date" value="$today" >
+					<p class="text-center"><img src="/static/default/wap/image/shop/icon-cx.png" /></p>
+				</gt>
+				<div class="blank-10"></div>
+				<p class="text-center"><a class="text-dot" href="#ping">商铺评价</a></p>
+				<p class="text-small text-center">( <em class="text-yellow"><{$totalnum}></em>人评价 )</p>
+                <if condition="$detail['is_renzheng'] eq 1">
+                <p class="text-small text-center"><em class="text-yellow">该商家已认证</em></p>
+                </if>
+                <if condition="$detail['recognition'] eq 0">
+                <p class="text-small text-center"><em class="text-yellow"><a href="<{:U('shop/recognition',array('shop_id'=>$detail['shop_id']))}>">我要认领</a></em></p>
+                </if>
+			</div>
+		</div>
+    </div>
+		<div class="blank-10 bg"></div>
+
+	<div class="container2">
+		<div class="line detail-contact">
+			<div class="x9">
+				<p class="addr"><i class="icon icon-map-marker"></i> <{$detail.addr}> </p>
+				<p class="margin-top"><i class="icon icon-phone"></i> 
+                <if condition="!empty($detail['tel'])"> 
+                <a class="text-large" href="tel:<{$detail.tel}>"><{$detail.tel}></a>
+                <else/>
+                <a class="text-large">暂无联系方式</a><!--该商家暂无联系方式-->
+                </if>
+                </p>
+			</div>
+			<div class="x3">
+				<a class="favor" href="<{:U('shop/favorites',array('shop_id'=>$detail['shop_id']))}>">
+					<div class="txt radius-circle bg-green"><i class="icon-heart"></i></div>
+					<p>关注该商家</p>
+					<p class="text-small">粉丝<em class="text-yellow"><{$favnum}></em>人</p>
+				</a>
+			</div>
+		</div>
+		
+        
+        <php>$sb = D('ShopBranch');$rsb = $sb -> where('shop_id ='.$detail['shop_id']) -> count();</php>
+        <if condition="!empty($rsb)"> 
+           <div class="list-link detail-link radius-none">
+		    <a href="<{:U('shop/branch/',array('shop_id'=>$detail['shop_id']))}>">
+				<span class="txt txt-little radius-little bg-yellow">店</span> 查看另外<{$rsb}>家分店
+				<span class="float-right icon-angle-right"></span>
+			</a>
+           </div>
+        <else/>
+       <!--该商家无分店-->
+        </if>
+   	</div>
+	<div class="blank-10 bg"></div>
+
+	<if condition="!empty($shopyouhui)">
+	<div class="container2" style="margin:10px;">
+		<div class="form-button"><a  href="<{:U('shop/breaks',array('shop_id'=>$detail['shop_id']))}>" class="button button-block button-big bg-dot text-center" type="submit">优惠买单</a></div>
+	</div>
+	</if>
+            
+        
+	<div class="container2">
+        <div class="list-link detail-link radius-none">
+			<div class="line border-bottom">
+				<div class="x6 border-right text-center">
+					<a href="<{:U('shop/gps',array('shop_id'=>$detail['shop_id']))}>"><i class="icon icon-send"></i> 导航到这去</a>
+				</div>
+				<div class="x6 text-center">
+					<a href="<{:U('shop/qrcode',array('shop_id'=>$detail['shop_id']))}>"><i class="icon icon-qrcode"></i> 二维码名片</a>
+				</div>
+			</div>
+			<!--团购数据开始-->
+		    <if condition="!empty($tuan)">
+               	<a href="<{:U('shop/tuan',array('shop_id'=>$detail['shop_id']))}>">
+				   	<span class="txt txt-little radius-little bg-green">团</span> 去逛逛商家抢购
+			    	<span class="float-right icon-angle-right"></span>
+			    </a>
+				<ul>
+				<volist name="tuan" id="item" key="index">
+					<li class="list border-bottom">
+						<a class="line" href="<{:U('tuan/detail',array('tuan_id'=>$item['tuan_id']))}>" >
+							<div class="container1">
+								<img class="x3" src="<{:config_img($item['photo'])}>" />
+								<div class="des x9">
+									<h5><{$item.title}></h5>
+									<p class="info">
+										<span class="now-price">$ <{:round($item['tuan_price']/100,2)}></span> <del>$ <{:round($item['price']/100,2)}></del>
+										<span class="text-little float-right badge bg-yellow margin-small-top padding-right">立省<{:round($item['price']/100 - $item['tuan_price']/100,2)}>NZD</span>
+									</p>
+								</div>
+							</div>
+						</a>
+					</li>
+				</volist>
+				</ul>
+				<div class="blank-10 bg"></div>
+            </if>
+			<!--团购数据结束-->
+
+			<!--优惠券数据开始-->
+			<if condition="!empty($coupon)">
+                <a href="<{:U('shop/coupon',array('coupon'=>$detail['coupon_id']))}>">
+				    <span class="txt txt-little radius-little bg-red">劵</span> 商家优惠券下载
+				    <span class="float-right icon-angle-right"></span>
+			    </a>
+				<div class="coupon-list">
+				<volist name="coupon" id="item" key="index">
+					<a href="<{:U('coupon/detail',array('coupon_id'=>$item['coupon_id']))}>" class="item">
+						<div class="line">
+							<div class="x4"><img class="pic" src="__ROOT__/attachs/<{$item.photo|default='default.jpg'}>"  style="width:90%"></div>
+							<div class="x8">
+								<h3><{$item['title']}></h3>
+								<p class="intro"><{$item['intro']}></p>
+								<p class="info">
+									<span class="float-left">下载：<em class="text-yellow"><{$item.downloads}></em>人</span>
+									<span class="float-right">有效期至：<em class="text-yellow"><{$item['expire_date']}></em></span>
+								</p>
+							</div>
+						</div>
+					</a>
+				</volist>
+				</div>
+				<div class="blank-10 bg"></div>
+            </if>            
+            <!--优惠劵数据结束-->
+
+			<!--商品数据开始-->
+			<if condition="!empty($goods)">
+				<a href="<{:U('mart/lists',array('id'=>$weidian_id))}>">
+					<span class="txt txt-little radius-little bg-yellow">商</span> 去逛逛商家微店
+					<span class="float-right icon-angle-right"></span>
+				</a>
+				<ul class="item-list">
+				<volist name="goods" id="item" key="index">
+					<li class="border-bottom">
+						<a href="<{:U('mall/detail',array('goods_id'=>$item['goods_id']))}>" class="line">
+							<img class="x3" src="<{:config_img($item['photo'])}>" />
+							<div class="x9" style="margin-top:0.3rem; padding: 0 5px;"><h5><{:bao_msubstr($item['title'],0,18)}></h5>
+
+								<if condition="!empty($item['mobile_fan'])">
+									<p class="desc">手机下单立减 <span style="color:#F00; font-size:12px;"><{:round($item['mobile_fan']/100,2)}></span> NZD</p>
+									<else/>
+									<p class="desc"><{:bao_msubstr($item['intro'],0,26)}></p>
+								</if>
+
+								<p class="info"><span>&#36;<{:round($item['mall_price']/100,2)}></span><del>&#36;<{:round($item['price']/100,2)}></del>
+									<em>已售<{$item.sold_num}></em>
+									<php>
+										$shopids = D('Shop')->where('shop_id ='.$item['shop_id'])->find();
+										$is_renzheng = $shopids['is_renzheng'];
+									</php>
+									<if condition="$is_renzheng eq 1"><em class="is_renzheng">认证</em></if>
+								</p>
+							</div>
+						</a>
+					</li>
+				</volist>
+				</ul>
+				<div class="blank-10 bg"></div>
+			</if>
+			<!--商品数据结束-->
+
+			<!--招聘信息开始-->
+			<if condition="!empty($work)">
+            <div class="blank-10 bg"></div>
+            <div class="panel-head"><b>商家招聘信息</b></div>
+            <php>$i=0;</php>	
+            <volist name="work" id="item" key="index"><!--循环输出的一条数据-->
+            <php>$i++;</php>	
+            <a href="<{:U('nearwork/detail',array('work_id'=>$item['work_id']))}>">
+				 <span class="txt txt-little radius-little bg-yellow"><{$i}></span> 
+                 <{:bao_msubstr($item['title'],0,12,false)}>
+                 <em style="color:#999; font-size:12px;">
+                 <if condition="!empty($item['money1'])">
+                 月薪：<{$item.money1}>
+                 </if>
+                 <if condition="!empty($item['money2'])">
+                 -<{$item.money2}> &nbsp;
+                 </if>
+                 <if condition="!empty($item['num'])">
+                 需：<{$item.num}>人
+                 </if>
+                 </em>
+				 <span class="float-right icon-angle-right"></span>
+			</a>
+            </volist>
+            <div class="blank-10 bg"></div>
+            </if>
+			<!--招聘信息结束-->
+
+            <if condition="!empty($huodong)">
+                <a href="<{:U('mobile/huodong/index',array('activity_id'=>$activity_id['activity_id']))}>">
+				    <span class="txt txt-little radius-little bg-red">活</span> 商家近期活动
+				    <span class="float-right icon-angle-right"></span>
+			    </a>
+            </if>
+                       
+			<a href="<{:U('shop/book',array('shop_id'=>$detail['shop_id']))}>">
+				<span class="txt txt-little radius-little bg-blue">约</span> 预约去消费
+				<span class="float-right icon-angle-right"></span>
+			</a>
+
+			<a href="<{:U('shop/news',array('shop_id'=>$detail['shop_id']))}>">
+				<span class="txt txt-little radius-little bg-blue">闻</span> 商家新闻
+				<span class="float-right icon-angle-right"></span>
+			</a>
+
+			<a href="<{:U('shop/life',array('shop_id'=>$detail['shop_id']))}>">
+				<span class="txt txt-little radius-little bg-blue">类</span> 商家分类信息
+				<span class="float-right icon-angle-right"></span>
+			</a>
+		</div>
+	</div>
+	<div class="blank-10 bg"></div>
+
+	<div class="container2">
+		<div class="panel detail-intro radius-none">
+			<div class="panel-head">商家介绍</div>
+			<div class="panel-body">
+				<{:cleanhtml($ex['details'])}>
+				<gt name="detail.niu_date" value="$today" >
+				<span class="niu"><img src="/static/default/wap/image/shop/icon-niu.png" /></span>
+				</gt>
+			</div>
+		</div>
+	</div>
+	<div class="blank-10 bg"></div>
+		
+        
+     
+	<div class="container2">
+        <div class="panel detail-intro radius-none">
+			<div class="panel-head">附近抢购</div>
+		    <div class="main-tuan" id="main-tuan" style="padding:0 10px;">
+				<volist name="tuans" id="item">
+				<li>
+					<a class="line" href="<{:U('tuan/detail',array('tuan_id'=>$item['tuan_id']))}>" >
+						<div class="container1">
+							<img class="x4" src="<{:config_img($item['photo'])}>" />
+							<div class="des x8">
+								<h5><{$item.title}></h5>
+								<p class="intro">
+									<{:msubstr($item['intro'],0,20)}>
+								</p>
+								<p class="info">
+									<span>$ <em><{:round($item['tuan_price']/100,2)}></em></span> <del>$ <{:round($item['price']/100,2)}></del>
+									<span class="text-little float-right badge bg-yellow margin-small-top padding-right">立省<{:round($item['price']/100 - $item['tuan_price']/100,2)}>NZD</span>
+								</p>
+							</div>
+						</div>
+					</a>
+				</li>
+				</volist>
+			</div>
+		</div>
+	</div>
+	<div class="blank-10"></div>
+
+
+<if condition="empty($detail['panorama_url'])">
+	<include file="public:footer"/>
+</if>
+<!--客服代码-->  
+<if condition="!empty($detail['service']) and $detail['service_audit'] eq 1">      
+<{$detail.service}>	
+</if>
+

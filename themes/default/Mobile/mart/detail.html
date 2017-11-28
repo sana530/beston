@@ -1,0 +1,241 @@
+<php>$seo_title = $detail['title'];</php>
+<include file='public:header'/>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('mall/index',array('cat'=>$detail['cate_id']))}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			商品详情
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>
+	
+	<div class="share-content">
+			<!--MOB SHARE BEGIN-->
+			<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+				<ul class="-mob-share-list">
+					<li class="-mob-share-weixin"><p>微信</p></li>
+					<li class="-mob-share-facebook"><p>Facebook</p></li>
+					<li class="-mob-share-twitter"><p>Twitter</p></li>
+					<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+					<li class="-mob-share-douban"><p>豆瓣网</p></li>
+				</ul>
+				<div class="-mob-share-close">取消</div>
+			</div>
+			
+			<div class="-mob-share-ui-bg"></div>
+			
+			<script>
+				// 同一网页下只能有一种分享效果，否则会冲突
+				// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+				var ui = getElementsByClassName( "-mob-share-ui" )[0];
+				var uiTemplate = ui.cloneNode( true );
+				var uiCurrent = ui;
+		
+				var buttons = getElementsByClassName("share-button" );
+				for( var i = 0, len = buttons.length; i < len; i++ ) {
+					var btn = buttons[ i ];
+					btn.onclick = function() {
+						if( uiCurrent ) {
+							uiCurrent.parentNode.removeChild( uiCurrent );
+						}
+						uiCurrent = uiTemplate.cloneNode( true );
+						var dataTheme = this.getAttribute( "data-theme" );
+						var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+						addClass( uiCurrent, theme );
+						if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+							getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+						}
+						document.body.appendChild( uiCurrent );
+						mobShare.ui.init();
+						mobShare.ui.open();
+					};
+				}
+		
+				function getElementsByClassName( classname, main ) {
+					var main = main || document;
+					if( main.getElementsByClassName ) {
+						return main.getElementsByClassName( classname );
+					}
+					var a = [];
+					var re = new RegExp( '(^| )' + classname + '( |$)' );
+					var els = main.getElementsByTagName( "*" );
+					for( var i = 0, j = els.length; i < j; i++ ) {
+						if( re.test( els[i].className ) ) {
+							a.push( els[i] );
+						}
+					}
+					return a;
+				};
+		
+				function hasClass( ele, cls ) {
+					return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+				}
+		
+				function addClass( ele, cls ) {
+					if (!hasClass(ele, cls)) {
+						ele.className += " " + cls;
+					}
+				}
+			</script>
+			
+			<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+			<!--MOB SHARE END-->
+			
+		</div>
+
+	<script>
+		$(document).ready(function () {
+			$("#share-box").hide();
+			$(".share-btn").click(function () {
+				$("#share-box").toggle();
+				$('html,body').animate({scrollTop:0}, 'slow');
+			});
+			$("#mui-card-close").click(function () {
+				$("#share-box").hide();
+			});
+		});
+	</script>
+	
+		<div class="item-detail">
+			<div class="detail-pic">
+				 <img src="__ROOT__/attachs/<{$detail.photo}>" />
+			</div>
+			<div class="detail-row bb">
+				<div class="item-tit">
+					 <{$detail.title}>
+				</div>
+				<div class="item-share">
+					<a class="share-btn" href="javascript:;">
+						<i class="icon-share-alt"></i>
+						<span>分享</span>
+					</a>
+				</div>
+			</div>
+			<div class="detail-row bb">
+				<div class="item-price">
+					<p class="price">&#36; <{:round($detail['mall_price']/100,2)}></p>
+					<p class="discout">已经在原价基础上打<{:round($detail['mall_price']/$detail['price']*10,1)}>折</p>
+					<p class="sprice">
+						原价:<del>&#36; <{:round($detail['price']/100,2)}></del>
+						<span class="sellnum">销量 <{$detail['sold_num']}></span>
+					</p>
+				</div>
+			</div>
+			<div class="detail-row bb">
+				<div class="item-tips">
+					<em><span class="text-green"><i class="icon-check-circle"></i></span> 24小时内配送</em>
+					<em><span class="text-green"><i class="icon-check-circle"></i></span> 正品保障</em>
+					<em><span class="text-green"><i class="icon-check-circle"></i></span> 认证商家</em>
+				</div>
+			</div>
+		</div>
+
+		<div class="blank-10 bg"></div>
+	
+		<div class="item-shop">
+			<div class="shop-row">
+				<div class="shop-pic">
+					 <a href="<{:U('mart/dian',array('shop_id'=>$detail['shop_id']))}>"><img src="__ROOT__/attachs/<{$shop.photo}>" /></a>
+				</div>
+				<div class="shop-name">
+					<h2><a href="<{:U('mart/dian',array('shop_id'=>$detail['shop_id']))}>"><{$shop.shop_name}></a></h2>
+					<span class="ui-starbar"><span style="width:<{:round($shop['score']*2,2)}>%"></span></span>
+				</div>
+			</div>
+			<div class="shop-desc">
+				<p>地址: <{$shop.addr}> 【<a class="text-blue" href="<{:U('shop/gps',array('shop_id'=>$detail['shop_id']))}>"><i class="icon-location-arrow"></i> 到这去</a>】</p>
+				<p>电话: <a class="text-blue" href="tel:<{$shop.tel}>"><{$shop.tel}></a>
+			</div>
+		</div>
+		
+		<div class="blank-10 bg"></div>
+		
+		<div class="item-intro">
+			<h2>商品介绍</h2>
+			<div class="intro-bd"><{$detail.details}></div>
+		</div>
+		
+		<div class="blank-10 bg"></div>
+		
+		<div class="item-intro">
+			<h2>购买须知</h2>
+			<div class="intro-bd"><{$detail.instructions}></div>
+		</div>
+		
+		<div class="blank-10 bg"></div>
+		
+		
+		<div class="item-list item-intro" id="item-list">
+			<h2>看了又看</h2>
+			<ul>
+			<volist name="recom" id="item" key="index">
+			<li class="line">
+				<a href="<{:U('mall/detail',array('goods_id'=>$item['goods_id']))}>">
+				<div class="x3">
+					<img src="__ROOT__/attachs/<{$item.photo}>" />
+				</div>
+				<div class="x9">
+					<h5><{$item.title}></h5>
+					<p class="desc"><{:bao_Msubstr($item[instructions],0,60)}></p>
+					<p class="info">
+						<span>&#36;<{:round($item['price']/100,2)}></span><del>&#36;<{:round($item['mall_price']/100,2)}></del>
+						<em>已售<{$item.sold_num}></em>
+					</p>
+				</div>
+				</a>
+			</li>
+			</volist>
+			</ul>
+		</div>
+
+    <script>
+        var num = '<{$cartnum}>';
+        $(document).ready(function (e) {
+            $(document).on('click','#add-cart',function(e){
+                e.preventDefault();
+                $.get($(this).attr('href'),function(data){
+                    if(data == 0){
+                        num++;
+                        $("#num").html(num);
+                        
+                    }else{
+                        alert(data);
+                    }
+                    
+                },'html');
+                
+            });
+        });
+    </script>
+	
+
+	
+	<nav class="cart-bar">
+		<a class="cart" href="<{:U('mall/cart')}>">
+			<i class="icon-shopping-cart"></i>
+			<div id="num" class="num"><{$cartnum}></div>件商品
+		</a>
+        <style>
+		.right10{ margin-right:5px;}
+		.button { padding: 6px 12px !important;}
+		</style>
+		<div class="result">
+			<a id="add-cart" href="<{:U('mall/cartadd',array('goods_id'=>$detail['goods_id']))}>">
+				<button class="button bg-dot right10">
+				  加入购物车
+				</button>
+			</a>
+			
+			<a href="<{:U('mall/buy',array('goods_id'=>$detail['goods_id']))}>">
+				<button class="button bg-dot">
+				  立即购买
+				</button>
+			</a>
+		</div>
+	</nav>	
+	
+</body>
+</html>

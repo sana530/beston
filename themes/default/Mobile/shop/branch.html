@@ -1,0 +1,126 @@
+<include file="public:header"/>
+
+<style>
+.container {margin-top: 0rem;}
+.list-media-x li {border-bottom: thin solid #eee;}
+.list-media-x ul {padding: 0;list-style: none;}
+p, .p {margin-bottom: 0px; }
+</style>
+
+
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('shop/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			商家分店
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>
+    
+    
+	  
+	<div class="share-content">
+		<!--MOB SHARE BEGIN-->
+		<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+			<ul class="-mob-share-list">
+				<li class="-mob-share-weixin"><p>微信</p></li>
+				<li class="-mob-share-facebook"><p>Facebook</p></li>
+				<li class="-mob-share-twitter"><p>Twitter</p></li>
+				<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+				<li class="-mob-share-douban"><p>豆瓣网</p></li>
+			</ul>
+			<div class="-mob-share-close">取消</div>
+		</div>
+		
+		<div class="-mob-share-ui-bg"></div>
+		
+		<script>
+			// 同一网页下只能有一种分享效果，否则会冲突
+			// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+			var ui = getElementsByClassName( "-mob-share-ui" )[0];
+			var uiTemplate = ui.cloneNode( true );
+			var uiCurrent = ui;
+	
+			var buttons = getElementsByClassName("share-button" );
+			for( var i = 0, len = buttons.length; i < len; i++ ) {
+				var btn = buttons[ i ];
+				btn.onclick = function() {
+					if( uiCurrent ) {
+						uiCurrent.parentNode.removeChild( uiCurrent );
+					}
+					uiCurrent = uiTemplate.cloneNode( true );
+					var dataTheme = this.getAttribute( "data-theme" );
+					var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+					addClass( uiCurrent, theme );
+					if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+						getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+					}
+					document.body.appendChild( uiCurrent );
+					mobShare.ui.init();
+					mobShare.ui.open();
+				};
+			}
+	
+			function getElementsByClassName( classname, main ) {
+				var main = main || document;
+				if( main.getElementsByClassName ) {
+					return main.getElementsByClassName( classname );
+				}
+				var a = [];
+				var re = new RegExp( '(^| )' + classname + '( |$)' );
+				var els = main.getElementsByTagName( "*" );
+				for( var i = 0, j = els.length; i < j; i++ ) {
+					if( re.test( els[i].className ) ) {
+						a.push( els[i] );
+					}
+				}
+				return a;
+			};
+	
+			function hasClass( ele, cls ) {
+				return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+			}
+	
+			function addClass( ele, cls ) {
+				if (!hasClass(ele, cls)) {
+					ele.className += " " + cls;
+				}
+			}
+		</script>
+		
+		<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+		<!--MOB SHARE END-->
+	
+		
+	</div>
+    
+ <div class="line tab-bar">
+	<div class="button-toolbar">
+		<div class="button-group">
+			<a class="block button bg-dot active"><{$rs.shop_name}> (共 <{$count}> 家分店)</a>
+		</div>
+	</div>
+</div>   
+
+<div class="list-media-x" id="list-media">
+	<ul>
+    <volist name="branch" id="r">
+    <li class="line padding">
+        <div class="x12">
+            <p><a href="<{:U('shop/shop',array('shop_id'=>$rs['shop_id'],'branch_id'=>$r['branch_id']))}>">分店名称：<{$rs.shop_name}> (<{$r.name}>)</a> </p>
+            <p class="text-small">分店地址：</span> <{$r.addr}>---距离<{$r.d}></p>       
+			<p class="text-right padding-top">                     
+            <a href="<{:U('shop/gps',array('shop_id'=>$r['shop_id']))}>" class="button button-small bg-green">导航</a>
+            <a href="tel:<{$r.telephone}>" class="button button-small bg-dot">联系商家</a>
+            <a href="<{:U('shop/shop',array('shop_id'=>$r['shop_id'],'branch_id'=>$r['branch_id']))}>" class="button button-small bg-dot">去逛逛</a>                          
+            </p>           
+        </div>
+    </li> 
+    </volist>
+  </ul>
+</div>
+
+<include file="public/footer" />

@@ -1,0 +1,251 @@
+<include  file='public:header'/>
+<script src="__PUBLIC__/js/my97/WdatePicker.js"></script>
+<div class="sjgl_lead">
+    <ul>
+        <li><a href="#">商家管理</a> > <a href="">分店</a> > <a>添加分店</a></li>
+    </ul>
+</div>
+<div class="tuan_content">
+    <div class="radius5 tuan_top">
+        <div class="tuan_top_t">
+            <div class="left tuan_topser_l">商家添加的分店要在后台审核之后才能显示在前台</div>
+        </div>
+    </div> 
+    <div class="tabnr_change  show">
+        <form method="post"  action="<{:U('branch/create')}>"  target="baocms_frm">
+            <table class="tuanfabu_table" width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">分店名称：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[name]" value="<{$SHOP.shop_name}>" class="tuanfabu_int tuanfabu_intw2" />
+                            <code>格式类似:<{$SHOP['shop_name']}>(绿地蓝海店)</code>
+                        </div></td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">地区：</p></td>
+                    <td>
+                        <div class="tuanfabu_nr">
+                        <select id="city_id" name="data[city_id]" class="tuanfabu_int tuanfabu_intw2">
+                            <option value="0">请选择...</option>            
+                        </select>
+                        <select id="area_id" name="data[area_id]" class="tuanfabu_int tuanfabu_intw2">
+                            <option value="0">请选择...</option>
+                        </select>
+                        <select id="business_id" name="data[business_id]" class="tuanfabu_int tuanfabu_intw2">
+                            <option value="0">请选择...</option>
+                        </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">分店地址：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[addr]" value="<{$detail.addr|default=''}>" class="tuanfabu_int tuanfabu_intw2" />
+                        </div></td>
+                </tr>
+                <tr style="display: none">
+                    <td width="120"><p class="tuanfabu_t">分店坐标：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[lng]" id="lng" value="<{$detail.lng|default=''}>" class="tuanfabu_int tuanfabu_intw2" /> 经度
+                            <input type="text" name="data[lat]" id="lat" value="<{$detail.lat|default=''}>" class="tuanfabu_int tuanfabu_intw2" /> 纬度
+                        </div></td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">手机号码：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[telephone]" id="telephone" value="<{$detail.telephone|default=''}>" class="tuanfabu_int tuanfabu_intw2" /> 请输入正确的手机号码
+                        </div></td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">地图：</p></td>
+                    <td><div class="tuanfabu_nr">
+                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&libraries=places&callback=initAutocomplete" async defer></script>
+                        <div class="top" style="width:700px; margin-bottom: 20px;">
+                            <div id="r-result">请输入:<input type="text" id="addr" class="mapinputs tuanfabu_int tuanfabu_intw3" size="20" /></div>
+                        </div>
+                        <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+                        <div id="allmap" style="width: 600px; height:500px;"></div>
+                        <script type="text/javascript">
+                            var autocomplete;
+                            var geolocation;
+                            var map;
+                            var marker;
+                            var infowindow;
+                            var geocoder;
+                            var markersArray = [];
+                            function initAutocomplete() {
+                                geocoder = new google.maps.Geocoder();
+                                autocomplete = new google.maps.places.Autocomplete((document.getElementById('addr')),{types: ['geocode']});
+                                autocomplete.addListener('place_changed', fillInAddress);
+                                geolocate();
+                            }
+                            function fillInAddress() {
+                                geocoder.geocode(
+                                    { address: autocomplete.getPlace().formatted_address },    //設定地址的字串
+                                    function(results, status) {
+                                        if (status == google.maps.GeocoderStatus.OK) {
+                                            geolocation = results[0].geometry.location;
+                                            map = new google.maps.Map(document.getElementById("allmap"), { center: geolocation, zoom: 15 });
+                                            google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+                                            placeMarker(geolocation);
+                                        }
+                                    }
+                                );
+                            }
+                            function geolocate() {
+                                if (navigator.geolocation) {
+                                    navigator.geolocation.getCurrentPosition(function(position) {
+                                        geolocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                                        map = new google.maps.Map(document.getElementById("allmap"), { zoom: 13, center: geolocation });
+                                        google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+                                    });
+                                }
+                            }
+                            function placeMarker(location) {
+                                //clearOverlays
+                                if (markersArray && markersArray.length > 0) {
+                                    for (var i = 0; i < markersArray.length; i++) { markersArray[i].setMap(null); }
+                                    markersArray.length = 0;
+                                }
+                                if (infowindow) { infowindow.close(); }
+
+                                marker = new google.maps.Marker({position: location, map: map});
+                                markersArray.push(marker);
+                                if (geocoder) {
+                                    geocoder.geocode({ 'location': location }, function (results, status) {
+                                        if (status == google.maps.GeocoderStatus.OK && results[0]) {
+                                            var message = "<b>座標:</b>" + results[0].geometry.location.lat() + " , " + results[0].geometry.location.lng() + "<br />" + "<b>地址:</b>" + results[0].formatted_address;
+                                            infowindow = new google.maps.InfoWindow({content: message, size: new google.maps.Size(50, 50)});
+                                            infowindow.open(map, marker);
+                                            document.getElementById("lng").value = results[0].geometry.location.lng();
+                                            document.getElementById("lat").value = results[0].geometry.location.lat();
+                                            document.getElementById("addr").value = results[0].formatted_address;
+                                        } else {
+                                            alert("Geocoder failed due to: " + status);
+                                        }
+                                    });
+                                }
+                            }
+                        </script>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">排序：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[orderby]" value="<{$detail.orderby|default=''}>"  class="tuanfabu_int tuanfabu_intw2"/>
+                        </div></td>
+                </tr>
+            </table>
+            <div class="tuanfabu_an">
+                <input type="submit" class="radius3 sjgl_an tuan_topbt" value="确认发布" />
+            </div>
+        </form>
+    </div> 
+</div>
+<script src="<{:U('app/datas/cab',array('name'=>'cityareas'))}>"></script>
+<script>
+    var city_id = 0;
+    var area_id = 0;
+    var business_id = 0;
+    $(document).ready(function () {
+        var city_str = ' <option value="0">请选择...</option>';
+        for (a in cityareas.city) {
+            if (city_id == cityareas.city[a].city_id) {
+                city_str += '<option selected="selected" value="' + cityareas.city[a].city_id + '">' + cityareas.city[a].name + '</option>';
+            } else {
+                city_str += '<option value="' + cityareas.city[a].city_id + '">' + cityareas.city[a].name + '</option>';
+            }
+        }
+        $("#city_id").html(city_str);
+
+        $("#city_id").change(function () {
+            if ($("#city_id").val() > 0) {
+                city_id = $("#city_id").val();
+                var area_str = ' <option value="0">请选择...</option>';
+                for (a in cityareas.area) {
+                    if (cityareas.area[a].city_id == city_id) {
+                        if (area_id == cityareas.area[a].area_id) {
+                            area_str += '<option selected="selected" value="' + cityareas.area[a].area_id + '">' + cityareas.area[a].area_name + '</option>';
+                        } else {
+                            area_str += '<option value="' + cityareas.area[a].area_id + '">' + cityareas.area[a].area_name + '</option>';
+                        }
+                    }
+                }
+                $("#area_id").html(area_str);
+                $("#business_id").html('<option value="0">请选择...</option>');
+                if (area_id > 0) {
+                    var business_str = ' <option value="0">请选择...</option>';
+                    for (a in cityareas.business) {
+                        if (cityareas.business[a].area_id == area_id) {
+                            if (business_id == cityareas.business[a].business_id) {
+                                business_str += '<option selected="selected" value="' + cityareas.business[a].business_id + '">' + cityareas.business[a].business_name + '</option>';
+                            } else {
+                                business_str += '<option value="' + cityareas.business[a].business_id + '">' + cityareas.business[a].business_name + '</option>';
+                            }
+                        }
+                    }
+                    $("#business_id").html(business_str);
+                }
+
+            } else {
+                $("#area_id").html('<option value="0">请选择...</option>');
+                $("#business_id").html('<option value="0">请选择...</option>');
+            }
+
+        });
+
+        if (city_id > 0) {
+            var area_str = ' <option value="0">请选择...</option>';
+            for (a in cityareas.area) {
+                if (cityareas.area[a].city_id == city_id) {
+                    if (area_id == cityareas.area[a].area_id) {
+                        area_str += '<option selected="selected" value="' + cityareas.area[a].area_id + '">' + cityareas.area[a].area_name + '</option>';
+                    } else {
+                        area_str += '<option value="' + cityareas.area[a].area_id + '">' + cityareas.area[a].area_name + '</option>';
+                    }
+                }
+            }
+            $("#area_id").html(area_str);
+        }
+
+
+        $("#area_id").change(function () {
+            if ($("#area_id").val() > 0) {
+                area_id = $("#area_id").val();
+                var business_str = ' <option value="0">请选择...</option>';
+                for (a in cityareas.business) {
+                    if (cityareas.business[a].area_id == area_id) {
+                        if (business_id == cityareas.business[a].business_id) {
+                            business_str += '<option selected="selected" value="' + cityareas.business[a].business_id + '">' + cityareas.business[a].business_name + '</option>';
+                        } else {
+                            business_str += '<option value="' + cityareas.business[a].business_id + '">' + cityareas.business[a].business_name + '</option>';
+                        }
+                    }
+                }
+                $("#business_id").html(business_str);
+            } else {
+                $("#business_id").html('<option value="0">请选择...</option>');
+            }
+
+        });
+
+        if (area_id > 0) {
+            var business_str = ' <option value="0">请选择...</option>';
+            for (a in cityareas.business) {
+                if (cityareas.business[a].area_id == area_id) {
+                    if (business_id == cityareas.business[a].business_id) {
+                        business_str += '<option selected="selected" value="' + cityareas.business[a].business_id + '">' + cityareas.business[a].business_name + '</option>';
+                    } else {
+                        business_str += '<option value="' + cityareas.business[a].business_id + '">' + cityareas.business[a].business_name + '</option>';
+                    }
+                }
+            }
+            $("#business_id").html(business_str);
+        }
+        $("#business_id").change(function () {
+            business_id = $(this).val();
+        });
+    });
+</script>
+<include  file='public:footer'/>

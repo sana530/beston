@@ -1,0 +1,28 @@
+<include file="public:header"/>
+<header class="top-fixed bg-yellow bg-inverse">
+    <div class="top-back">
+        <a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+    </div>
+    <div class="top-title">
+        QRcode
+    </div>
+    <div class="top-signed">
+        <include file="public:message"/>
+    </div>
+</header>
+<div id="main" style="padding: 20px;">
+    <div id="qrcode_img">
+        <{$token_url}>
+    </div>
+    <div id="user_desc">
+        <span style="color:#06c1ae;">用户名：</span><{$user_name}>
+    </div>
+    <div id="shangjia_desc">
+        <if condition="isset($shangjia)">
+        <span style="color:#21897d;">特约商家*：</span><{$shangjia.shop_name}>
+        </if>
+    </div>
+</div>
+</div>
+
+<include file="public:footer"/>

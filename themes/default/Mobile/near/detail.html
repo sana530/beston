@@ -1,0 +1,59 @@
+<php>$seo_title = $detail['name'];</php>
+<include file='public:header'/> <header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('near/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			附近生活
+		</div>
+	</header>
+	
+	<div class="padding border-bottom">
+		<{$detail['name']}> <span class="float-right">【<a href="<{:U('near/gps',array('id'=>$detail['uid']))}>"><i class="icon-location-arrow"></i> 到这里去</a>】</span>
+	</div>
+	<div class="padding border-bottom">
+		地址：<{$detail['address']}> (<{$distance}>)
+	</div>
+	<if condition="!empty($detail[telephone])">
+	<div class="padding border-bottom">
+		电话：<a href="tel:<{$detail['telephone']}>"><{$detail['telephone']}></a>
+	</div>
+	</if>
+	<div class="padding border-bottom">
+		<if condition="!empty($shop)">
+		商户：<a class="text-dot" href="<{:U('shop/detail',array('shop_id'=>$shop['shop_id']))}>"><{$shop.shop_name}></a>
+		<span class="float-right text-gray"><i class="icon-angle-right"></i></span>
+		<else />
+			<php>$tel = explode(',',$CONFIG[site][tel]);</php>
+		<span class="text-small text-yellow">
+		入驻<{$CONFIG[site][sitename]}>，开启互联网+ 新营销之旅 !<br />咨询热线 <a class="margin-small-left" href="tel:<{$tel[0]}>"><i class="icon-phone"></i> <{$tel[0]}></a>
+		</span>
+		</if>
+	</div>
+	
+	
+	<div class="blank-10 bg"></div>
+<{$city.name}>
+	<div class="padding">
+		<div id="allmap" style="width:100%;height:400px;"></div>
+	</div>
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&callback=initMap" async defer></script>
+	<script type="text/javascript">
+        function initMap(){
+            var geocoder = new google.maps.Geocoder();  //定義一個Geocoder物件
+            geocoder.geocode(
+                { address: '<{$detail.address}>, <{$business.business_name}>, <{$area.area_name}>, <{$city.pinyin}>' },    //設定地址的字串
+                function(results, status) {    //callback function
+                    if (status == google.maps.GeocoderStatus.OK) {    //判斷狀態
+                        var myCenter = results[0].geometry.location;
+                        var map = new google.maps.Map(document.getElementById("allmap"), {center: myCenter, zoom: 15});
+                        var marker = new google.maps.Marker({position: myCenter});
+                        marker.setMap(map);
+                        google.maps.event.addListener(marker,'click',function() {map.setZoom(15); map.setCenter(marker.getPosition());});
+                    }
+                }
+            );
+        }
+	</script>
+
+<include file='public:footer'/>  

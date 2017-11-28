@@ -1,0 +1,183 @@
+<include file="public:header"/>
+<style>
+ul{ padding-left:0px;}
+li {list-style: none;}
+.container { margin-top:0rem;}
+.container2 {margin: 0 auto; }
+.coupon-list .item {  padding: 5px 0px 0px 5px;}
+.coupon-list .item .intro { height: initial;}
+.panel-head { background-color: #fff;}
+p, .p {margin-bottom: 0px; }
+</style>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('express/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			<{$detail.shop_name}>
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>
+	  
+	<div class="share-content">
+		<!--MOB SHARE BEGIN-->
+		<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+			<ul class="-mob-share-list">
+				<li class="-mob-share-weixin"><p>微信</p></li>
+				<li class="-mob-share-facebook"><p>Facebook</p></li>
+				<li class="-mob-share-twitter"><p>Twitter</p></li>
+				<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+				<li class="-mob-share-douban"><p>豆瓣网</p></li>
+			</ul>
+			<div class="-mob-share-close">取消</div>
+		</div>
+		
+		<div class="-mob-share-ui-bg"></div>
+		
+		<script>
+			// 同一网页下只能有一种分享效果，否则会冲突
+			// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+			var ui = getElementsByClassName( "-mob-share-ui" )[0];
+			var uiTemplate = ui.cloneNode( true );
+			var uiCurrent = ui;
+	
+			var buttons = getElementsByClassName("share-button" );
+			for( var i = 0, len = buttons.length; i < len; i++ ) {
+				var btn = buttons[ i ];
+				btn.onclick = function() {
+					if( uiCurrent ) {
+						uiCurrent.parentNode.removeChild( uiCurrent );
+					}
+					uiCurrent = uiTemplate.cloneNode( true );
+					var dataTheme = this.getAttribute( "data-theme" );
+					var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+					addClass( uiCurrent, theme );
+					if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+						getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+					}
+					document.body.appendChild( uiCurrent );
+					mobShare.ui.init();
+					mobShare.ui.open();
+				};
+			}
+	
+			function getElementsByClassName( classname, main ) {
+				var main = main || document;
+				if( main.getElementsByClassName ) {
+					return main.getElementsByClassName( classname );
+				}
+				var a = [];
+				var re = new RegExp( '(^| )' + classname + '( |$)' );
+				var els = main.getElementsByTagName( "*" );
+				for( var i = 0, j = els.length; i < j; i++ ) {
+					if( re.test( els[i].className ) ) {
+						a.push( els[i] );
+					}
+				}
+				return a;
+			};
+	
+			function hasClass( ele, cls ) {
+				return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+			}
+	
+			function addClass( ele, cls ) {
+				if (!hasClass(ele, cls)) {
+					ele.className += " " + cls;
+				}
+			}
+		</script>
+		
+		<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+		<!--MOB SHARE END-->
+	</div>
+ 
+ 	<script>
+		var news = new fz.Scroll('.scroller-news', {
+			scrollY: false,
+			scrollX: true
+		});
+		news.scrollToElement("li:nth-child(1)", 120, true, true);
+		
+		$(document).ready(function () {
+			$("#share-box").hide();
+			$("#share-btn").click(function () {
+				$("#share-box").toggle();
+				$('html,body').animate({scrollTop:0}, 'slow');
+			});
+			$("#mui-card-close").click(function () {
+				$("#share-box").hide();
+			});
+		});
+	</script>
+
+	<div class="container">
+		<div class="line detail-base">
+			<div class="x4">
+				<div class="pic">
+					<if condition="$detail['photo']">
+						<img src="<{:config_img($detail['photo'])}>" />
+					<else/>
+						<img src="<{$host}>/attachs/delivery.png" />
+					</if>
+				</div>
+			</div>
+			<div class="x5">
+				<h1><{$detail.shop_name}></h1>
+				<p><span class="ui-starbar"><span style="width:<{:round($detail['score']*2,2)}>%"></span></span></p>
+				<p>浏览量: <{$detail.view}> 次</p>
+			</div>
+			<div class="x3">
+				<gt name="detail.niu_date" value="$today" >
+					<p class="text-center"><img src="/static/default/wap/image/shop/icon-cx.png" /></p>
+				</gt>
+				<div class="blank-10"></div>
+			</div>
+		</div>
+    </div>
+		<div class="blank-10 bg"></div>
+
+	<div class="container2">
+		<div class="line detail-contact">
+			<div class="x9">
+				<p class="addr"><i class="icon icon-map-marker"></i> <{$detail.addr}> </p>
+				<p class="margin-top"><i class="icon icon-phone"></i> 
+                <if condition="!empty($detail['tel'])"> 
+                <a class="text-large" href="tel:<{$detail.tel}>"><{$detail.tel}></a>
+                <else/>
+                <a class="text-large">暂无联系方式</a><!--该商家暂无联系方式-->
+                </if>
+                </p>
+			</div>
+			<div class="x3">
+				<a class="favor" href="<{:U('shop/favorites',array('shop_id'=>$detail['shop_id']))}>">
+				</a>
+			</div>
+		</div>
+   	</div>
+	<div class="blank-10 bg"></div>
+
+	<div class="container2">
+		<div class="panel detail-intro radius-none">
+			<div class="panel-head">物流说明</div>
+			<div class="panel-body">
+				<p>物流暂时仅限奥克兰对奥克兰，包裹重量不得超过10KG，体积不可超过0.3m * 0.3m * 0.3m，其他情况请联系客服。</p>
+				<p>奥克兰区域内，运费为<{$CONFIG['mobile']['delivery_price']}>NZD</p>
+				<gt name="detail.niu_date" value="$today" >
+				<span class="niu"><img src="/static/default/wap/image/shop/icon-niu.png" /></span>
+				</gt>
+			</div>
+		</div>
+	</div>
+	<div class="blank-10 bg"></div>
+
+<if condition="empty($detail['panorama_url'])">
+	<include file="public:footer"/>
+</if>
+<!--客服代码-->  
+<if condition="!empty($detail['service']) and $detail['service_audit'] eq 1">      
+<{$detail.service}>	
+</if>
+

@@ -1,0 +1,314 @@
+<include  file='public:header'/>
+<div class="sjgl_lead">
+    <ul>
+        <li><a href="#">系统设置</a> > <a href="">旅行社管理</a> > <a>旅行社资料</a></li>
+    </ul>
+</div>
+<div class="tuan_content">
+    <div class="radius5 tuan_top">
+        <div class="tuan_top_t">
+            <div class="left tuan_topser_l">旅行社文字资料介绍、旅行社的基本信息，旅行社信息修改后需要后台重新审核后才能正常运行，改动请慎重！！！ </div>
+        </div>
+    </div> 
+    <div class="tuanfabu_tab">
+        <ul>
+            <li class="tuanfabu_tabli tabli_change on"><a href="<{:U('farm/set_farm')}>">旅行社资料</a></li>
+        </ul>
+    </div>
+    <div class="tabnr_change  show">
+        <form method="post"  action="<{:U('farm/set_farm')}>" target="baocms_frm">
+            <table class="tuanfabu_table" width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td><p class="tuanfabu_t">旅行社名称：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[farm_name]" value="<notempty name="farm.farm_name"><{$farm.farm_name}><else/><{$SHOP.shop_name}></notempty>" class="tuanfabu_int tuanfabu_intw2" />
+                        </div></td>
+                </tr>
+                <tr>
+                    <td><p class="tuanfabu_t">旅行社简介：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[intro]" value="<notempty name="farm.intro"><{$farm.intro}></notempty>" class="tuanfabu_int tuanfabu_intw2" />
+                        </div></td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">旅行社地址：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[addr]" value="<notempty name="farm.addr"><{$farm.addr}><else/><{$SHOP.addr}></notempty>" class="tuanfabu_int tuanfabu_intw2" />
+                        </div></td>
+                </tr>
+             
+                <tr>
+                    <td><p class="tuanfabu_t">旅行社起价：</p></td>
+                    <td>
+                        <div class="tuanfabu_nr">
+                            <input type="text" name="data[price]" value="<{$farm.price|default=''}>" class="tuanfabu_int tuanfabu_intw2" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p class="tuanfabu_t">旅行社电话：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[tel]" value="<{$farm.tel|default=''}>" class="tuanfabu_int tuanfabu_intw2" />
+                        </div></td>
+                </tr>
+               <tr>
+                    <td><p class="tuanfabu_t">行程介绍：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <script type="text/plain" id="data_notice" name="data[notice]" style="width:800px;height:360px;"><{$farm.notice}></script>
+                        </div></td>
+                </tr>
+                <tr>
+                    <td><p class="tuanfabu_t">店铺环境：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <script type="text/plain" id="data_environmental" name="data[environmental]" style="width:800px;height:360px;"><{$farm.environmental}></script>
+                        </div></td>
+                </tr>
+                <tr>
+                    <td><p class="tuanfabu_t">商家简介：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <script type="text/plain" id="data_details" name="data[details]" style="width:800px;height:360px;"><{$farm.details}></script>
+                        </div></td>
+                </tr>
+                <js file='__PUBLIC__/js/uploadify/jquery.uploadify.min.js'/>
+                <link rel="stylesheet" href="__PUBLIC__/js/uploadify/uploadify.css">
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">旅行社图片：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <div style="width: 300px;height: 100px; float: left;">
+                                <input type="hidden" name="data[photo]" value="<{$farm.photo}>" id="data_img" class="tuanfabu_int tuanfabu_intw" />
+                                <input id="logo_file" name="data[photo]" type="data[photo]" multiple="true" value="" />
+                            </div>
+                            <div style="width: 300px;height: 100px; float: left;">
+                                <img id="image_show" width="100" height="80"  src="__ROOT__/attachs/<{$farm.photo|default='default.jpg'}>" />
+                                建议尺寸:<{$CONFIG.attachs.hotel.thumb}>
+                            </div>
+                            <script>
+                                        $("#logo_file").uploadify({
+                                'swf': '__PUBLIC__/js/uploadify/uploadify.swf?t=<{$nowtime}>',
+                                        'uploader': '<{:U("app/upload/uploadify",array("model"=>"hotel"))}>',
+                                        'cancelImg': '__PUBLIC__/js/uploadify/uploadify-cancel.png',
+                                        'buttonText': '上传旅行社图片',
+                                        'fileTypeExts': '*.gif;*.jpg;*.png',
+                                        'queueSizeLimit': 1,
+                                        'onUploadSuccess': function (file, data, response) {
+                                        $("#data_img").val(data);
+                                                $("#image_show").attr('src', '__ROOT__/attachs/' + data).show();
+                                        }
+                                });                            </script>
+                        </div></td>
+                </tr>
+                <tr>
+                    <td><p class="tuanfabu_t">旅行社组图：</p></td>
+                    <td class="rgTdBt">
+                        <div class="tuanfabu_nr">
+                            <div>
+                                <input id="thumb_file" name="logo_file" type="file" multiple="true" value="" />
+                            </div>
+                            <div class="jq_uploads_img">
+                                <foreach  name="thumb" item="item">
+                                    <span style="width: 200px; height: 120px; float: left; margin-left: 5px; margin-top: 10px;"> 
+                                        <img width="160" height="120" src="__ROOT__/attachs/<{$item.photo}>">  
+                                        <input type="hidden" name="thumb[]" value="<{$item.photo}>" />  
+                                        <a href="javascript:void(0);">取消</a>  
+                                    </span>
+                                </foreach>
+                            </div>
+                        </div>
+                        <script>
+                            $("#thumb_file").uploadify({
+                                'swf': '__PUBLIC__/js/uploadify/uploadify.swf?t=<{$nowtime}>',
+                                'uploader': '<{:U("app/upload/uploadify",array("model"=>"hotel"))}>',
+                                'cancelImg': '__PUBLIC__/js/uploadify/uploadify-cancel.png',
+                                'buttonText': '上传图片',
+                                'fileTypeExts': '*.gif;*.jpg;*.png',
+                                'queueSizeLimit': 5,
+                                'onUploadSuccess': function (file, data, response) {
+                                    var str = '<span style="width: 160px; height: 120px; float: left; margin-left: 5px; margin-top: 10px;">  <img width="120" height="90" src="__ROOT__/attachs/' + data + '">  <input type="hidden" name="thumb[]" value="' + data + '" />    <a href="javascript:void(0);">取消</a>  </span>';
+                                    $(".jq_uploads_img").append(str);
+                                }
+                            });
+
+                            $(document).on("click", ".jq_uploads_img a", function () {
+                                $(this).parent().remove();
+                            });
+
+                        </script>
+                    </td>
+                </tr>
+
+                
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">游玩项目：</p></td>
+                    <td>
+                    <div class="tuanfabu_nr">
+                        <notempty name="new_cates">
+                            <volist name="new_cates" id="var">
+                                <label><span><{$var.name}>：</span><input style="width: 20px; height: 20px;" type="checkbox" name="cate_id[]" value="<{$key}>" <notempty name="var.sel">checked="checked"</notempty> /></label>
+                            </volist>
+                            <else/>  
+                            <volist name="cates" id="var">
+                                <label><span><{$var}>：</span><input style="width: 20px; height: 20px;" type="checkbox" name="cate_id[]" value="<{$key}>" /></label>
+                            </volist>
+                        </notempty>
+                    </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">适合人群：</p></td>
+                    <td>
+                        <div class="tuanfabu_nr">
+                            <notempty name="new_groups">
+                                <volist name="new_groups" id="var">
+                                <label><span><{$var.name}>：</span><input style="width: 20px; height: 20px;" type="checkbox" name="group_id[]" value="<{$key}>" <notempty name="var.sel">checked="checked"</notempty> /></label>
+                                </volist>
+                                <else/>
+                                <volist name="groups" id="var">
+                                <label><span><{$var}>：</span><input style="width: 20px; height: 20px;" type="checkbox" name="group_id[]" value="<{$key}>" /></label>
+                                </volist>
+                            </notempty>
+                        </div>
+                    </td>
+                </tr>
+                
+        <tr>
+            <td width="120"><p class="tuanfabu_t">属性：</p></td>
+            <td><div class="tuanfabu_nr">
+                <label><span>摄影服务：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_room]" value="1" <if condition="$farm['have_room'] eq 1">checked="checked"</if> /></label>
+                <label><span>多国语言：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_washchange]" value="1" <if condition="$farm['have_washchange'] eq 1">checked="checked"</if> /></label>
+                <label><span>本地向导：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_wifi]" value="1" <if condition="$farm['have_wifi'] eq 1">checked="checked"</if> /></label>
+                <label><span>旅行订制：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_shower]" value="1" <if condition="$farm['have_shower'] eq 1">checked="checked"</if> /></label>
+                <label><span>住宿服务：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_tv]" value="1" <if condition="$farm['have_tv'] eq 1">checked="checked"</if> /></label>
+                <label><span>签证服务：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_ticket]" value="1" <if condition="$farm['have_ticket'] eq 1">checked="checked"</if> /></label>
+                <label><span>接机服务：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_toiletries]" value="1" <if condition="$farm['have_toiletries'] eq 1">checked="checked"</if> /></label>
+                <label><span>商务接待：</span><input style="width: 20px; height: 20px;" type="checkbox" name="data[have_hotwater]" value="1" <if condition="$farm['have_hotwater'] eq 1">checked="checked"</if> /></label>
+           </div></td>
+        </tr>
+                
+                
+                <link rel="stylesheet" href="__PUBLIC__/umeditor/themes/default/css/umeditor.min.css" type="text/css">
+                <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+                <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+                <script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+                <script>
+                    um = UM.getEditor('data_details', {
+                    imageUrl: "<{:U('app/upload/editor')}>",
+                            imagePath: '__ROOT__/attachs/editor/',
+                            lang: 'zh-cn',
+                            langPath: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + "lang/",
+                            focus: false
+                    });  
+                    um = UM.getEditor('data_notice', {
+                    imageUrl: "<{:U('app/upload/editor')}>",
+                            imagePath: '__ROOT__/attachs/editor/',
+                            lang: 'zh-cn',
+                            langPath: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + "lang/",
+                            focus: false
+                    }); 
+                    um = UM.getEditor('data_environmental', {
+                    imageUrl: "<{:U('app/upload/editor')}>",
+                            imagePath: '__ROOT__/attachs/editor/',
+                            lang: 'zh-cn',
+                            langPath: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + "lang/",
+                            focus: false
+                    }); 
+                </script>
+                <tr style="display: none">
+                    <td width="120"><p class="tuanfabu_t">旅行社坐标：</p></td>
+                    <td><div class="tuanfabu_nr">
+                            <input type="text" name="data[lng]" id="lng" value="<notempty name="weidian.lng"><{$farm.lng}><else/><{$SHOP.lng}></notempty>" class="tuanfabu_int tuanfabu_intw2" /> 经度
+                            <input type="text" name="data[lat]" id="lat" value="<notempty name="weidian.lat"><{$farm.lat}><else/><{$SHOP.lat}></notempty>" class="tuanfabu_int tuanfabu_intw2" /> 纬度
+                        </div></td>
+                </tr>
+                <tr>
+                    <td width="120"><p class="tuanfabu_t">地图：</p></td>
+                    <td><div class="tuanfabu_nr">
+                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&libraries=places&callback=initAutocomplete" async defer></script>
+                            <div class="top" style="width:700px; margin-bottom: 20px;">
+                                <div id="r-result">请输入:<input type="text" id="addr" class="mapinputs tuanfabu_int tuanfabu_intw3" size="20" /></div>
+                            </div>
+                            <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+                            <div id="allmap" style="width: 600px; height:500px;"></div>
+                        <script type="text/javascript">
+                            var autocomplete;
+                            var geolocation;
+                            var map;
+                            var marker;
+                            var infowindow;
+                            var geocoder;
+                            var markersArray = [];
+                            function initAutocomplete() {
+                                geocoder = new google.maps.Geocoder();
+                                autocomplete = new google.maps.places.Autocomplete((document.getElementById('addr')),{types: ['geocode']});
+                                autocomplete.addListener('place_changed', fillInAddress);
+                                geolocate();
+                            }
+                            function fillInAddress() {
+                                var place = autocomplete.getPlace();
+                                geocoder.geocode(
+                                    { address: place.formatted_address },    //設定地址的字串
+                                    function(results, status) {    //callback function
+                                        if (status == google.maps.GeocoderStatus.OK) { geolocation = results[0].geometry.location; }
+                                        map = new google.maps.Map(document.getElementById("allmap"), { center: geolocation, zoom: 15 });
+                                        google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+                                        placeMarker(geolocation);
+                                    }
+                                );
+                            }
+                            function geolocate() {
+                                if (document.getElementById("lat").value && document.getElementById("lng").value) {
+                                    geolocation = { lat:parseFloat(document.getElementById("lat").value), lng:parseFloat(document.getElementById("lng").value) };
+                                } else if (navigator.geolocation) {
+                                    navigator.geolocation.getCurrentPosition(function(position) {
+                                        geolocation = {lat: position.coords.latitude, lng: position.coords.longitude};
+                                    });
+                                }
+                                map = new google.maps.Map(document.getElementById("allmap"), {zoom: 13, center: geolocation});
+                                google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+
+                            }
+                            function placeMarker(location) {
+                                //clearOverlays
+                                if (markersArray && markersArray.length > 0) {
+                                    for (var i = 0; i < markersArray.length; i++) { markersArray[i].setMap(null); }
+                                    markersArray.length = 0;
+                                }
+                                if (infowindow) { infowindow.close(); }
+
+                                marker = new google.maps.Marker({ position: location, map: map });
+                                markersArray.push(marker);
+                                if (geocoder) {
+                                    geocoder.geocode({ 'location': location }, function (results, status) {
+                                        if (status == google.maps.GeocoderStatus.OK && results[0]) {
+                                            var message = "<b>座標:</b>" + results[0].geometry.location.lat() + " , " + results[0].geometry.location.lng() + "<br />" + "<b>地址:</b>" + results[0].formatted_address;
+                                            var infowindow = new google.maps.InfoWindow({content: message, size: new google.maps.Size(50, 50)});
+                                            infowindow.open(map, marker);
+                                            document.getElementById("lng").value = results[0].geometry.location.lng();
+                                            document.getElementById("lat").value = results[0].geometry.location.lat();
+                                            document.getElementById("addr").value = results[0].formatted_address;
+                                        } else {
+                                            alert("Geocoder failed due to: " + status);
+                                        }
+                                    });
+                                }
+                            }
+                            function setiInit() {
+                                var lattxt = document.getElementById("lat").value;
+                                var lngtxt = document.getElementById("lng").value;
+                                var geolocation = { lat:parseFloat(lattxt), lng:parseFloat(lngtxt) };
+                                placeMarker(geolocation);
+                            }
+                            window.onload = function () { setiInit(); }
+                        </script>
+                        </div></td>
+                </tr>
+
+
+
+            </table>
+            <div class="tuanfabu_an">
+                <input type="submit" class="radius3 sjgl_an tuan_topbt" value="确认保存" />
+            </div>
+        </form>
+    </div> 
+</div>
+<include  file='public:footer'/>

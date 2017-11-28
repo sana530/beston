@@ -1,0 +1,98 @@
+<include  file='public:header'/>
+
+<div class="mainBt">
+
+    <ul>
+
+        <li class="li1">运营</li>
+
+        <li class="li2">统计报表</li>
+
+        <li class="li2 li3">站长推广</li>
+
+    </ul>
+
+</div>
+
+<div class="main-jsgl main-sc">
+
+    <p class="attention"><span>注意：</span>这个功能可以考核站长绩效</p>
+
+
+    <div class="jsglNr">
+
+        <div class="selectNr" style="margin-top: 0px; border-top: none;">
+
+            <div class="right">
+
+                <form method="post" action="<{:U('zhanzhangtui/associate')}>">
+
+                    <input type="text"  class="inptText" name="keyword" value="<{$keyword}>"  /><input type="submit" value="   搜索"  class="inptButton" />
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <form  target="baocms_frm" method="post">
+
+            <div class="tableBox">
+
+                <table bordercolor="#dbdbdb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;"  >
+
+                    <tr>
+
+                        <td class="w50"><input type="checkbox" class="checkAll" rel="tui_id" /></td>
+
+                        <td class="w50">用户ID</td>
+
+                        <td>账户</td>
+
+                        <td>用户名</td>
+
+                        <td>手机</td>
+
+                        <td>操作</td>
+
+                    </tr>
+
+                    <foreach name="list" item="var">
+
+                        <tr>
+
+                            <td><input class="child_tui_id" type="checkbox" name="tui_id[]" value="<{$var.tui_id}>" /></td>
+
+                            <td><{$var.user_id}></td>
+
+                            <td><{$var.account}></td>
+
+                            <td><{$var.nickname}></td>
+
+                            <td><{$var.mobile}></td>
+
+                            <td>
+                                <{:BA('zhanzhangtui/changeassociate',array("user_id"=>$var["user_id"]),'换绑','','remberBtn')}>
+                            </td>
+
+                        </tr>
+
+                    </foreach>
+
+                </table>
+
+                <{$page}>
+
+            </div>
+
+            <div class="selectNr" style="margin-bottom: 0px; border-bottom: none;">
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<include  file='public:footer'/>       

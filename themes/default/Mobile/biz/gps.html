@@ -1,0 +1,22 @@
+<include file="public:header"/>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a href="javascript:history.go(-1);"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			商家地图
+		</div>
+	</header>
+
+	<section class="ui-container">
+		<iframe id="nav-map" width="100%" height="100%" frameborder="0" style="border:0; min-width: 500px;"
+				src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDSgnpNY4IOksedgiISgBCGjZWHFsbq6TE&q=<{$Biz.address}>+<{$business.business_name}>+<{$area.area_name}>+<{$city.name}>"
+				allowfullscreen>
+		</iframe>
+	</section>
+	<script type="text/javascript">
+		height = $(window).height() -44;
+		$("#nav-map").height(height);
+	</script>
+</body>
+</html>

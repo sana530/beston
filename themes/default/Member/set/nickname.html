@@ -1,0 +1,25 @@
+<include file="public:header"/>
+<div class="content_right">  
+<div class="tgdd">
+    <include file="set:header"/>
+    <form method="post"  action="<{:U('set/nickname')}>"  target="baocms_frm">
+        <div class="password_nr">
+            <div class="password_input">
+                <div class="left">设置昵称</div>
+                <div class="lef int_box"><input class="oldPassw" name="nickname" type="text" value="<{$MEMBER.nickname}>" /></div>
+            </div>
+            <div class="password_input">
+                <!--div class="left">云联惠账户</div>
+                <div class="lef int_box"><input class="oldPassw" name="ext_account" type="text" value="<{$MEMBER.ext_account}>" /></div>
+            </div>
+            <div class="password_input">
+                <div class="left">云联惠手机号</div>
+                <div class="lef int_box"><input class="oldPassw" name="ext_mobile" type="text" value="<{$MEMBER.ext_mobile}>" /></div>
+            </div-->
+            <div class="password_subm"><input class="submit" type="submit" value="确认保存" /></div>
+        </div>
+    </form>
+</div>
+</div>
+</div>
+<include file="public:footer"/>

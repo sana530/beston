@@ -1,0 +1,42 @@
+<php>$i = 2;</php>
+<calldata mdl="Hotel" where="shop_id = {$detail['shop_id']} AND audit = 1 AND closed = 0" limit="0,1"  cache="86400">
+    <php>$is_hotel = $item; $i++;</php>
+</calldata>
+<calldata mdl="Ele" where="shop_id = {$detail['shop_id']} AND audit = 1" limit="0,1"  cache="86400">
+    <php>($item['is_delivery'] == 1) && ($i++); $is_ele = $item; $i++;</php>
+</calldata>
+<calldata mdl="Booking" where="shop_id = {$detail['shop_id']} AND audit = 1 AND closed = 0" limit="0,1"  cache="86400">
+    <php>$is_booking = $item; $i++;</php>
+</calldata>
+<php>
+    $width = 100/$i;
+    $action = strtolower(ACTION_NAME);
+</php>
+<ul id="shangjia_tab">
+    <li style="width:<{$width}>%;">
+        <a href="<{:U('shop/detail',array('shop_id'=>$detail['shop_id']))}>" <if condition="($ctl eq 'shop') AND ($action eq 'detail')">class="on"</if>>首页</a>
+    </li>
+    <if condition="!empty($is_hotel)">
+    <li style="width:<{$width}>%;">
+        <a href="<{:U('hotel/detail',array('hotel_id'=>$is_hotel['hotel_id']))}>" <if condition="($ctl eq 'hotel') AND ($action eq 'detail')">class="on"</if>>酒店</a>
+    </li>
+    </if>
+    <if condition="!empty($is_ele)">
+    <li style="width:<{$width}>%;">
+        <a href="<{:U('ele/shop',array('shop_id'=>$detail['shop_id']))}>" <if condition="($ctl eq 'ele') AND ($action eq 'shop')  AND ($is_delivery eq '0')">class="on"</if>>美食</a>
+    </li>
+    </if>
+    <if condition="(!empty($is_ele)) AND ($is_ele['is_delivery'] eq 1)">
+    <li style="width:<{$width}>%;">
+        <a href="<{:U('ele/shop',array('shop_id'=>$detail['shop_id'],'delivery'=>1))}>" <if condition="($ctl eq 'ele') AND ($action eq 'shop') AND ($is_delivery eq '1')">class="on"</if>>外送</a>
+    </li>
+    </if>
+    <if condition="!empty($is_booking)">
+    <li style="width:<{$width}>%;">
+        <a href="<{:U('booking/detail',array('shop_id'=>$detail['shop_id']))}>" <if condition="($ctl eq 'booking') AND ($action eq 'detail')">class="on"</if>>订座</a>
+    </li>
+    </if>
+    <li style="width:<{$width}>%;">
+        <a href="<{:U('shop/dianping',array('shop_id'=>$detail['shop_id']))}>" <if condition="($ctl eq 'shop') AND ($action eq 'dianping')">class="on"</if>>评价</a>
+    </li>
+</ul>

@@ -1,0 +1,31 @@
+<include  file='public:header'/>
+<div class="mainBt">
+    <ul>
+        <li class="li1">运营</li>
+        <li class="li2">推广配置</li>
+        <li class="li2 li3">编辑</li>
+    </ul>
+</div>
+<div class="mainScAdd ">
+    <div class="tableBox">
+        <form target="baocms_frm" action="<{:U('zhanzhangtui/changeassociate',array('user_id'=>$detail['user_id']))}>" method="post">
+            <table  bordercolor="#dbdbdb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;" >
+                <tr>
+                    <td class="lfTdBt">站长：</td>
+                    <td class="rgTdBt">
+                        <select name="zhanzhang" class="seleFl w210">
+                            <option value="0">请选择</option>
+                            <foreach name="list" item="var">
+                                <option value="<{$var['user_id']}>" <eq name="var['user_id']" value="$detail.tui_zhanzhang">selected="selected"</eq>>
+                                    <{$var['first_name']}> <{$var['last_name']}>
+                                </option>
+                            </foreach>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <div class="smtQr"><input type="submit" value="确认编辑" class="smtQrIpt" /></div>
+        </form>
+    </div>
+</div>
+<include  file='public:footer'/>       

@@ -1,0 +1,179 @@
+<include  file='public:header'/>   
+
+<header class="top-fixed bg-yellow bg-inverse">
+	<div class="top-back">
+		<a class="top-addr" href="<{:U('store/branch/index')}>"><i class="icon-angle-left"></i></a>
+	</div>
+	<div class="top-title">
+		添加分店
+	</div>
+</header>
+
+<form class="fabu-form" method="post"  target="x-frame" action="<{:U('store/branch/create')}>">
+
+
+<div class="blank-10 bg border-top"></div>
+
+
+
+<div class="row">
+	<div class="line">
+		<span class="x3">分店名称</span>
+		<span class="x9">
+			<input type="text" class="text-input" name="data[name]" />
+		</span>
+	</div>
+</div>
+
+
+
+
+
+<div class="row" style="display:none">
+	<div class="line">
+		<span class="x3">地区</span>
+		<span class="x3">
+			<input name="data[city_name]" class="field text-select" id="administrative_area_level_1">
+		</span>
+		<span class="x3">
+			<input name="data[area_name]" class="field text-select" id="locality">
+		</span>
+        
+        <span class="x3">
+			<input name="data[business_name]" class="field text-select" id="sublocality_level_1">
+		</span>
+	</div>
+</div>
+<div class="row">
+	<div class="line">
+		<span class="x3">分店地址</span>
+		<span class="x9">
+			<input id="addr" type="text" class="text-input" name="data[addr]"/>
+		</span>
+	</div>
+</div>
+
+<div class="row">
+	<div class="line">
+		<span class="x3">手机号码</span>
+		<span class="x9">
+			<input type="text" class="text-input" name="data[telephone]"  />
+		</span>
+	</div>
+</div>
+
+
+
+    
+<!--商家地图开始-->
+<div class="line padding border-bottom">	
+	<div class="life-infor-float" >
+		<div id="login-input" class="life-infor-float" style="display:none;">
+			<div class="left"><span>经度：</span><input type="text" name="data[lng]" id="lng"/></div>
+			<div class="right"><span>纬度：</span><input type="text" name="data[lat]" id="lat"/></div>
+		</div>
+		<div class="life-infor-float" >
+			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&libraries=places&callback=initAutocomplete" async defer></script>
+			<div id="allmap" style="width: 100%; height:300px;"></div>
+			<script type="text/javascript">
+                var autocomplete;
+                var geolocation;
+                var map;
+                var marker;
+                var infowindow;
+                var geocoder;
+                var markersArray = [];
+                var componentForm = {sublocality_level_1:'long_name', locality: 'long_name', administrative_area_level_1: 'long_name'};
+                function initAutocomplete() {
+                    geocoder = new google.maps.Geocoder();
+                    autocomplete = new google.maps.places.Autocomplete((document.getElementById('addr')),{types: ['geocode']});
+                    autocomplete.addListener('place_changed', fillInAddress);
+                    geolocate();
+                }
+                function fillInAddress() {
+                    geocoder.geocode(
+                        { address: autocomplete.getPlace().formatted_address },    //設定地址的字串
+                        function(results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                geolocation = results[0].geometry.location;
+                                map = new google.maps.Map(document.getElementById("allmap"), { center: geolocation, zoom: 15 });
+                                google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+                                document.getElementById("sublocality_level_1").value = "";
+                                document.getElementById('locality').value = "";
+                                document.getElementById('administrative_area_level_1').value = "";
+                                for (var i = 0; i < results[0].address_components.length; i++) {
+                                    for (var j = 0; j < results[0].address_components[i].types.length; j++) {
+                                        var addressType = results[0].address_components[i].types[j];
+                                        if (componentForm[addressType]) {
+                                            var val = results[0].address_components[i][componentForm[addressType]];
+                                            document.getElementById(addressType).value = val;
+                                        }
+									}
+                                }
+                                placeMarker(geolocation, autocomplete.getPlace().formatted_address);
+                            }
+                        }
+                    );
+                }
+                function geolocate() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            geolocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                            map = new google.maps.Map(document.getElementById("allmap"), { zoom: 13, center: geolocation });
+                            google.maps.event.addListener(map, 'click', function (event) { placeMarker(event.latLng); });
+                        });
+                    }
+                }
+                function placeMarker(location, address) {
+                    //clearOverlays
+                    if (markersArray && markersArray.length > 0) {
+                        for (var i = 0; i < markersArray.length; i++) { markersArray[i].setMap(null); }
+                        markersArray.length = 0;
+                    }
+                    if (infowindow) { infowindow.close(); }
+
+                    marker = new google.maps.Marker({position: location, map: map});
+                    markersArray.push(marker);
+                    if (geocoder) {
+                        geocoder.geocode({ 'location': location }, function (results, status) {
+                            if (status == google.maps.GeocoderStatus.OK && results[0]) {
+                                if (!address) { address = results[0].formatted_address;	}
+                                var message = "<b>座標:</b>" + results[0].geometry.location.lat() + " , " + results[0].geometry.location.lng() + "<br />" + "<b>地址:</b>" + address;
+                                infowindow = new google.maps.InfoWindow({content: message, size: new google.maps.Size(50, 50)});
+                                infowindow.open(map, marker);
+                                document.getElementById("lng").value = results[0].geometry.location.lng();
+                                document.getElementById("lat").value = results[0].geometry.location.lat();
+                                document.getElementById("addr").value = address;
+                                document.getElementById("sublocality_level_1").value = "";
+                                document.getElementById('locality').value = "";
+                                document.getElementById('administrative_area_level_1').value = "";
+                                for (var i = 0; i < results[0].address_components.length; i++) {
+                                    for (var j = 0; j < results[0].address_components[i].types.length; j++) {
+                                        var addressType = results[0].address_components[i].types[j];
+                                        if (componentForm[addressType]) {
+                                            var val = results[0].address_components[i][componentForm[addressType]];
+                                            document.getElementById(addressType).value = val;
+                                        }
+                                    }
+                                }
+                            } else {
+                                alert("Geocoder failed due to: " + status);
+                            }
+                        });
+                    }
+                }
+			</script>
+		</div>
+	</div>
+	</div>
+<!--商家地图结束-->
+
+	<div class="container">
+		<div class="blank-30"></div>
+		<button  type="submit" class="button button-block button-big bg-dot">添加分店</button>
+		<div class="blank-30"></div>
+	</div>
+		
+</form>
+	
+<include  file='public:footer'/>

@@ -1,0 +1,5 @@
+/* 商家头部 */
+.shop-type{position:relative;z-index:1;height:38px;overflow:hidden}
+.shop-type ul li{float:left}
+.shop-type ul li{display:inline-block;height:36px;padding:0 29px;font-size:16px;line-height:36px;border:1px solid #ebebeb;margin-right:-1px;background-color:#fbfbfb}
+.shop-type ul li.a{background-color:#fff;border-bottom-color:#fff}

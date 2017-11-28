@@ -1,0 +1,135 @@
+<php>$mobile_title = $detail['title'];</php>
+
+<include  file='public:header'/>
+<style>
+	#pay-video{overflow: hidden; position: relative;display: initial;}
+	#video{ width:100%;height:auto;margin:auto;}
+	.form-button{ padding:5px 10px;text-align:center;}
+	.form-button a{text-align: center;width: 41.66666667%;}
+	.container p {text-align:center;color: #e33;}
+	.layui-layer-page .layui-layer-content{ padding:20px;}
+	.layui-layer-page .layui-layer-content input[type='text']{ width:100%; height:36px; border:1px solid #ccc; background:#fff; margin-bottom:10px; text-indent:10px; font-size:14px;}
+	.layui-layer-page .layui-layer-content input[type='button']{ width:100%; height:40px; border:none; background:#33b095; color:#fff; font-size:16px;}
+	.layui-layer-page .layui-layer-content p{ line-height:28px; color:#999;}
+	.layui-layer-page .layui-layer-content .check_box{ overflow:hidden; margin-bottom:5px;}
+	.layui-layer-page .layui-layer-content .check_box label{ display:block; float:left; margin-right:20px; margin-bottom:10px;}
+</style>
+
+
+	<header class="top-fixed bg-yellow bg-inverse">
+
+		<div class="top-back">
+			<a class="top-addr" href="<{$back}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			<{$cate[cate_name]}>
+        </div>
+        <div  class="top-share">
+            <button class="share-button" data-theme="slide-top">分享</button>
+        </div>
+	</header>
+
+
+    
+    <script>
+        // 同一网页下只能有一种分享效果，否则会冲突
+        // 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+        var ui = getElementsByClassName( "-mob-share-ui" )[0];
+        var uiTemplate = ui.cloneNode( true );
+        var uiCurrent = ui;
+
+        var buttons = getElementsByClassName("share-button" );
+        for( var i = 0, len = buttons.length; i < len; i++ ) {
+            var btn = buttons[ i ];
+            btn.onclick = function() {
+                if( uiCurrent ) {
+                    uiCurrent.parentNode.removeChild( uiCurrent );
+                }
+                uiCurrent = uiTemplate.cloneNode( true );
+                var dataTheme = this.getAttribute( "data-theme" );
+                var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+                addClass( uiCurrent, theme );
+                if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+                    getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+                }
+                document.body.appendChild( uiCurrent );
+                mobShare.ui.init();
+                mobShare.ui.open();
+            };
+        }
+
+        function getElementsByClassName( classname, main ) {
+            var main = main || document;
+            if( main.getElementsByClassName ) {
+                return main.getElementsByClassName( classname );
+            }
+            var a = [];
+            var re = new RegExp( '(^| )' + classname + '( |$)' );
+            var els = main.getElementsByTagName( "*" );
+            for( var i = 0, j = els.length; i < j; i++ ) {
+                if( re.test( els[i].className ) ) {
+                    a.push( els[i] );
+                }
+            }
+            return a;
+        }
+
+        function hasClass( ele, cls ) {
+            return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+        }
+
+        function addClass( ele, cls ) {
+            if (!hasClass(ele, cls)) {
+                ele.className += " " + cls;
+            }
+        }
+    </script>
+    
+    <script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+    <!--MOB SHARE END-->
+
+  
+</div>
+
+	<div class="detail">
+
+		<div class="blank-10"></div>
+
+		<h1><{$detail.title}></h1>
+		<p class="detail-des">
+			<span>总浏览：<{$detail.views}></span>
+		</p>
+		<p class="detail-des" id="pay-video">
+			<if condition="!empty($detail['video'])"><!--如果有-->
+                <video id="video" controls="" preload="none" mediagroup="myVideoGroup" poster="<{:config_img($detail['video_photo'])}>"> 
+                      <source id="mp4" src="<{$detail['video']}>" type="video/mp4"> 
+                </video> 
+            </if>
+            <script> 
+                document.getElementById('car_audio').play(); 
+                document.addEventListener("WeixinJSBridgeReady", function () { 
+                    document.getElementById('car_audio').play(); 
+                    document.getElementById('video').play(); 
+                }, false); 
+            </script> 
+		</p>
+
+		<div class="detail-read">
+			<{$detail.details}>
+		</div>
+	</div>
+
+
+	<div class="container" style="padding:10px 0;">
+		<p>该方案有帮到您解决问题吗?</p>
+		<div class="x12 form-button">
+			<a class="button button-small bg-blue" target="x-frame"  href="<{:U('guide/zan',array('article_id'=>$detail['article_id']))}>">赞(<{$detail.zan}>)</a >
+		</div>
+
+	</div>
+
+    <div class="blank-10 bg"></div>
+
+</if>
+
+<include  file='public:footer'/> 

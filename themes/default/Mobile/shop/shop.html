@@ -1,0 +1,282 @@
+<include file="public:header"/>
+<style>
+.container {margin-top: 0rem;}
+</style>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('store/branch/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			<{$detail.shop_name}>分店
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>
+	  
+	<div class="share-content">
+		<!--MOB SHARE BEGIN-->
+		<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+			<ul class="-mob-share-list">
+				<li class="-mob-share-weixin"><p>微信</p></li>
+				<li class="-mob-share-facebook"><p>Facebook</p></li>
+				<li class="-mob-share-twitter"><p>Twitter</p></li>
+				<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+				<li class="-mob-share-douban"><p>豆瓣网</p></li>
+			</ul>
+			<div class="-mob-share-close">取消</div>
+		</div>
+		
+		<div class="-mob-share-ui-bg"></div>
+		
+		<script>
+			// 同一网页下只能有一种分享效果，否则会冲突
+			// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+			var ui = getElementsByClassName( "-mob-share-ui" )[0];
+			var uiTemplate = ui.cloneNode( true );
+			var uiCurrent = ui;
+	
+			var buttons = getElementsByClassName("share-button" );
+			for( var i = 0, len = buttons.length; i < len; i++ ) {
+				var btn = buttons[ i ];
+				btn.onclick = function() {
+					if( uiCurrent ) {
+						uiCurrent.parentNode.removeChild( uiCurrent );
+					}
+					uiCurrent = uiTemplate.cloneNode( true );
+					var dataTheme = this.getAttribute( "data-theme" );
+					var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+					addClass( uiCurrent, theme );
+					if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+						getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+					}
+					document.body.appendChild( uiCurrent );
+					mobShare.ui.init();
+					mobShare.ui.open();
+				};
+			}
+	
+			function getElementsByClassName( classname, main ) {
+				var main = main || document;
+				if( main.getElementsByClassName ) {
+					return main.getElementsByClassName( classname );
+				}
+				var a = [];
+				var re = new RegExp( '(^| )' + classname + '( |$)' );
+				var els = main.getElementsByTagName( "*" );
+				for( var i = 0, j = els.length; i < j; i++ ) {
+					if( re.test( els[i].className ) ) {
+						a.push( els[i] );
+					}
+				}
+				return a;
+			};
+	
+			function hasClass( ele, cls ) {
+				return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+			}
+	
+			function addClass( ele, cls ) {
+				if (!hasClass(ele, cls)) {
+					ele.className += " " + cls;
+				}
+			}
+		</script>
+		
+		<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+		<!--MOB SHARE END-->
+	</div>
+	
+	<div class="container">
+		<div class="line detail-base">
+			<div class="x4">
+				<div class="pic">
+					<img src="__ROOT__/attachs/<{$detail.logo}>" />
+				</div>
+			</div>
+			<div class="x5">
+				<h1><{$detail.shop_name}><if condition="!empty($detail['name'])">(<{$detail['name']}>)</if></h1>
+				<p><span class="ui-starbar"><span style="width:<{$detail.score}>%"></span></span></p>
+				<p>浏览量: <{$detail.view}> 次</p>
+				<p class="text-small"><span class="text-yellow"><{$ex.business_time}> </span></p>
+			</div>
+			<div class="x3">
+				<gt name="detail.niu_date" value="$today" >
+					<p class="text-center"><img src="/static/default/wap/image/shop/icon-cx.png" /></p>
+				</gt>
+				
+			</div>
+		</div>
+		<div class="blank-10"></div>
+		<hr />
+		<div class="line detail-contact">
+			<div class="x9">
+				<p class="addr"><i class="icon icon-map-marker"></i> <{$detail.addr}> </p>
+				<p class="margin-top"><i class="icon icon-phone"></i> 营业时间：<{$detail.business_time}></p>
+			</div>
+            
+            <!--有错误先这样使用-->
+			<div class="x3">
+				<a class="favor" href="<{:U('shop/favorites',array('shop_id'=>$detail['shop_id']))}>">
+					<div class="txt radius-circle bg-green"><i class="icon-heart"></i></div>
+					<p>关注该商家</p>
+					<p class="text-small">已关注<em class="text-yellow"><{$favnum}></em>人</p>
+				</a>
+			</div>
+            <!--有错误先这样结束--> 
+            
+            
+		</div>
+		<div class="blank-10"></div>
+        
+           <div class="list-link detail-link radius-none">
+			 <php>$sb = D('ShopBranch');$rsb = $sb -> where('shop_id ='.$detail['shop_id']) -> count();</php>
+			<a href="<{:U('shop/branch/',array('shop_id'=>$detail['shop_id']))}>">
+				<span class="txt txt-little radius-little bg-yellow">店</span> 查看另外<{$rsb}>家店铺
+				<span class="float-right icon-angle-right"></span>
+			</a>
+			
+		</div>
+        <div class="blank-10"></div>
+        
+        
+		<div class="list-link detail-link radius-none">
+			<div class="line border-bottom">
+				<div class="x6 border-right text-center">
+					<a href="<{:U('shop/gps',array('shop_id'=>$detail['shop_id']))}>"><i class="icon icon-send"></i> 导航到这去</a>
+				</div>
+				<div class="x6 text-center">
+					<a href="tel:<{$detail.telephone}>"><i class="icon icon-phone"></i> <{$detail.telephone}></a>
+				</div>
+			</div>
+      <if condition="!empty($tuans)"><!--显示近期团购数据-->			
+           <volist name="tuans" id="item" key="index"><!--循环输出的一条数据-->
+            <a href="<{:U('tuan/detail',array('tuan_id'=>$item['tuan_id']))}>">
+				<span class="txt txt-little radius-little bg-green">团</span> <{$item.title}>
+				<span class="float-right icon-angle-right"></span>
+			</a>
+            </volist>
+            <else/>
+
+            </if><!--显示近期团购结束-->
+            
+           <if condition="!empty($goods)"><!--显示近期商品数据-->			
+           <volist name="goods" id="item" key="index"><!--循环输出的一条数据-->
+            <a href="<{:U('mall/detail',array('goods_id'=>$item['goods_id']))}>">
+				<span class="txt txt-little radius-little bg-yellow">商</span> <{$item.title}>
+        
+				<span class="float-right icon-angle-right"></span>
+			</a>
+            </volist>
+            <else/>
+
+            </if><!--显示近期商品结束-->
+            
+            
+             <if condition="!empty($coupon)"><!--显示近期优惠券数据-->			
+           <volist name="coupon" id="item" key="index"><!--循环输出的一条数据-->
+            <a href="<{:U('coupon/detail',array('coupon_id'=>$item['coupon_id']))}>">
+				<span class="txt txt-little radius-little bg-dot">劵</span> <{$item.title}>
+				<span class="float-right icon-angle-right"></span>
+			</a>
+            </volist>
+            <else/>
+
+            </if><!--显示近期优惠劵结束-->
+            
+            
+             <if condition="!empty($huodong)"><!--显示近期活动数据-->			
+           <volist name="huodong" id="item" key="index"><!--循环输出的一条数据-->
+            <a href="<{:U('huodong/detail',array('activity_id'=>$item['activity_id']))}>">
+				<span class="txt txt-little radius-little bg-dot">活</span> <{$item.title}>
+				<span class="float-right icon-angle-right"></span>
+			</a>
+            </volist>
+            <else/>
+
+            </if><!--显示近期活动结束-->
+            
+            
+            
+              <if condition="!empty($ele_menu)"><!--显示近期外卖数据-->			
+           <volist name="ele_menu" id="item" key="index"><!--循环输出的一条数据-->
+            <a href="<{:U('mobile/ele/shop/',array('shop_id'=>$item['shop_id']))}>">
+				<span class="txt txt-little radius-little bg-yellow">外</span> <{:bao_msubstr($item['product_name'],0,8)}> -$<{:round($item['price']/100,2)}>
+        
+				<span class="float-right icon-angle-right"></span>
+			</a>
+            </volist>
+            <else/>
+ 
+            </if><!--显示近期外卖结束-->
+            
+            
+            
+            
+            
+              <if condition="!empty($ding_menu)"><!--显示近期菜单数据-->			
+           <volist name="ding_menu" id="item" key="index"><!--循环输出的一条数据-->
+            <a href="<{:U('mobile/ding/menu/',array('shop_id'=>$item['shop_id'],'yuyue_id'=>$item['cate_id']))}>">
+				<span class="txt txt-little radius-little bg-yellow">菜</span> <{:bao_msubstr($item['menu_name'],0,8)}>-$<{:round($item['ding_price']/100,2)}>
+        
+				<span class="float-right icon-angle-right"></span>
+			</a>
+            </volist>
+            <else/>
+       
+            </if><!--显示近期商品结束-->
+            
+            
+            
+             
+			<a href="<{:U('shop/book',array('shop_id'=>$detail['shop_id']))}>">
+				<span class="txt txt-little radius-little bg-blue">约</span> 预约去消费
+				<span class="float-right icon-angle-right"></span>
+			</a>
+            
+            
+		</div>
+		<div class="blank-10"></div>
+     
+		<div class="panel detail-intro radius-none">
+			<div class="panel-head">商家介绍</div>
+			<div class="panel-body">
+				<{$detail.details}>
+				<gt name="detail.niu_date" value="$today" >
+				<span class="niu"><img src="/static/default/wap/image/shop/icon-niu.png" /></span>
+				</gt>
+			</div>
+		</div>
+
+		
+		<div class="blank-10"></div>
+
+		<!--<div class="detail-title">
+			<h4 id="ping">会员评价</h4>
+			<a class="more" href="<{:U('shop/dianping',array('shop_id'=>$detail['shop_id']))}>">查看更多评价</a>
+		</div>
+		<div class="detail-ping">
+			<volist name="list" id="var" key="index">
+			<if condition="$index elt 5">
+			<div class="media media-x">
+					<a class="float-left" href="#">
+						<img class="radius" src="__ROOT__/attachs/<{$$sers[$var['user_id']]['face']|default='avatar.jpg'}>" />
+					</a>
+					<div class="media-body">
+						<strong><{$users[$var['user_id']]['nickname']}></strong>
+						<{$var.contents}>
+						<div class="ping-pic">
+							<volist name="pics" id="pic" key="index">
+							<eq name="pic.dianping_id" value="$var['dianping_id']">
+								<img src="__ROOT__/attachs/<{$pic.pic|default='default.jpg'}>" />
+							</eq>
+							</volist>
+						</div>
+					</div>
+			</div>
+			</if>
+			</volist>
+		</div>-->
+	</div>
+	
+<include file="public/footer" />

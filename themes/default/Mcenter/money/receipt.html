@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title><if condition="!empty($mobile_title)"><{$mobile_title}>_</if><{$CONFIG.site.sitename}></title>
+    <meta name="keywords" content="<{$mobile_keywords}>" />
+    <meta name="description" content="<{$mobile_description}>" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="/static/default/wap/css/base.css">
+    <link rel="stylesheet" href="/static/default/wap/css/<{$ctl}>.css?V=2"/>
+    <script src="/static/default/wap/js/jquery.js"></script>
+    <script src="/static/default/wap/js/base.js"></script>
+    <script src="/static/default/wap/other/layer.js"></script>
+    <script src="/static/default/wap/other/roll.js"></script>
+    <script src="/static/default/wap/js/public.js"></script>
+    <script src="/static/default/wap/js/mobile_common.js"></script>
+    <script src="/static/default/wap/js/iscroll-probe.js"></script>
+    <script src="__PUBLIC__/js/common.js"></script>
+</head>
+<body>
+<header class="top-fixed bg-yellow bg-inverse">
+    <div class="top-back">
+        
+    </div>
+    <div class="top-title">
+        商家收款
+    </div>
+    <div class="top-signed">
+        <include file="public:message"/>
+    </div>
+</header>
+<div id="main" style="padding: 20px;">
+    <div id="qrcode_img">
+        <{$token_url}>
+    </div>
+    <div style="text-align:center;">Barcode: <{$encrypt_order_id}></div>
+    <div style="text-align:center;">请等待商家扫描，并请不要关闭该页面。</div>
+    <input type="text" id="token" style="display: none;" value="<{$encryption}>">
+</div>
+</div>
+
+<include file="public:footer"/>
+
+
+<script>
+$(document).ready(function(){
+    var token = $('#token').val();
+    get_scan_act()
+    function get_scan_act() {
+        $.post('<{:U("money/receiptCheck")}>', {token: token}, function(data) {
+
+            var json = data;
+            if (json.error == -1) {
+                setTimeout(function(){ get_scan_act() }, 500);
+            } else {
+                $('#qrcode_img img').attr('src', '__ROOT__/static/default/wap/other/skin/default/loading-0.gif');
+                $('#qrcode_img img').css('width', '10%');
+                $('#qrcode_img img').css('margin-left', '45%');
+                $('#qrcode_img img').css('margin-top', '60px');
+            }
+            if (json.error == 0) {
+                get_amount_act();
+            } else if (json.error == 1 && json.code == 12) {    //二维码过期
+                layer.msg(json.msg, {icon:2});
+                setTimeout( function(){location.href = "<{:U('money/receipt')}>";}, 2000 );
+            } else if (json.error == 1) {
+                layer.msg(json.msg, {icon:2});
+                setTimeout( function(){location.href = "<{:U('money/receipt')}>";}, 2000 );
+            }
+
+        }, 'JSON');
+    }
+
+    function get_amount_act() {
+        $.post('<{:U("money/receiptAmountCheck")}>', {token: token}, function(data) {
+
+            var json = data;
+            if (json.error == -1) {
+                setTimeout(function(){ get_amount_act() }, 500);
+            } else if (json.error == 0) {
+                layer.msg('正在跳转到支付页面，请稍候。。。', {icon:1});
+                setTimeout( function(){location.href = "<{:U('money/receiptPay', array('token'=>$encryption))}>";}, 2000 );
+            } else if (json.error == 1 && json.code == 14) {    //订单过期
+                $('#qrcode_img img').attr('src', '');
+                layer.msg(json.msg, {icon:2});
+                setTimeout( function(){location.href = "<{:U('money/receipt')}>";}, 2000 );
+            } else {
+                $('#qrcode_img img').attr('src', '');
+                layer.msg(json.msg, {icon:2});
+                setTimeout( function(){location.href = "<{:U('money/receipt')}>";}, 2000 );
+            }
+
+        }, 'JSON');
+    }
+});
+</script>

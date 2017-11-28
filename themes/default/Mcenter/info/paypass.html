@@ -1,0 +1,169 @@
+<include  file='public:header'/>
+<script src="/static/default/wap/js/jquery.gesture.password.js"></script>
+<header class="top-fixed bg-yellow bg-inverse">
+	<div class="top-back">
+		<a class="top-addr" href="<{:U('member/index')}>"><i class="icon-angle-left"></i></a>
+	</div>
+	<div class="top-title">
+		支付密码
+	</div>
+</header>
+
+
+
+<form class="fabu-form" method="post"  target="x-frame" action="<{:U('info/paypass')}>">
+
+	<div class="blank-10 bg border-top"></div>
+
+	<div class="row">
+
+		<div class="line">
+
+			<span class="x3">默认方式</span>
+			<span class="x4">
+				<input type="radio" id="type0" class="x2 pay_type" name="data[type]" value="0" <if condition="$user.pay_type eq 0">checked</if> style="margin-top: 3px;"/>四位数密码
+			</span>
+			<span class="x4">
+				<input type="radio" id="type1" class="x2 pay_type" name="data[type]" value="1" <if condition="$user.pay_type eq 1">checked</if> style="margin-top: 3px;"/>手势密码
+			</span>
+
+		</div>
+
+	</div>
+
+
+	<div class="row" id="new_code">
+
+		<div class="line">
+
+			<span class="x3">新密码</span>
+
+			<span class="x9">
+
+				<input id="pay_code" type="password" class="text-input" name="data[pay_code]" value="" maxlength="4"/>
+
+			</span>
+
+		</div>
+
+	</div>
+
+	<div class="row" id="new_pass">
+
+		<div class="line">
+
+			<span class="x3">新手势密码</span>
+
+			<span class="x9">
+
+				<div class="theme-signin" id="gesture_password"></div>
+				<input type="text" style="display:none;" id="pay_pass" name="data[pay_pass]">
+
+			</span>
+
+		</div>
+
+	</div>
+	<div class="row" id="password_input">
+
+		<div class="line">
+
+			<span class="x3">验证码</span>
+
+			<span class="x5"><input class="oldPassw text-input" style="width: 200px;" name="yzm" id="yzm" type="text" placeholder="已綁定手机短信验证码"/></span>
+
+			<span class="x4"><button id="jq_send" type="button" class="button button-little bg-dot m_zcyz">获取验证码</button></span>
+
+		</div>
+
+	</div>
+
+	<div class="container">
+
+		<div class="blank-30"></div>
+
+		<button  type="submit" class="button button-block button-big bg-dot">提交</button>
+
+		<div class="blank-30"></div>
+
+	</div>
+
+		
+
+</form>
+
+<include  file='public:footer'/>
+
+<script>
+    $(document).ready(function () {
+        $("#gesture_password").GesturePasswd({
+            backgroundColor:"#FFF",  //背景色
+            color:"#252736",   //主要的控件颜色
+            roundRadii:25,    //大圆点的半径
+            pointRadii:6, //大圆点被选中时显示的圆心的半径
+            space:30,  //大圆点之间的间隙
+            width:240,   //整个组件的宽度
+            height:240,  //整个组件的高度
+            lineColor:"#00aec7",   //用户划出线条的颜色
+        });
+        $("#gesture_password").on("hasPasswd",function(e,passwd){
+            $("#gesture_password").trigger("passwdRight");
+            $('#pay_pass').val(passwd);
+        });
+
+        if ($('#type0').attr('checked') == 'checked') {
+			$('#new_pass').hide();
+		} else {
+            $('#new_code').hide();
+		}
+
+		$('.pay_type').click(function (){
+            if ($(this).val() == 0) {
+                $('#new_pass').hide();
+                $('#new_code').show();
+            } else {
+                $('#new_code').hide();
+                $('#new_pass').show();
+            }
+		})
+
+    });
+</script>
+
+<script type="text/javascript">
+    var mobile_timeout;
+    var mobile_count = 100;
+    var mobile_lock = 0;
+    var user_mobile = "<{$MEMBER['mobile']}>";
+    $(function () {
+        $("#jq_send").click(function () {
+            if (!user_mobile) {
+                layer.msg("未绑定手机",{icon:2});
+            } else if (mobile_lock == 0) {
+                mobile_lock = 1;
+                $.post("<{:U('info/sendsms')}>",{mobile:user_mobile},function(data){
+                    if(data.status == 'success'){
+                        mobile_count = 60;
+                        layer.msg(data.msg,{icon:1});
+                        BtnCount();
+                    }else{
+                        mobile_lock = 0;
+                        layer.msg(data.msg,{icon:2});
+                    }
+                },'json');
+            }
+        });
+    });
+    BtnCount = function () {
+        if (mobile_count == 0) {
+            $('#jq_send').val("重新发送");
+            mobile_lock = 0;
+            clearTimeout(mobile_timeout);
+        }
+        else {
+            mobile_count--;
+            $('#jq_send').val(mobile_count.toString() + "s后重发");
+            mobile_timeout = setTimeout(BtnCount, 1000);
+        }
+    };
+</script>

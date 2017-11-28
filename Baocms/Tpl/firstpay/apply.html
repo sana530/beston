@@ -1,0 +1,88 @@
+<include  file='public:header'/>
+<div class="mainBt">
+    <ul>
+        <li class="li1">1stPay</li>
+        <li class="li2">1stPay管理</li>
+        <li class="li2 li3">1stPay审核列表</li>
+    </ul>
+</div>
+<div class="main-jsgl main-sc">
+    <p class="attention"><span>注意：</span>前台申请，后台审核！会员申请链接：你的域名后面/credit/index</p>
+    <div class="jsglNr">
+        <div class="selectNr" style="margin-top: 0px; border-top:none;">
+            <div class="left">
+                <{:BA('firstpay/create','','添加申请')}>
+            </div>
+            <div class="right">
+                <form class="search_form" method="post" action="<{:U('firstpay/apply')}>">
+                    <div class="seleHidden" id="seleHidden">
+                        <span>关键字(电话或信箱)</span>
+                        <input type="text" name="keyword" value="<{$keyword}>" class="inptText" /><input type="submit" value="   搜索"  class="inptButton" />
+                    </div>
+                </form>
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="selectNr selectNr2">
+        <div class="clear"></div>
+    </div>
+    <form  target="baocms_frm" method="post">
+        <div class="tableBox">
+            <table bordercolor="#dbdbdb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;"  >
+                <tr>
+                    <td class="w50"><input type="checkbox" class="checkAll" rel="credit_id" /></td>
+                    <td class="w50">ID</td>
+                    <td>申請者(电话)</td>
+                    <td>申請者姓名</td>
+                    <td>身份/额度</td>
+                    <td>身份证明</td>
+                    <td>银行帐户</td>
+                    <td>申請时间</td>
+                    <td class="w200">操作</td>
+                </tr>
+                <foreach name="list" item="var">
+                    <tr>
+                        <td><input class="child_credit_id" type="checkbox" name="credit_id[]" value="<{$var.credit_id}>" /></td>
+                        <td><{$var.credit_id}></td>
+                        <td>
+                        ID：<{$users[$var['user_id']]['account']}>(<{$var.user_id}>)<br/>
+                        电话：<{$var.mobile}> / 生日：<{$var.birth_date}>
+                        </td>
+                        <td>
+                        名字：<{$var.first_name}><br/>
+                        姓氏：<{$var.last_name}>
+                        </td>
+                        <td>
+                        类型：<eq name="var.identity" value="1">License<else/>Passport </eq><br/>
+                        申請额度: <{$var.credit_limit}>
+                        </td>
+                        <td><<eq name="var.photo_id_type" value="pdf">iframe<else/>img</eq> style="padding:2px; height:60px; width:60px;" src="__ROOT__/attachs/<{$var.photo_id}>" /><eq name="var.photo_id_type" value="pdf"></iframe></eq></td>
+                        <td><<eq name="var.photo_bk_type" value="pdf">iframe<else/>img</eq> style="padding:2px; height:60px; width:60px;" src="__ROOT__/attachs/<{$var.photo_bk}>" /><eq name="var.photo_bk_type" value="pdf"></iframe></eq></td>
+                    <td><{$var.create_time|date='Y-m-d H:i:s',###}></td>
+                    <td class="w150">
+                    <{:BA('firstpay/edit',array("credit_id"=>$var["credit_id"]),'编辑','','remberBtn_small')}>
+                    <{:BA('firstpay/audit',array("credit_id"=>$var["credit_id"]),'审核','act','remberBtn_small')}>
+                    <{:BA('firstpay/delete',array("credit_id"=>$var["credit_id"]),'删除','act','remberBtn_small')}>
+                                         
+					
+                    </td>
+                    </tr>
+                </foreach>
+            </table>
+            <{$page}>
+        </div>
+        <div class="selectNr" style="margin-bottom: 0px; border-bottom: none;">
+            <div class="left">
+                <{:BA('firstpay/delete','','批量删除','list',' a2')}>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+<include  file='public:footer'/>  
+
+
+
+
+

@@ -1,0 +1,27 @@
+<include file="public:header"/>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('shop/detail',array('shop_id'=>$detail['shop_id']))}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			<{$detail.shop_name}><{$shop.shop_name}>
+		</div>
+		<div class="top-share">
+			<a href="<{:U('shop/favorites/',array('shop_id'=>$shop_id))}>" id="share-btn">关注</a>
+		</div>
+	</header>
+	    
+<style>
+.coupon-list { margin-top:2.6rem;}
+ul{ padding-left:0px;}
+</style>
+<include file="shop:header"/>
+
+ <div id="coupon-list" class="coupon-list"></div>
+    <script>
+        $(document).ready(function () {
+            loaddata('<{$nextpage}>', $("#coupon-list"), true);
+        });
+    </script>
+
+<include file="public:footer"/>

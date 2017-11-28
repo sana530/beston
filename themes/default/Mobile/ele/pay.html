@@ -1,0 +1,264 @@
+<include file='public:header'/>    
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('ele/cart')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			订单设定
+		</div>
+	</header>
+<style>.pac-container{z-index: 198910150;}</style>
+	<script src="<{:U('app/datas/cab',array('name'=>'cityareas'))}>"></script>  <!-- 获取下拉 -->
+    
+    <script>
+    	$(document).ready(function(){
+			//添加收货地址
+			$('.add_addr').click(function(){
+				var index = layer.open({
+					type: 1,
+					title:'新增收货地址',
+					skin: 'layer-ext-demo', //加上边框
+					area: ['90%', '340px'], //宽高
+					content: '<div class="form-x form-auto"><div class="line margin-top"><div class="x2 label"><label>联系人</label></div><div class="x10 field"><input type="text" class="input input-auto" id="name" name="name" size="10"  value=""></div></div>   <div style="display: none" class="line margin-top"><div class="x2 label text-center"><label>地区</label></div><div class="x10 field form-inline"><input id="administrative_area_level_1" name="city_name"  class="input margin-small-right input-auto"><input id="locality" name="area_name" class="input  margin-small-right input-auto"><input id="sublocality_level_1" name="business_name" class="input input-auto"></div></div><div class="line margin-top"><div class="x2 label"><label>手机</label></div><div class="x10 field"><input type="text" class="input input-auto" name="mobile" id="mobile" value=""></div></div><div class="line margin-top"><div class="x2 label"><label>地址</label></div><div class="x10 field"><input type="text" class="input input-auto" size="25" name="addr" id="addr" value="" /></div></div><div class="line margin-top"><div class="x10 float-right"><input class="button bg-dot addr_post" type="submit" value="添加地址" /></div></div></div>'
+				});
+
+				get_option();
+                var autocomplete;
+                var componentForm = {sublocality_level_1:'long_name', locality: 'long_name', administrative_area_level_1: 'short_name'};
+                autocomplete = new google.maps.places.Autocomplete((document.getElementById('addr')),{types: ['geocode']});
+                autocomplete.addListener('place_changed', fillInAddress);
+				$('.layui-layer-content').css('padding','15px');
+				
+				$('.addr_post').click(function(){
+					var name = $('#name').val();
+                    var city_name = $('#administrative_area_level_1').val();
+                    var area_name = $('#locality').val();
+                    var business_name = $('#sublocality_level_1').val();
+					var mobile = $('#mobile').val();
+					var addr = $('#addr').val();
+					
+					$.post('<{:U("mobile/addr/add_addr")}>',{name:name,city_name:city_name,area_name:area_name,business_name:business_name,mobile:mobile,addr:addr},function(result){
+						if(result.status == 'success'){
+							layer.msg(result.msg,{icon:1});
+							setTimeout(function(){
+								location.reload(true);
+							},2000);
+						}else{
+							layer.msg(result.msg,{icon:2});
+						}														
+					},'json');
+				})
+                function fillInAddress() {
+                    var place = autocomplete.getPlace();
+                    document.getElementById("sublocality_level_1").value = "";
+                    document.getElementById('locality').value = "";
+                    document.getElementById('administrative_area_level_1').value = "";
+                    for (var i = 0; i < place.address_components.length; i++) {
+                        var addressType = place.address_components[i].types[0];
+                        if (componentForm[addressType]) {
+                            document.getElementById(addressType).value = place.address_components[i][componentForm[addressType]];
+                        }
+                    }
+                }
+			});
+
+			//修改
+			$('.edit_addr').click(function(){
+				var val = $(this).attr('val');
+				var a = $(this).attr('a');
+				var b = $(this).attr('b');
+				var c = $(this).attr('c');
+				var n = $(this).attr('n');
+				var m = $(this).attr('m');
+				var addr = $(this).attr('addr');
+				var index = layer.open({
+					type: 1,
+					title:'修改收货地址',
+					skin: 'layer-ext-demo', //加上边框
+					area: ['90%', '340px'], //宽高
+					content: '<div class="form-x form-auto">' +
+					'<div class="line margin-top"><div class="x2 label"><label>联系人</label></div><div class="x10 field"><input type="text" class="input input-auto" id="name" name="name" size="10"  value="'+n+'"></div></div>   ' +
+                    '<div style="display: none" class="line margin-top"><div class="x2 label text-center"><label>地区</label></div><div class="x10 field form-inline"><input id="administrative_area_level_1" name="city_name"  class="input margin-small-right input-auto"><input id="locality" name="area_name" class="input  margin-small-right input-auto"><input id="sublocality_level_1" name="business_name" class="input input-auto"></div></div>' +
+					'<div class="line margin-top"><div class="x2 label"><label>手机</label></div><div class="x10 field"><input type="text" class="input input-auto" name="mobile" id="mobile" value="'+m+'"></div></div><div class="line margin-top"><div class="x2 label"><label>地址</label></div><div class="x10 field"><input type="text" class="input input-auto" size="25" name="addr" id="addr" value="'+addr+'" /></div></div>' +
+					'<div class="line margin-top"><div class="x10 float-right"><input class="button bg-yellow edit_post" type="submit" value="立即修改"  val="'+val+'" /></div></div></div>'
+				});
+				$('.layui-layer-content').css('padding','15px');
+				get_option();
+				changeCAB(c,a,b);
+                var autocomplete;
+                var componentForm = {sublocality_level_1:'long_name', locality: 'long_name', administrative_area_level_1: 'short_name'};
+				autocomplete = new google.maps.places.Autocomplete((document.getElementById('addr')),{types: ['geocode']});
+				autocomplete.addListener('place_changed', fillInAddress);
+				$('.edit_post').click(function(){
+					var addr_id = $(this).attr('val');
+					var name = $('#name').val();
+                    var city_name = $('#administrative_area_level_1').val();
+                    var area_name = $('#locality').val();
+                    var business_name = $('#sublocality_level_1').val();
+					var mobile = $('#mobile').val();
+					var addr = $('#addr').val();
+					$.post('<{:U("mobile/addr/edit_addr")}>',{name:name,city_name:city_name,area_name:area_name,business_name:business_name,mobile:mobile,addr:addr,addr_id:addr_id},function(result){
+						if(result.status == 'success'){
+							layer.msg(result.msg,{icon:1});
+							setTimeout(function(){
+								location.reload(true);
+							},2000);
+						}else{
+							layer.msg(result.msg,{icon:2});
+						}														
+					},'json');
+				})
+                function fillInAddress() {
+                    var place = autocomplete.getPlace();
+                    document.getElementById("sublocality_level_1").value = "";
+                    document.getElementById('locality').value = "";
+                    document.getElementById('administrative_area_level_1').value = "";
+                    for (var i = 0; i < place.address_components.length; i++) {
+                        var addressType = place.address_components[i].types[0];
+                        if (componentForm[addressType]) {
+                            document.getElementById(addressType).value = place.address_components[i][componentForm[addressType]];
+                        }
+                    }
+                }
+			})
+			$("#pay-method li").click(function(){
+				var code = $(this).attr("data-rel");
+				$("#code").val(code);
+				$("#pay-method li").each(function(){
+					$(this).removeClass("active");
+				});
+				$(this).addClass("active");
+			});
+			
+		});
+    </script>
+<style>
+.icon-angle-right{ float:right; font-size:20px;}
+.layui-layer-molv .layui-layer-title { background-color: #F8F8F8; border-bottom: 1px solid #eee;color: #333;}
+.divButtons{ width:50%;display: initial;padding:0px;}.text-area { width: 100%;border: thin solid #eee;resize: none; margin-top:10px; :}
+</style>    
+
+	<form class="pay-form" action="<{:U('ele/pay2',array('order_id'=>$order['order_id']))}>" method="post"  target="x-frame">
+		<div id="logistics" class="row">
+			<span class="float-left">订餐总费用：</span>
+			<span class="float-right">$ <{:round($order['total_price']/100,2)}>
+            <if condition="!empty($order['logistics'])">（含配送费：<{:round($order['logistics']/100,2)}>NZD）</if></span>
+		</div>
+		<hr />
+	<if condition="$order['is_delivery'] eq 1">
+		<div class="row">
+			<span class="float-left">请选择收货地址</span>
+			<!--<span class="float-right"><a class="text-dot add_addr" href="javascript:void(0);" >新增收货地址</a></span>-->
+		</div>
+		<hr />
+        
+        
+        
+		<if condition="!empty($useraddr)">
+		<foreach name="useraddr" item="item">
+		<div class="row">
+        <span class="x10">
+			<input type="radio" name="addr_id" id="addr_id" value="<{$item['addr_id']}>" <eq name="item.is_default" value="1">checked="checked"</eq> />
+			<{$item.name}> <{$item.mobile}> <a style="display:none;" class="text-dot edit_addr" href="#" val="<{$item.addr_id}>" a="<{$item.area_id}>" b="<{$item.business_id}>" c="<{$item.city_id}>" n="<{$item.name}>" m="<{$item.mobile}>" addr="<{$item.addr}>">修改地址</a>
+            <p onclick="location='<{:U("mcenter/addrs/index",array('type'=>1,'order_id'=>$order['order_id']))}>'"><{$item.addr}>, <{$business[$item['business_id']]['business_name']}>, <{$areas[$item['area_id']]['area_name']}>, <{$citys[$item['city_id']]['name']}></p>
+         </span>
+          <span class="x2" onclick="location='<{:U("mcenter/addrs/index",array('type'=>1,'order_id'=>$order['order_id']))}>'"><i class="icon-angle-right padding-top"></i></span>
+		</div>
+		</foreach>
+		<else/>
+		<div class="row">
+			您还没有设置收货地址，赶紧添加一个吧！ <a class="text-dot add_addr" href="javascript:void(0);" >新增收货地址</a>
+		</div>
+		</if>
+	</if>
+		
+        
+        <hr />
+		<div id="distance"></div>
+		<div class="row"  onclick="location='<{:U("mobile/ele/message",array('order_id'=>$order['order_id']))}>'">
+			<span class="float-left">备注：<if condition="!empty($order['message'])"><{:bao_msubstr($order['message'],0,12,false)}></if></span>
+			<span class="float-right"> <i class="icon-angle-right"></i></span>
+		</div>
+        
+       <!--填写END-->
+
+		<ul id="pay-method" class="pay-method">
+			<foreach name="payment" item="var">
+			<li data-rel="<{$var.code}>" class="media media-x payment">
+				<a class="float-left"  href="javascript:;">
+					<img src="/static/default/wap/image/pay/<{$var.mobile_logo}>">
+				</a>
+				<div class="media-body">
+					<div class="line">
+						<div class="x10">
+						<{$var.name}><p><{$var.contents}></p>
+						</div>
+						<div class="x2">
+							<span class="radio txt txt-small radius-circle bg-green"><i class="icon-check"></i></span>
+						</div>
+					</div>
+				</div>
+			</li>
+			</foreach>
+			<if condition="$order['is_delivery'] eq 0">
+                <!--<li data-rel="wait" class="media media-x payment" style="display:none;">
+                    <a class="float-left" href="javascript:;">
+                        <img src="/static/default/wap/image/pay/dao.png">
+                    </a>
+                    <div class="media-body">
+                        <div class="line">
+                            <div class="x10">
+                            货到付款<p>如果您没有网银，可以到店付</p>
+                            </div>
+                            <div class="x2">
+                                <span class="radio txt txt-small radius-circle bg-green"><i class="icon-check"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </li>-->
+			</if>
+		</ul>
+		<input id="code" type="hidden" name="code" value="" />
+		
+		<div class="text-center padding-left padding-right margin-large-top">
+			<button type="submit" class="button button-big button-block bg-yellow  submit">提交订单</button>
+		</div>
+		
+		<div class="blank-20"></div>
+	</form>
+</div>
+ 	<script>
+        if ("<{$order['is_delivery']}>" == 1) {
+            var addr = '';
+			if ("<{$useraddr[0]['addr']}>") {
+                addr +="<{$useraddr[0]['addr']}>";
+			}
+            if ("<{$bizs[$useraddr[0]['business_id']]['business_name']}>") {
+                addr +=', '+"<{$bizs[$useraddr[0]['business_id']]['business_name']}>";
+            }
+            if ("<{$areas[$useraddr[0]['area_id']]['area_name']}>") {
+                addr +=', '+"<{$areas[$useraddr[0]['area_id']]['area_name']}>";
+            }
+            if ("<{$citys[$useraddr[0]['city_id']]['name']}>") {
+                addr +=', '+"<{$citys[$useraddr[0]['city_id']]['name']}>";
+            }
+            distance("<{$order.order_id}>", addr);
+        }
+
+        function distance(order_id, addr) {
+            if (addr) {
+                $.post("<{:U('ele/distance')}>", {order_id: order_id, addr: addr}, function (data) { $('#distance').html(data); });
+			}
+        }
+		<eq name="mobile_open" value="0">
+		$('.submit').click(function(){
+			check_user_mobile('<{:U("mobile/tuan/tuan_sendsms")}>','<{:U("mobile/tuan/tuan_mobile")}>');
+			return false;
+		});
+    	check_user_mobile('<{:U("mobile/tuan/tuan_sendsms")}>','<{:U("mobile/tuan/tuan_mobile")}>');
+		$('#mobile_btn').click(function(){
+			check_user_mobile('<{:U("mobile/tuan/tuan_sendsms")}>','<{:U("mobile/tuan/tuan_mobile")}>');
+		});
+		</eq>
+    </script>
+<include  file='public:footer'/>

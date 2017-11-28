@@ -1,0 +1,190 @@
+﻿<php>$mobile_title = $detail['title'].'活动';</php>
+<include  file='public:header'/>
+<script src="/static/default/wap/other/roll.js"></script> 
+	<header class="top-fixed bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('huodong/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			活动详情
+		</div>
+		<div  class="top-share">
+			<button class="share-button" data-theme="slide-top">分享</button>
+		</div>
+	</header>  
+	<div class="share-content">
+		<!--MOB SHARE BEGIN-->
+		<div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+			<ul class="-mob-share-list">
+				<li class="-mob-share-weixin"><p>微信</p></li>
+				<li class="-mob-share-facebook"><p>Facebook</p></li>
+				<li class="-mob-share-twitter"><p>Twitter</p></li>
+				<li class="-mob-share-linkedin"><p>LinkedIn</p></li>
+				<li class="-mob-share-douban"><p>豆瓣网</p></li>
+			</ul>
+			<div class="-mob-share-close">取消</div>
+		</div>
+		
+		<div class="-mob-share-ui-bg"></div>
+		
+		<script>
+			// 同一网页下只能有一种分享效果，否则会冲突
+			// 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+			var ui = getElementsByClassName( "-mob-share-ui" )[0];
+			var uiTemplate = ui.cloneNode( true );
+			var uiCurrent = ui;
+	
+			var buttons = getElementsByClassName("share-button" );
+			for( var i = 0, len = buttons.length; i < len; i++ ) {
+				var btn = buttons[ i ];
+				btn.onclick = function() {
+					if( uiCurrent ) {
+						uiCurrent.parentNode.removeChild( uiCurrent );
+					}
+					uiCurrent = uiTemplate.cloneNode( true );
+					var dataTheme = this.getAttribute( "data-theme" );
+					var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+					addClass( uiCurrent, theme );
+					if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+						getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+					}
+					document.body.appendChild( uiCurrent );
+					mobShare.ui.init();
+					mobShare.ui.open();
+				};
+			}
+	
+			function getElementsByClassName( classname, main ) {
+				var main = main || document;
+				if( main.getElementsByClassName ) {
+					return main.getElementsByClassName( classname );
+				}
+				var a = [];
+				var re = new RegExp( '(^| )' + classname + '( |$)' );
+				var els = main.getElementsByTagName( "*" );
+				for( var i = 0, j = els.length; i < j; i++ ) {
+					if( re.test( els[i].className ) ) {
+						a.push( els[i] );
+					}
+				}
+				return a;
+			};
+	
+			function hasClass( ele, cls ) {
+				return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+			}
+	
+			function addClass( ele, cls ) {
+				if (!hasClass(ele, cls)) {
+					ele.className += " " + cls;
+				}
+			}
+		</script>
+		
+		<script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+		<!--MOB SHARE END-->
+	
+	  
+	</div>
+
+
+<div class="tuan-detail">   
+    <div class="line banner">	
+			<div id="focus" class="focus">
+		<div class="hd">
+			<ul></ul>
+		</div>
+		<div class="bd">
+			<ul>
+          		<li><a href="javascript:void(0);"><img src="<{:config_img($detail['photo'])}>" /></a></li>
+                <php>$i=0;</php>
+                <foreach name="detail.thumb" item="item">
+                <php>$i++;if($i<=3){</php>
+                <li><a href="javascript:void(0);"><img src="<{:config_img($item)}>" /></a></li>
+                <php>}</php>
+                </foreach>
+			</ul>
+		</div>
+	</div>
+			<div class="title">
+				<h1><{:bao_msubstr($detail['title'],0,20)}></h1>
+				<p><{:bao_msubstr($detail['intro'],0,40)}></p>
+			</div>	
+		</div>
+</div>            
+
+	<script type="text/javascript">
+		TouchSlide({ 
+			slideCell:"#focus",
+			titCell:".hd ul", //开启自动分页 autoPage:true ，此时设置 titCell 为导航元素包裹层
+			mainCell:".bd ul", 
+			effect:"left", 
+			autoPlay:true,//自动播放
+			autoPage:true, //自动分页
+			switchLoad:"_src" //切换加载，真实图片路径为"_src" 
+		});
+	</script>
+
+	<div class="hd-detail tuan-detail">
+		<div class="detail-ctrl">
+         <php>
+         $num = D('Activitysign') -> where('activity_id ='.$detail['activity_id']) -> sum(num);
+         </php> 
+			<span><em><{$num}></em>人已报名</span>
+            <if condition="$detail['sign_end'] lt $today">
+              <a class="button  bg-gray float-right"  href="javascript:void(0);">活动结束</a  >
+              <else/><!--否则显示立即报名-->
+                  <eq name="detail['sign']" value="0">
+                  	<if condition="empty($MEMBER)">
+                  <a class="button  bg-dot float-right"  href="<{:u('mobile/passport/login')}>">登录报名</a>
+                 	 <else/>
+                  <a class="button  bg-yellow float-right"  href="<{:U('huodong/sign',array('activity_id'=>$detail['activity_id']))}>">立即报名</a>
+                  	</if>   
+                  	<else/>
+                  <a class="button  bg-gray float-right"  href="javascript:void(0);">已报名</a>  
+                  </eq> 
+          </if><!--结束-->
+       </div>
+       
+        <div class="blank-10 bg"></div>
+		<div class="detail-info">
+			<h1>商家信息</h1>
+			<p>提供商家：<a href="<{:U('shop/detail',array('shop_id'=>$shop['shop_id']))}>"><{$shop.shop_name}></a></p>
+			<p>联系电话：<a href="tel:<{$shop.tel}>"><{$shop.tel}></a></p>
+			<p>商家地址：<{$detail.addr}></p>
+            <p>活动时间：<{$detail.time}></p>
+			<p>位置导航：<a href="<{:U('shop/gps',array('shop_id'=>$shop['shop_id']))}>">到这里去</a></p>
+		</div>
+    
+
+		<div class="blank-10 bg"></div>
+		<div class="detail-info2">
+			<h1>活动介绍</h1><div class="blank-10"></div>
+			<p><{$detail.intro}></p>
+		</div>
+		<div class="blank-10 bg"></div>
+		<div class="detail-info2">
+			<h1>活动详情</h1><div class="blank-10"></div>
+            
+            <div class="global">
+
+        <div class="line banner">	
+
+            <h5>相关描述</h5>
+
+            <div id="focus" class="global_focus">
+
+             <p><{$detail.details}></p>     
+
+            </div>
+
+        </div>
+
+    </div>
+    
+			
+		</div>
+		<div class="blank-10 bg"></div>
+
+
+<include  file='public:footer'/>
