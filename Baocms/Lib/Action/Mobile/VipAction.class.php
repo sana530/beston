@@ -4,6 +4,15 @@
 
 class VipAction extends CommonAction {
 
+    public function _initialize()
+    {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['vip'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
+
     public function index() {
         $cat = (int) $this->_param('cat');
         $this->assign('cat', $cat);

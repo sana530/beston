@@ -4,6 +4,10 @@ class BookingAction extends CommonAction {
    protected $cart = array();
    public function _initialize() {
         parent::_initialize();
+       if ($this->_CONFIG['operation']['booking'] == 0) {
+           $this->error('此功能已关闭');
+           die;
+       }
 		$this->assign('cfg',D('Booking')->getCfg());
 		$this->assign('room',D('Booking')->getType());		
         $this->assign('dingtypes',D('Booking')->getDingType());

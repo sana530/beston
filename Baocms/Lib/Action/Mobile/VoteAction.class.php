@@ -4,6 +4,15 @@
 
 class VoteAction extends CommonAction {
 
+    public function _initialize()
+    {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['vote'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
+
     public function index($vote_id) {
         $vote_id = (int) $vote_id;
         if (!$detail = D('Vote')->find($vote_id)) {

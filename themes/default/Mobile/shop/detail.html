@@ -192,7 +192,7 @@ p, .p {margin-bottom: 0px; }
    	</div>
 	<div class="blank-10 bg"></div>
 
-	<if condition="!empty($shopyouhui)">
+	<if condition="!empty($shopyouhui) AND $operation['money']">
 	<div class="container2" style="margin:10px;">
 		<div class="form-button"><a  href="<{:U('shop/breaks',array('shop_id'=>$detail['shop_id']))}>" class="button button-block button-big bg-dot text-center" type="submit">优惠买单</a></div>
 	</div>
@@ -210,7 +210,7 @@ p, .p {margin-bottom: 0px; }
 				</div>
 			</div>
 			<!--团购数据开始-->
-		    <if condition="!empty($tuan)">
+		    <if condition="!empty($tuan) AND $operation['money']">
                	<a href="<{:U('shop/tuan',array('shop_id'=>$detail['shop_id']))}>">
 				   	<span class="txt txt-little radius-little bg-green">团</span> 去逛逛商家抢购
 			    	<span class="float-right icon-angle-right"></span>
@@ -265,7 +265,7 @@ p, .p {margin-bottom: 0px; }
             <!--优惠劵数据结束-->
 
 			<!--商品数据开始-->
-			<if condition="!empty($goods)">
+			<if condition="!empty($goods) AND $operation['money']">
 				<a href="<{:U('mart/lists',array('id'=>$weidian_id))}>">
 					<span class="txt txt-little radius-little bg-yellow">商</span> 去逛逛商家微店
 					<span class="float-right icon-angle-right"></span>
@@ -301,7 +301,7 @@ p, .p {margin-bottom: 0px; }
 			<!--商品数据结束-->
 
 			<!--招聘信息开始-->
-			<if condition="!empty($work)">
+			<if condition="!empty($work) AND $operation['work']">
             <div class="blank-10 bg"></div>
             <div class="panel-head"><b>商家招聘信息</b></div>
             <php>$i=0;</php>	
@@ -328,7 +328,7 @@ p, .p {margin-bottom: 0px; }
             </if>
 			<!--招聘信息结束-->
 
-            <if condition="!empty($huodong)">
+            <if condition="!empty($huodong) AND $operation['huodong']">
                 <a href="<{:U('mobile/huodong/index',array('activity_id'=>$activity_id['activity_id']))}>">
 				    <span class="txt txt-little radius-little bg-red">活</span> 商家近期活动
 				    <span class="float-right icon-angle-right"></span>
@@ -365,9 +365,9 @@ p, .p {margin-bottom: 0px; }
 		</div>
 	</div>
 	<div class="blank-10 bg"></div>
-		
-        
-     
+
+
+	<if condition="$operation['money']">
 	<div class="container2">
         <div class="panel detail-intro radius-none">
 			<div class="panel-head">附近抢购</div>
@@ -395,6 +395,7 @@ p, .p {margin-bottom: 0px; }
 		</div>
 	</div>
 	<div class="blank-10"></div>
+	</if>
 
 
 <if condition="empty($detail['panorama_url'])">

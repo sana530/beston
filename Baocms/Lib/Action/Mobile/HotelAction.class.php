@@ -5,6 +5,10 @@ class HotelAction extends CommonAction
     public function _initialize()
     {
         parent::_initialize();
+        if ($this->_CONFIG['operation']['hotel'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
         $this->types = D('Hotelbrand')->fetchAll();
         $this->assign('types', $this->types);
         $this->cates = D('Hotel')->getHotelCate();

@@ -5,6 +5,10 @@ class FarmAction extends CommonAction {
 
     public function _initialize() {
         parent::_initialize();
+        if ($this->_CONFIG['operation']['farm'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
         $this->group = D('Farm')->getFarmGroup();
         $this->assign('group', $this->group);
         $this->cate = D('Farm')->getFarmCate();

@@ -4,6 +4,15 @@
 
 class HousekeepingAction extends CommonAction {
 
+    public function _initialize()
+    {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['housekeeping'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
+
     public function main() {
         $this->display();
     }

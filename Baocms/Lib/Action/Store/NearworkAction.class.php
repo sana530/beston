@@ -6,6 +6,15 @@ class NearworkAction extends CommonAction {
 
     private $edit_fields = array('title', 'money1', 'money2','num','intro','work_time','expir_date');
 
+    public function _initialize()
+    {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['work'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
+
     public function index() {
         $Work = D('Work');
         import('ORG.Util.Page'); // 导入分页类

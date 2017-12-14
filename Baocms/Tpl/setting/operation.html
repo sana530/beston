@@ -88,7 +88,7 @@
 <td class="rgTdBt">
 <label><input type="radio" name="data[billboard]" <eq name="CONFIG.operation.billboard" value="1">checked="checked"</eq> value="1"  />开启</label>
 <label><input type="radio" name="data[billboard]"  <eq name="CONFIG.operation.billboard" value="0">checked="checked"</eq>  value="0"  />关闭</label>
-<code>没鸟用，建议关闭。</code>
+<code>没鸟用，建议关闭。对应BillboardAction</code>
 </td>
 </tr> 
 
@@ -164,7 +164,156 @@
 <label><input type="radio" name="data[village]"  <eq name="CONFIG.operation.village" value="0">checked="checked"</eq>  value="0"  />关闭村镇</label>
 <code>一般开启吧！</code>
 </td>
-</tr>                 
+</tr>        
+
+<tr>
+<td class="lfTdBt"></td>
+<td class="rgTdBt"><span>注意：以下为新添加功能开关，只适用于手机版</span></td>
+</tr>
+
+<tr>
+<td class="lfTdBt">关闭地址：</td>
+<td class="rgTdBt">
+<label><input type="radio" name="data[addr]" <eq name="CONFIG.operation.addr" value="1">checked="checked"</eq> value="1"  />开启地址</label>
+<label><input type="radio" name="data[addr]"  <eq name="CONFIG.operation.addr" value="0">checked="checked"</eq>  value="0"  />关闭地址</label>
+<code>对应AddrAction</code>
+</td>
+</tr>     
+
+<tr>
+<td class="lfTdBt">关闭家政预约：</td>
+<td class="rgTdBt">
+<label><input type="radio" name="data[appoint]" <eq name="CONFIG.operation.appoint" value="1">checked="checked"</eq> value="1"  />开启家政预约</label>
+<label><input type="radio" name="data[appoint]"  <eq name="CONFIG.operation.appoint" value="0">checked="checked"</eq>  value="0"  />关闭家政预约</label>
+<code>对应AppointAction。列出家政公司或个人的信息，让客人选择。</code>
+</td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭黄页：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[biz]" <eq name="CONFIG.operation.biz" value="1">checked="checked"</eq> value="1"  />开启黄页</label>
+        <label><input type="radio" name="data[biz]"  <eq name="CONFIG.operation.biz" value="0">checked="checked"</eq>  value="0"  />关闭黄页</label>
+        <code>对应BizAction以及NearAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭新版订座：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[booking]" <eq name="CONFIG.operation.booking" value="1">checked="checked"</eq> value="1"  />开启订座</label>
+        <label><input type="radio" name="data[booking]"  <eq name="CONFIG.operation.booking" value="0">checked="checked"</eq>  value="0"  />关闭订座</label>
+        <code>对应BookingAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭外卖美食：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[ele]" <eq name="CONFIG.operation.ele" value="1">checked="checked"</eq> value="1"  />开启外卖</label>
+        <label><input type="radio" name="data[ele]"  <eq name="CONFIG.operation.ele" value="0">checked="checked"</eq>  value="0"  />关闭外卖</label>
+        <code>对应EleAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭旅游板块：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[farm]" <eq name="CONFIG.operation.farm" value="1">checked="checked"</eq> value="1"  />开启旅游</label>
+        <label><input type="radio" name="data[farm]"  <eq name="CONFIG.operation.farm" value="0">checked="checked"</eq>  value="0"  />关闭旅游</label>
+        <code>对应FarmAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭红包：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[hongbao]" <eq name="CONFIG.operation.hongbao" value="1">checked="checked"</eq> value="1"  />开启红包</label>
+        <label><input type="radio" name="data[hongbao]"  <eq name="CONFIG.operation.hongbao" value="0">checked="checked"</eq>  value="0"  />关闭红包</label>
+        <code>对应HongbaoAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭酒店：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[hotel]" <eq name="CONFIG.operation.hotel" value="1">checked="checked"</eq> value="1"  />开启酒店</label>
+        <label><input type="radio" name="data[hotel]"  <eq name="CONFIG.operation.hotel" value="0">checked="checked"</eq>  value="0"  />关闭酒店</label>
+        <code>对应HotelAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭家政服务：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[housekeeping]" <eq name="CONFIG.operation.housekeeping" value="1">checked="checked"</eq> value="1"  />开启家政</label>
+        <label><input type="radio" name="data[housekeeping]"  <eq name="CONFIG.operation.housekeeping" value="0">checked="checked"</eq>  value="0"  />关闭家政</label>
+        <code>对应HousekeepingAction。客人选择家政类型，提交表格，网站帮忙找相应的家政阿姨。</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭招聘功能：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[work]" <eq name="CONFIG.operation.work" value="1">checked="checked"</eq> value="1"  />开启招聘</label>
+        <label><input type="radio" name="data[work]"  <eq name="CONFIG.operation.work" value="0">checked="checked"</eq>  value="0"  />关闭招聘</label>
+        <code>对应NearworkAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭扫一扫登陆/支付api功能：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[scan]" <eq name="CONFIG.operation.scan" value="1">checked="checked"</eq> value="1"  />开启</label>
+        <label><input type="radio" name="data[scan]"  <eq name="CONFIG.operation.scan" value="0">checked="checked"</eq>  value="0"  />关闭</label>
+        <code>对应ScanAction。自主开发的扫一扫登陆以及api支付</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭签到领积分功能：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[sign]" <eq name="CONFIG.operation.sign" value="1">checked="checked"</eq> value="1"  />开启签到</label>
+        <label><input type="radio" name="data[sign]"  <eq name="CONFIG.operation.sign" value="0">checked="checked"</eq>  value="0"  />关闭签到</label>
+        <code>对应SignAction</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭团购功能：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[tuan]" <eq name="CONFIG.operation.tuan" value="1">checked="checked"</eq> value="1"  />开启团购</label>
+        <label><input type="radio" name="data[tuan]"  <eq name="CONFIG.operation.tuan" value="0">checked="checked"</eq>  value="0"  />关闭团购</label>
+        <code>对应TuanAction。就是现金券</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭会员卡功能：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[vip]" <eq name="CONFIG.operation.vip" value="1">checked="checked"</eq> value="1"  />开启会员卡</label>
+        <label><input type="radio" name="data[vip]"  <eq name="CONFIG.operation.vip" value="0">checked="checked"</eq>  value="0"  />关闭会员卡</label>
+        <code>对应VipAction。功能未开发完成</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭投票功能：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[vote]" <eq name="CONFIG.operation.vote" value="1">checked="checked"</eq> value="1"  />开启投票</label>
+        <label><input type="radio" name="data[vote]"  <eq name="CONFIG.operation.vote" value="0">checked="checked"</eq>  value="0"  />关闭投票</label>
+        <code>对应VoteAction。页面样式未做</code>
+    </td>
+</tr>
+
+<tr>
+    <td class="lfTdBt">关闭支付功能：</td>
+    <td class="rgTdBt">
+        <label><input type="radio" name="data[money]" <eq name="CONFIG.operation.money" value="1">checked="checked"</eq> value="1"  />开启支付</label>
+        <label><input type="radio" name="data[money]"  <eq name="CONFIG.operation.money" value="0">checked="checked"</eq>  value="0"  />关闭支付</label>
+        <code>对应Mcenter/MoneyAction，以及所有跟支付有关的。</code>
+    </td>
+</tr>
 
             </table>
 

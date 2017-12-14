@@ -1,5 +1,14 @@
 <?php
 class NearAction extends CommonAction{
+
+    public function _initialize() {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['biz'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
+
     public function index(){
         $lat = cookie('lat_ok');
         $lng = cookie('lng_ok');

@@ -8,9 +8,10 @@
  */
 
 class TribeAction extends CommonAction {
-
     public function _initialize() {
         parent::_initialize();
+        $this->error('此功能已关闭'); //估计是旧版的贴吧系统, 或者是农家乐的东西，先整个关闭
+        die;
 		$this->assign('cates',D('Tribecate')->fetchAll());
 
     }

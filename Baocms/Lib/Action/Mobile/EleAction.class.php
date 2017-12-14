@@ -4,6 +4,10 @@ class EleAction extends CommonAction
     protected $cart = array();
     public function _initialize(){
         parent::_initialize();
+        if ($this->_CONFIG['operation']['ele'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
         $this->cart = $this->getcart();
         $this->assign('cartnum', (int) array_sum($this->cart));
         $cate = D('Ele')->getEleCate();

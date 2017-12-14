@@ -1,6 +1,13 @@
 <?php
 class MoneyAction extends CommonAction
 {
+    public function _initialize() {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['money'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
     public function index(){
         $this->assign('payment', D('Payment')->getPayments(true));
         $this->display();

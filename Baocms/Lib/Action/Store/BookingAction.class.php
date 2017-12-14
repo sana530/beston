@@ -5,7 +5,7 @@ class BookingAction extends CommonAction {
         parent::_initialize();
         $dingtypes = D('Booking')->getDingType();
         $this->assign('dingtypes',$dingtypes);
-		if ($this->_CONFIG['operation']['ding'] == 0) {
+		if ($this->_CONFIG['operation']['booking'] == 0) {
 				$this->error('此功能已关闭');die;
 		}
         $obj = D('Booking');

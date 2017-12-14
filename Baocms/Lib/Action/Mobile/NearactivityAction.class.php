@@ -6,6 +6,10 @@ class NearactivityAction extends CommonAction {
 
 	protected function _initialize(){
         parent::_initialize();
+        if ($this->_CONFIG['operation']['huodong'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
         $getHuoCate = D('Huodong')->getHuoCate();
         $this->assign('getHuoCate', $getHuoCate);
         $getPeopleCate = D('Huodong')->getPeopleCate();

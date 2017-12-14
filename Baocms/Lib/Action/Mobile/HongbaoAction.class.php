@@ -1,6 +1,14 @@
 <?php
 class HongbaoAction extends CommonAction {
 
+    public function _initialize() {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['hongbao'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
+
     public function index() {
 
         //取出地址栏中传递的参数信息

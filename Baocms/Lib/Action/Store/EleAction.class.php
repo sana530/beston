@@ -4,6 +4,10 @@ class EleAction extends CommonAction{
     private $edit_fields = array('product_name', 'desc', 'cate_id', 'photo', 'price', 'is_new', 'is_hot', 'is_tuijian');
     public function _initialize(){
         parent::_initialize();
+        if ($this->_CONFIG['operation']['ele'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
         $this->ele = D('Ele')->find($this->shop_id);
         if (empty($this->ele) && ACTION_NAME != 'apply') {
             $this->error('您还没有入住外卖频道,即将为您跳转！', U('eleapply/apply'));

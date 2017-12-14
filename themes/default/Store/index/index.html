@@ -111,7 +111,7 @@
         </if>
         
 
-            <if condition="!empty($SHOPGRADE['is_mall'])">
+            <if condition="!empty($SHOPGRADE['is_mall']) AND $operation['mall']">
                 <li>
                     <a href="<{:U('mart/index')}>"><span class="icon-home"></span>商城管理
                     <font>
@@ -142,7 +142,7 @@
             </a>
         </li>
         
-        <if condition="!empty($SHOPGRADE['is_ele'])">
+        <if condition="!empty($SHOPGRADE['is_ele']) AND $operation['ele']">
             <li>
                 <a href="<{:U('ele/eleorder',array('status'=>1))}>"><span class="icon-home"></span>美食
                 <font>
@@ -158,23 +158,23 @@
             </li>
         </if>
         
-            <if condition="!empty($SHOPGRADE['is_life'])">
-                <li>
-                    <a href="<{:U('life/index')}>"><span class="icon-truck"></span>同城信息
-                    <font>
-                        <if condition="$counts['life'] gt 0">
-                            <{$counts['life']}>条，
-                        </if>
-                        <if condition="$counts['life_audit'] gt 0">
-                            <b><{$counts['life_audit']}></b>待审核
-                        </if>
-                    </font>
-                    <i class="icon-angle-right"></i>
-                    </a>
-                </li>
-            </if>
-        
-        
+        <if condition="!empty($SHOPGRADE['is_life'])">
+            <li>
+                <a href="<{:U('life/index')}>"><span class="icon-truck"></span>同城信息
+                <font>
+                    <if condition="$counts['life'] gt 0">
+                        <{$counts['life']}>条，
+                    </if>
+                    <if condition="$counts['life_audit'] gt 0">
+                        <b><{$counts['life_audit']}></b>待审核
+                    </if>
+                </font>
+                <i class="icon-angle-right"></i>
+                </a>
+            </li>
+        </if>
+
+        <if condition="$operation['work']">
         <li>
             <a href="<{:U('nearwork/index')}>"><span class="icon-github"></span>人才招聘
                 <font>
@@ -188,6 +188,7 @@
                 <i class="icon-angle-right"></i>
             </a>
         </li>
+        </if>
         
         <li>
             <a href="<{:U('yuyue/index')}>"><span class="icon-phone-square"></span>预约管理
@@ -217,10 +218,12 @@
                 <i class="icon-angle-right"></i>
             </a>
         </li>
-        
-        <li><a href="<{:U('money/index')}>"><span class="icon-btc"></span>财务<i class="icon-angle-right"></i></a></li>
 
-        <if condition="$counts['shop_booking'] gt 0">
+        <if condition="$operation['money']">
+            <li><a href="<{:U('money/index')}>"><span class="icon-btc"></span>财务<i class="icon-angle-right"></i></a></li>
+        </if>
+
+        <if condition="$operation['booking']">
             <li><a href="<{:U('booking/index')}>"><span class="icon-btc"></span>订座<i class="icon-angle-right"></i></a></li>
         </if>
 

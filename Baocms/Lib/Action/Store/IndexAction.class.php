@@ -53,7 +53,6 @@ class IndexAction extends CommonAction {
 		$counts['ding_order_one'] = (int) D('Shopdingyuyue')->where(array('shop_id' => $this->shop_id,'is_pay' => 1))->count();// 订座1代表已经付款购买 
 		$counts['ding_order_zero'] = (int) D('Shopdingyuyue')->where(array('shop_id' => $this->shop_id,'is_pay' => 0))->count();// 订座0未付款
 
-        $counts['shop_booking']= (int) D('booking')->where(array('shop_id' => $this->shop_id,'is_open' => 1))->count();// 是否已经开通订座功能
 		
 		//黄页
 		$counts['biz'] = (int) D('Biz')->where(array('shop_id' => $this->shop_id))->count();//总黄页数量
@@ -94,7 +93,8 @@ class IndexAction extends CommonAction {
 		$counts['shopworker'] = (int) D('Shopworker')->where(array('shop_id' => $this->shop_id,'closed' => 0))->count();//总商家预约数量
 		
 	
-	   $this->assign('counts', $counts);
+	    $this->assign('counts', $counts);
+        $this->assign('operation', $this->_CONFIG['operation']);
         $this->display();
     }
 

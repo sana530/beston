@@ -264,6 +264,7 @@ class ShopAction extends CommonAction{
         $this->mobile_title = $detail['shop_name'];
         $this->mobile_keywords = $detail['addr'] . ',' . $detail['tel'];
         $this->mobile_description = $detail['addr'];
+        $this->assign('operation', $this->_CONFIG['operation']);
         $this->display();
     }
     public function favorites(){

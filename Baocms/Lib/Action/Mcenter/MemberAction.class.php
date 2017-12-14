@@ -311,6 +311,7 @@ class MemberAction extends CommonAction{
         $sf = D('ShopFavorites');
         $rsf = $sf->where('user_id =' . $this->uid)->count();
         $this->assign('rsf', $rsf);
+        $this->assign('operation', $this->_CONFIG['operation']);
         $this->display();
     }
     public function password()

@@ -7,6 +7,15 @@
  */
 class ScanAction extends CommonAction
 {
+    public function _initialize()
+    {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['scan'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
+
     /*显示扫描二维码登录页面*/
     public function login() {
 

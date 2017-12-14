@@ -4,6 +4,14 @@
 
 class NearworkAction extends CommonAction {
 
+    public function _initialize()
+    {
+        parent::_initialize();
+        if ($this->_CONFIG['operation']['work'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
+    }
     public function index() {
         $keyword = $this->_param('keyword', 'htmlspecialchars');
         $this->assign('keyword', $keyword);

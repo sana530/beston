@@ -3,6 +3,10 @@ class AppointAction extends CommonAction {
 	protected $Activitycates = array();
     public function _initialize() {
         parent::_initialize();
+        if ($this->_CONFIG['operation']['appoint'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
         $this->appointcates = D('Appointcate')->fetchAll();//分类表
         $this->assign('appointcates', $this->appointcates);
 		$this->assign('areas', $areas = D('Area')->fetchAll());

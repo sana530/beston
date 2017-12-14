@@ -4,6 +4,10 @@ class TuanAction extends CommonAction
     public function _initialize()
     {
         parent::_initialize();
+        if ($this->_CONFIG['operation']['tuan'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
         //统计抢购分类数量代码开始
         $Tuan = D('Tuan');
         $tuancates = D('Tuancate')->fetchAll();

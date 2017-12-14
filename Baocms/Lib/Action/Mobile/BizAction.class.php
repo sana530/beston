@@ -3,6 +3,10 @@ class BizAction extends CommonAction {
 
     public function _initialize() {
         parent::_initialize();
+        if ($this->_CONFIG['operation']['biz'] == 0) {
+            $this->error('此功能已关闭');
+            die;
+        }
 		$getType = D('Near')->getType();
 		$this->assign('getType', $getType);
     }
