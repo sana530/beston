@@ -180,14 +180,8 @@ class CommonAction extends Action{
         $this->assign('cartnum', (int) array_sum($goods));
         $footer = $this->_CONFIG['other']['footer'];
         $this->assign('footer', $footer);
-        //获取微信的PID全局
 
-        import("@/Net.Jssdk");
-        $jssdk = new JSSDK($this->_CONFIG['weixin']["appid"], $this->_CONFIG['weixin']["appsecret"]);
-        //$signPackage = $jssdk->GetSignPackage();
-        //$this->signPackage = $signPackage;
         //检测是否有店铺
-	
         $this->assign('is_shop', $is_shop = D('Shop')->find(array('where' => array('user_id' => $this->uid))));
         $web_close = $this->_CONFIG['site']['web_close'];
         $web_close_title = $this->_CONFIG['site']['web_close_title'];
