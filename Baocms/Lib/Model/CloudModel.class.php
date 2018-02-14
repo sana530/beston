@@ -36,7 +36,7 @@ class CloudModel extends CommonModel{
     }
 
     public function GetPlace($key) { //通过云端获取place
-        $url = 'https://maps.googleapis.com/maps/api/geocode/json?&address='.$key;
+        $url = 'https://maps.googleapis.com/maps/api/geocode/json?&address='.$key.'&key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU';
         $str = file_get_contents_url($url);
         return $str;
     }

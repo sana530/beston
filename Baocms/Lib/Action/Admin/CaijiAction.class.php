@@ -101,21 +101,29 @@ class CaijiAction extends CommonAction {
                 }
             }
             $poi[] = $shops;
+            $Page = new Page(count($poi), 10);
+            $show = $Page->show();
+            // 分页显示输出
+            $var = C('VAR_PAGE') ? C('VAR_PAGE') : 'p';
+            $p = $_GET[$var];
+            if ($Page->totalPages < $p) {
+                die('0');
+            }
+            $this->assign('lat', $lat);
+            $this->assign('lng', $lng);
+            $this->assign('keyword', urldecode($keyword));
+            $this->assign('poi', $poi);
+            $this->assign('page', $show);
+            if ($shops['exist']) {
+                $this->display();
+            } else {
+                $this->assign('cates', D('Shopcate')->fetchAll());
+                $this->assign('business', D('Business')->fetchAll());
+                $this->assign('grades',$grades = D('Shopgrade')->where(array('closed'=>0))->select());
+                $this->assign('detail', $poi[0]);
+                $this->display('create');
+            }
         }
-        $Page = new Page(count($poi), 10);
-        $show = $Page->show();
-        // 分页显示输出
-        $var = C('VAR_PAGE') ? C('VAR_PAGE') : 'p';
-        $p = $_GET[$var];
-        if ($Page->totalPages < $p) {
-            die('0');
-        }
-        $this->assign('lat', $lat);
-        $this->assign('lng', $lng);
-        $this->assign('keyword', urldecode($keyword));
-        $this->assign('poi', $poi);
-        $this->assign('page', $show);
-        $this->display();
     }
 
     public function save() {
@@ -141,8 +149,8 @@ class CaijiAction extends CommonAction {
         $distinct = $this->_post('distinct');
         $areawhere['area_name'] = array('LIKE', '%'.$city.'%');
         $businesswhere['business_name'] = array('LIKE', '%'.$distinct.'%');
-        $shops['area_id'] = D('Area')->where($areawhere)->getField('area_id');
-        $shops['business_id'] = D('Business')->where($businesswhere)->getField('business_id');
+        ($city) && $shops['area_id'] = D('Area')->where($areawhere)->getField('area_id');
+        ($distinct) && $shops['business_id'] = D('Business')->where($businesswhere)->getField('business_id');
 
         //保存到数据库
         if ($exist) {

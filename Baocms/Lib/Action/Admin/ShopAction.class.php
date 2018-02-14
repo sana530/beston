@@ -1,6 +1,6 @@
 <?php
 class ShopAction extends CommonAction{
-    private $create_fields = array('user_id', 'cate_id','grade_id', 'city_id', 'area_id', 'business_id', 'shop_name', 'logo', 'mobile', 'photo', 'addr', 'tel', 'extension', 'contact', 'tags', 'near', 'is_pei', 'business_time', 'delivery_time', 'orderby', 'lng', 'lat', 'price', 'recognition', 'panorama_url');
+    private $create_fields = array('user_id', 'cate_id','grade_id', 'city_id', 'area_id', 'business_id', 'shop_name', 'logo', 'mobile', 'photo', 'addr', 'tel', 'extension', 'contact', 'tags', 'near', 'is_pei', 'business_time', 'delivery_time', 'orderby', 'lng', 'lat', 'price', 'recognition', 'panorama_url', 'uid', 'score');
     private $edit_fields = array('user_id', 'cate_id','grade_id', 'city_id', 'area_id', 'business_id', 'shop_name', 'mobile', 'logo', 'photo', 'addr', 'tel', 'extension', 'contact', 'tags', 'near', 'business_time', 'delivery_time', 'is_pei', 'orderby', 'lng', 'lat', 'price', 'is_ding', 'recognition', 'apiKey', 'mKey', 'partner', 'machine_code','service','service_audit','is_ele_print','is_tuan_print','is_goods_print','is_ding_print','service_audit', 'panorama_url');
 	
 	public function _initialize(){
@@ -100,7 +100,12 @@ class ShopAction extends CommonAction{
                 $wei_pic = D('Weixin')->getCode($shop_id, 1);
                 $ex = array('wei_pic' => $wei_pic, 'details' => $details, 'bank' => $bank, 'near' => $data2['near'], 'price' => $data2['price'], 'business_time' => $data2['business_time'], 'delivery_time' => $data2['delivery_time']);
                 D('Shopdetails')->upDetails($shop_id, $ex);
-                $this->baoSuccess('添加成功', U('shop/apply'));
+                if (strstr($_SERVER['HTTP_REFERER'],'/admin/caiji')) {
+                    $ReturnAddress = U('caiji/index');
+                }else{
+                    $ReturnAddress = U('shop/apply');
+                }
+                $this->baoSuccess('添加成功', $ReturnAddress);
             }
             $this->baoError('操作失败！');
         } else {
@@ -223,6 +228,12 @@ class ShopAction extends CommonAction{
         $data['lat'] = htmlspecialchars($data['lat']);
         if (empty($data['lng']) || empty($data['lat'])) {
             $this->baoError('坐标不能为空');
+        }
+        if ($data['uid']) {
+            $data['uid'] = htmlspecialchars($data['uid']);
+        }
+        if ($data['score']) {
+            $data['score'] = htmlspecialchars($data['score']);
         }
 		$data['audit'] = 1;
         $data['create_time'] = NOW_TIME;
