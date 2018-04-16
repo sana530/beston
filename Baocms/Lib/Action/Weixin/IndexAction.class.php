@@ -20,6 +20,11 @@ class IndexAction extends CommonAction
                 if ($data['Event'] == 'SCAN') {
                     $this->scan();
                 }
+                if ($data['Event'] == 'LOCATION') {
+                    if (!S('location_openOA_'.$data['FromUserName'])) {
+                        $this->openOA($data);
+                    }
+                }
                 break;
             case 'location':
                 $this->location($data);
@@ -49,13 +54,13 @@ class IndexAction extends CommonAction
         if (empty($data['Content'])) {
             return;
         }
-		
-		
+
+
         if ($this->shop_id == 0) {
             $key = explode(' ', $data['Content']);
             $keyword = D('Weixinkeyword')->checkKeyword($key[0]);
             if ($keyword) {
-			 switch ($keyword['type']) {
+                switch ($keyword['type']) {
                     case 'text':
                         $this->weixin->response($keyword['contents'], 'text');
                         break;
@@ -70,21 +75,13 @@ class IndexAction extends CommonAction
                         $this->weixin->response($content, 'news');
                         break;
                 }
-			
+
             } else {
                 // 没有特定关键词则查询POIS信息
                 $openid = $data['FromUserName'];
                 $con = D('Connect')->getConnectByOpenid('weixin', $openid);
                 $usr = D('Users')->where(array('user_id' => $con['uid']))->find();
                 $search_type = $this->_CONFIG['weixin']['search_type']; //search_type(1:商家; 2:黄页)
-                $map = array();
-                if ($search_type == 2) {
-                    $map['name|tag'] = array('LIKE', array('%' . $key[0] . '%', '%' . $key[0], $key[0] . '%', 'OR'));
-                } elseif ($search_type == 1) {
-                    $map['shop_name'] = array('LIKE', array('%' . $key[0] . '%', '%' . $key[0], $key[0] . '%', 'OR'));
-                    $map['audit'] = 1;
-                    $map['closed'] = 0;
-                }
                 if (S('location_'.$data['FromUserName'])) {
                     $lat_lng = explode('_', S('location_'.$data['FromUserName']));
                     $lat = $lat_lng[0];
@@ -95,10 +92,23 @@ class IndexAction extends CommonAction
                     $lng = $this->_CONFIG['site']['lng'];
                 }
                 $squares = returnSquarePoint($lng, $lat, 2);
+                $map = array();
                 $map['lat'] > $squares['right-bottom']['lat'];
                 $map['lat'] < $squares['left-top']['lat'];
                 $map['lng'] > $squares['left-top']['lng'];
                 $map['lng'] > $squares['right-bottom']['lng'];
+                if ($search_type == 3) {
+                    //如果是全局搜索
+                    $this->searchAll($key, $openid, $data, $usr);
+                    die;
+                }
+                if ($search_type == 2) {
+                    $map['name|tag'] = array('LIKE', array('%' . $key[0] . '%', '%' . $key[0], $key[0] . '%', 'OR'));
+                } elseif ($search_type == 1) {
+                    $map['shop_name'] = array('LIKE', array('%' . $key[0] . '%', '%' . $key[0], $key[0] . '%', 'OR'));
+                    $map['audit'] = 1;
+                    $map['closed'] = 0;
+                }
                 $orderby = 'orderby asc';
                 //查询包年固顶
                 $word = D('Nearword')->where(array('text' => $key[0]))->find();
@@ -177,7 +187,7 @@ class IndexAction extends CommonAction
                 $this->weixin->response($text, 'text');
             }
         } else {
-           $keyword = D('Shopweixinkeyword')->checkKeyword($this->shop_id, $data['Content']);
+            $keyword = D('Shopweixinkeyword')->checkKeyword($this->shop_id, $data['Content']);
             if ($keyword) {
                 switch ($keyword['type']) {
                     case 'text':
@@ -199,9 +209,105 @@ class IndexAction extends CommonAction
             }
         }
     }
-	
-	
-	
+
+    /* 当允许地址访问并一打开公众号时 */
+    private function openOA ($data) {
+        //记录位置信息到缓存，记录位置信息打开状态到缓存，并更新缓存
+        if ($data['Latitude']) {
+            S('location_openOA_'.$data['FromUserName'], NULL);
+            S('location_openOA_'.$data['FromUserName'], $data['Latitude'].'_'.$data['Longitude'], 5);     //记录openOA使用时间
+            S('location_open_'.$data['FromUserName'], NULL);
+            S('location_open_'.$data['FromUserName'], $data['Latitude'].'_'.$data['Longitude'], 24*3600);   //记录客人打开了位置信息
+        }
+
+        //查询相应的用户信息
+        $openid = $data['FromUserName'];
+        $con = D('Connect')->getConnectByOpenid('weixin', $openid);
+        $user = D('Users')->where(array('user_id' => $con['uid']))->find();
+
+        //更新用户数据
+        $save_user = array (
+            'user_id' => $user['user_id'],
+            'last_weixin_time' => NOW_TIME,
+            'last_weixin_lat' => $data['Latitude'],
+            'last_weixin_lng' => $data['Longitude']
+        );
+        D('Users')->save($save_user);
+
+        //如果有时段广告，则推送时段广告
+        $period_ad = D('Weixinperiodad')->fetchAll();
+        $ad_ids = array();
+        foreach ($period_ad as $k => $v) {
+            if (NOW_TIME > $v['end_at'] || NOW_TIME < $v['start_from']) {
+                unset($period_ad[$k]);
+            } else {
+                $ad_ids[$k] = $k;
+            }
+        }
+
+        //如果固定广告被推送了两次以上，则不再推送
+        $push_times_where = array(
+            'content_id' => array('IN', array_keys($ad_ids)),
+            'content_type' => 1,
+            'receive_uid' => $user['user_id']
+        );
+        $weixinPushTimes = D('Weixinpushtimes');
+        $push_times = $weixinPushTimes->where($push_times_where)->select();
+        $push_times_ad_ids = array();
+        foreach ($push_times as $k => $v) {
+            if ($v['times'] >= 2) {
+                unset($period_ad[$v['content_id']]);
+            } else {
+                $push_times_ad_ids[$v['content_id']] = $v['times_id'];
+            }
+        }
+
+        //如果有时段广告则推送时段广告，如果没有则推送别的内容
+        if ($period_ad) {
+            $content = array();
+            foreach ($period_ad as $k => $v) {
+                $content[] = array($v['title'], $v['contents'], $this->getImage($v['photo']), $v['url']);
+
+                //更新推送次数表
+                if (in_array($v['ad_id'], array_keys($push_times_ad_ids))) {
+                    $weixinPushTimes->where(array('times_id'=>$push_times_ad_ids[$v['ad_id']]))->setInc('times');
+                } else {
+                    $weixin_push_times_add = array(
+                        'content_type' => 1,
+                        'content_id' => $v['ad_id'],
+                        'receive_uid' => $user['user_id'],
+                        'times' => 1
+                    );
+                    $weixinPushTimes->add($weixin_push_times_add);
+                }
+
+                //更新推送记录表
+                D('Weixinpushrecord')->record($v['shop_id'], 1, 1, $v['ad_id'], $user['user_id']);
+            }
+
+            //得出要组合的广告数组
+            $period_num = count($period_ad);
+            $ad = $this->getAd($data['Longitude'], $data['Latitude'], $user, 8-$period_num);
+            $content = array_merge($content, $ad);
+            $this->weixin->response($content, 'news');
+        } else {
+            $random = rand(1,2);
+            if ($random == 1) { //发送Tips
+                if (!D('Weixintips')->responseTips($user)) {    //如果没有要发送的Tips则发送广告
+                    //得出要组合的广告数组
+                    $ad = $this->getAd($data['Longitude'], $data['Latitude'], $user);
+                    $this->weixin->response($ad, 'news');
+                }
+            } elseif ($random == 2) {
+                //得出要组合的广告数组
+                $ad = $this->getAd($data['Longitude'], $data['Latitude'], $user);
+                $this->weixin->response($ad, 'news');
+            }
+        }
+
+    }
+
+
     //响应用户的事件
     private function event(){
         if ($this->shop_id == 0) {
@@ -395,17 +501,210 @@ class IndexAction extends CommonAction
             }
         }
     }
+
+    private function searchAll($key, $openid, $data, $user) {
+        if (S('location_'.$data['FromUserName'])) {
+            $lat_lng = explode('_', S('location_'.$data['FromUserName']));
+            $lat = $lat_lng[0];
+            $lng = $lat_lng[1];
+        }
+        if (empty($lat) || empty($lng)) {
+            $lat = $this->_CONFIG['site']['lat'];
+            $lng = $this->_CONFIG['site']['lng'];
+        }
+
+        $this->city_id = 1;
+        $where_article = array('audit'=>1,'closed' => 0,'city_id'=>$this->city_id);
+        $where_coupon = array('audit' => 1,'closed' => 0,'city_id'=>$this->city_id,'is_online_show'=>1, 'expire_date' => array('EGT', TODAY));
+        $where_farm = array('audit'=>1,'closed' => 0,'city_id'=>$this->city_id);
+        $where_life = array('audit' => 1,'city_id'=>$this->city_id);
+        $where_shop = array('closed'=>0,'audit' =>1,'city_id'=>$this->city_id);
+        $where_post = array('audit'=>1,'closed' => 0,'city_id'=>$this->city_id);
+        $where_tuan = array('closed'=>0,'audit' =>1,'city_id'=>$this->city_id,'end_date'=>array('EGT',TODAY));
+
+        $where_article_map = array();
+        $where_coupon_map = array();
+        $where_farm_map = array();
+        $where_life_map = array();
+        $where_shop_map = array();
+        $where_post_map = array();
+        $where_tuan_map = array();
+        for($i=0; $i<sizeof($key); $i++) {
+            if ($i > 0 && sizeof($key) > 1) {
+                $where_article_map[$i]['_complex'] = $where_article_map[$i-1];
+            }
+            $where_article_map[$i]['title|keywords'] = array('LIKE', '%' . $key[$i] . '%');
+            $where_coupon_map[$i]['title'] = array('LIKE', '%' . $key[$i] . '%');
+            $where_farm_map[$i]['farm_name|intro|tel|addr'] = array('LIKE', '%' . $key[$i] . '%');
+            $where_life_map[$i]['qq|mobile|contact|title|num1|num2'] = array('LIKE', '%' . $key[$i] . '%');
+            $where_shop_map[$i]['shop_name|tags|addr'] = array('LIKE','%'.$key[$i].'%');
+            $where_post_map[$i]['title'] = array('LIKE', '%' . $key[$i] . '%');
+            $where_tuan_map[$i]['title'] = array('LIKE', '%' . $key[$i] . '%');
+        }
+        $where_article['_complex'] = $where_article_map;
+        $where_coupon['_complex'] = $where_coupon_map;
+        $where_farm['_complex'] = $where_farm_map;
+        $where_life['_complex'] = $where_life_map;
+        $where_shop['_complex'] = $where_shop_map;
+        $where_post['_complex'] = $where_post_map;
+        $where_tuan['_complex'] = $where_tuan_map;
+
+
+        $Article = D('Article');
+        $Coupon = D('Coupon');
+        $Farm = D('Farm');
+        $Life = D('Life');
+        $Shop=D('Shop');
+        $Post = D('Post');
+        $Tuan=D('Tuan');
+
+        $list_article=$Article->Field('"新闻" as t_name,"news/detail" as t_url,"article_id" as t_param,article_id as t_id,title as t_title,photo as t_photo,FROM_UNIXTIME(create_time,"%Y-%m-%d") as t_note')->order($orderby)->where($where_article)->select();
+        $list_coupon=$Coupon->Field('"优惠券" as t_name,"coupon/detail" as t_url,"coupon_id" as t_param,coupon_id as t_id,title as t_title,photo as t_photo,FROM_UNIXTIME(create_time,"%Y-%m-%d") as t_note')->order($orderby)->where($where_coupon)->select();
+        $list_farm=$Farm->Field('"景点" as t_name,"farm/detail" as t_url,"farm_id" as t_param,farm_id as t_id,farm_name as t_title,photo as t_photo,FROM_UNIXTIME(create_time,"%Y-%m-%d") as t_note')->order($orderby)->where($where_farm)->select();
+        $list_life=$Life->Field('"分类" as t_name,"life/detail" as t_url,"life_id" as t_param,life_id as t_id,title as t_title,photo as t_photo,FROM_UNIXTIME(create_time,"%Y-%m-%d") as t_note')->order($orderby)->where($where_life)->select();
+        $list_shop =$Shop->Field('"商家" as t_name,"shop/detail" as t_url,"shop_id" as t_param,shop_id as t_id,shop_name as t_title,logo as t_photo,tel as t_note, addr, lat, lng')->order($orderby)->where($where_shop)->select();
+        $list_post=$Post->Field('"帖子" as t_name,"tieba/detail" as t_url,"post_id" as t_param,post_id as t_id,title as t_title,photo as t_photo,FROM_UNIXTIME(create_time,"%Y-%m-%d") as t_note')->order($orderby)->where($where_post)->select();
+        $list_tuan=$Tuan->Field('"抢购" as t_name,"tuan/detail" as t_url,"tuan_id" as t_param,tuan_id as t_id,title as t_title,photo as t_photo,concat("$",round(tuan_price/100,2)) as t_note')->order($orderby)->where($where_tuan)->select();
+
+        $list = array();
+        if(!empty($list_shop)){
+            foreach ($list_shop as $k => $v) {
+                $v['distance'] = getDistance($v['lat'], $v['lng'], $lat, $lng);
+                $addr = explode(',', $v['addr']);
+                $list_shop[$k]['t_title'] = $v['t_title'] . '
+'.$addr[0].' ('.$v['distance'].')';
+            }
+            $list=array_merge($list,$list_shop);
+        }
+        if (!empty($this->_CONFIG['operation']['news'])){
+            if(!empty($list_article)){
+                $list=array_merge($list,$list_article);
+            }
+        }
+        if(!empty($list_farm)){
+            $list=array_merge($list,$list_farm);
+        }
+        if (!empty($this->_CONFIG['operation']['life'])){
+            if(!empty($list_life)){
+                $list=array_merge($list,$list_life);
+            }
+        }
+        if(!empty($list_post)){
+            $list=array_merge($list,$list_post);
+        }
+        if(!empty($list_coupon)){
+            $list=array_merge($list,$list_coupon);
+        }
+        if(!empty($list_tuan)){
+            $list=array_merge($list,$list_tuan);
+        }
+
+        if ($list) {
+            if (S('location_open_'.$openid)) {
+                foreach ($list as $k => $v) {
+                    if ($k < 5) {
+                        $content[] = array($v['t_name'] . ': ' . $v['t_title'], $v['t_note'], $this->getImage($v['t_photo']), __HOST__ . 'mobile/' . $v['t_url'] . '/' . $v['t_param'] . $v['t_id']);
+                    } else {
+                        unset($list[$k]);
+                    }
+                }
+                $ad = $this->getAd($lng, $lat, $user, 3);
+                $content = array_merge($content, $ad);
+                $this->weixin->response($content, 'news');
+            } else {
+                foreach ($list as $k => $v) {
+                    if ($k < 8) {
+                        $list[$k]['title'] = $v['t_name'] . ': ' . $v['t_title'];
+                        $list[$k]['contents'] = $v['t_note'];
+                        $list[$k]['url'] = __HOST__ . 'mobile/' . $v['t_url'] . '/' . $v['t_param'] . $v['t_id'];
+                        $list[$k]['photo'] = $this->getImage($v['t_photo']);
+                    } else {
+                        unset($list[$k]);
+                    }
+                }
+                $this->weixin->custom_send($list, $openid ,'news');
+                D('Weixintips')->responseTips($user, false);
+            }
+        } else {
+            $this->weixin->response('没有找到相关信息', 'text');
+        }
+
+    }
+
+    private function getAd($lng, $lat, $user, $num=8) {
+        $content = array();
+        if ($num >= 1) {
+            //Ad1内容
+            $ad1 = D('Shop')->where(array('audit' => 1, 'closed' => 0))->order(" (ABS(lng - '{$lng}') +  ABS(lat - '" . $lat . '\') )  asc ')->find();
+            array_push($content, array('离您最近的店: '.$ad1['shop_name'], $ad1['addr'], $this->getImage($ad1['logo']),  __HOST__ . '/mobile/shop/detail/shop_id/' . $ad1['shop_id'] . '.html'));
+            $this->adPush($ad1['shop_id'], $user['user_id'], $ad1['shop_id'], 2, 2);
+        }
+
+        if ($num >= 2) {
+            //Ad2内容
+            $ad2 = D('Shop')->where(array('audit' => 1, 'closed' => 0))->order(" (ABS(lng - '{$lng}') +  ABS(lat - '" . $lat . '\') )  asc ')->limit(0,10)->select();
+            $ad2_weight = 0;
+            foreach ($ad2 as $k => $v) {
+                $ad2[$k]['weight_from'] = $ad2_weight;
+                $ad2[$k]['weight_to'] = $ad2_weight + $v['weight'];
+                $ad2_weight += $v['weight'];
+            }
+            $ad2_random = rand(0, $ad2_weight);
+            foreach ($ad2 as $k => $v) {
+                if (($ad2_random >= $v['weight_from']) && ($ad2_random < $v['weight_to'])) {
+                    array_push($content, array('附近推荐的店: '.$v['shop_name'], $v['addr'], $this->getImage($v['logo']),  __HOST__ . '/mobile/shop/detail/shop_id/' . $v['shop_id'] . '.html'));
+                    $this->adPush($v['shop_id'], $user['user_id'], $v['shop_id'], 2, 3);
+                }
+            }
+        }
+
+        if ($num >= 3) {
+            //Ad3内容
+            $ad3 = D('Article')->where(array('audit' => 1, 'closed' => 0))->order('article_id asc ')->find();
+            array_push($content, array('推荐文章: '.$ad3['title'], $ad3['details'], $this->getImage($ad3['photo']),  __HOST__ . '/mobile/news/detail/article_id/' . $ad3['article_id'] . '.html'));
+            $this->adPush($ad3['shop_id'], $user['user_id'], $ad3['article_id'], 4, 2);
+        }
+
+        return $content;
+    }
+
+    private function adPush ($shop_id, $user_id, $content_id, $content_type, $push_type) {
+        $weixinPushTimes = D('Weixinpushtimes');
+        $weixinPushRecord = D('Weixinpushrecord');
+        //更新推送次数表
+        $ad1_push_times_where = array(
+            'content_id' => $content_id,
+            'content_type' => $content_type,
+            'receive_uid' => $user_id
+        );
+        $ad1_push_times = $weixinPushTimes->where($ad1_push_times_where)->find();
+        if ($ad1_push_times) {
+            $weixinPushTimes->where(array('times_id'=>$ad1_push_times['times_id']))->setInc('times');
+        } else {
+            $ad1_weixin_push_times_add = array(
+                'content_type' => $content_type,
+                'content_id' => $content_id,
+                'receive_uid' => $user_id,
+                'times' => 1
+            );
+            $weixinPushTimes->add($ad1_weixin_push_times_add);
+        }
+
+        //更新推送记录表
+        $weixinPushRecord->record($shop_id, $push_type, $content_type, $content_id, $user_id);
+    }
+
     private function getImage($img)
     {
         if(strstr($img,"http")){
             $img = $img;
         }elseif(empty($img)){
-            $img = 'https://'.$_SERVER['HTTP_HOST'].'/attachs/default.jpg';
+            $img = 'http://'.$_SERVER['HTTP_HOST'].'/attachs/default.jpg';
         }else{
             if(strstr($img,"attachs")){
-                $img = 'https://'.$_SERVER['HTTP_HOST'].'/'.$img;
+                $img = 'http://'.$_SERVER['HTTP_HOST'].'/'.$img;
             }else{
-                $img = 'https://'.$_SERVER['HTTP_HOST'].'/attachs/'.$img;
+                $img = 'http://'.$_SERVER['HTTP_HOST'].'/attachs/'.$img;
             }
         }
         return  $img;
