@@ -383,7 +383,7 @@ class WeixinModel {
                         "title":"'.$data['title'].'",
                         "description":"'.$data['contents'].'",
                         "url":"'.$data['url'].'",
-                        "picurl":"'.config_img($data['photo']).'"
+                        "picurl":"'.$this->getImage($data['photo']).'"
                     }
                 ]';
             } else {    //如果是Select得到的数组
@@ -394,7 +394,7 @@ class WeixinModel {
                         "title":"'.$v['title'].'",
                         "description":"'.$v['contents'].'",
                         "url":"'.$v['url'].'",
-                        "picurl":"'.config_img($v['photo']).'"
+                        "picurl":"'.$this->getImage($v['photo']).'"
                     }';
                     $count ++;
                     if ($count < sizeof($data)) {
@@ -405,6 +405,22 @@ class WeixinModel {
             }
         }
         return $return;
+    }
+
+    private function getImage($img)
+    {
+        if(strstr($img,"http")){
+            $img = $img;
+        }elseif(empty($img)){
+            $img = 'http://'.$_SERVER['HTTP_HOST'].'/attachs/default.jpg';
+        }else{
+            if(strstr($img,"attachs")){
+                $img = 'http://'.$_SERVER['HTTP_HOST'].'/'.$img;
+            }else{
+                $img = 'http://'.$_SERVER['HTTP_HOST'].'/attachs/'.$img;
+            }
+        }
+        return  $img;
     }
 
 }
