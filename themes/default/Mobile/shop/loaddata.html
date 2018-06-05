@@ -1,3 +1,69 @@
+<php>if ($listed == 0) {</php>
+<script>
+    var map;
+    var infoWindow;
+    initMap();
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: parseInt('<{$zoom}>'),
+            center: new google.maps.LatLng('<{$lat}>', '<{$lng}>'),
+            mapTypeId: 'roadmap'
+        });
+
+        map.addListener('zoom_changed', function() {
+            setCookie('mapzoom', map.getZoom(), 100);
+        });
+
+        map.addListener('center_changed', function() {
+            setCookie('maplat', map.getCenter().lat(), 100);
+            setCookie('maplng', map.getCenter().lng(), 100);
+        });
+
+        var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+        var icons = {
+            parking: {
+                icon: iconBase + 'parking_lot_maps.png'
+            },
+            library: {
+                icon: iconBase + 'library_maps.png'
+            },
+            info: {
+                icon: iconBase + 'info-i_maps.png'
+            }
+        };
+
+        var features = <{$features}>;
+        infoWindow = new google.maps.InfoWindow;
+        var markers = [];
+        features.forEach(function(feature) {
+            var marker = new google.maps.Marker({
+                position: feature.position,
+                map: map
+            });
+            markers.push(marker);
+            marker.addListener('click', function() {
+                var shopurl = "<{$host}>/mobile/shop/detail/shop_id/" + feature.shop_id;
+                var infowincontent = '<div onclick="location.href=\''+shopurl+'\'"><b class="button button-little bg-blue" style="margin-bottom: 5px;">'+feature.shop_name+'</b><br>'+'<div style="text-align: center;"><img style="width:100px;height:100px;" src="'+feature.logo+'"/></div></div>';
+                infoWindow.setContent(infowincontent);
+                infoWindow.open(map, marker);
+            });
+        });
+        var infowincontent = '<b>'+features[0].shop_name+'</b><br>'+'<div style="text-align: center;"><img style="width:100px;height:100px;" src="'+features[0].logo+'"/></div>';
+        infoWindow.setContent(infowincontent);
+        infoWindow.open(map, markers[0]);
+        new MarkerClusterer(map, markers, {imagePath:'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+    }
+
+    function setCookie(cname, cvalue, exsecs) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exsecs*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+</script>
+<php>}</php>
 <volist name="list" id="item" key="index">
 	<a class="item" href="<{:U('shop/detail',array('shop_id'=>$item['shop_id']))}>">	
     

@@ -94,11 +94,6 @@ p, .p {margin-bottom: 0px; }
 		<!--MOB SHARE END-->
 	</div>
 
- 	<if condition="!empty($detail['panorama_url'])">
-        <div class="panorama_url">
-            <iframe src="<{$detail.panorama_url}>" width="100%" height="600"></iframe>
-        </div>
-    </if>
 	<include file="shop:header"/>
  
  	<script>
@@ -121,6 +116,43 @@ p, .p {margin-bottom: 0px; }
 	</script>
 
 	<div class="container">
+		<div id="panorama_url" style="width:100%; height:250px;">
+		</div>
+		<style>
+			.gm-style-cc,.gmnoprint,.gmnoscreen {display: none}
+			.gm-bundled-control, .gm-bundled-control .gmnoprint {display: block}
+		</style>
+		<script>
+            var panorama;
+            function initialize() {
+                panorama = new google.maps.StreetViewPanorama(
+                    document.getElementById('panorama_url'),
+                    {
+                        position: {lat: parseFloat("<{$detail['lat']}>"), lng: parseFloat("<{$detail['lng']}>")},
+                        addressControl: false,
+                        linksControl: false,
+                        zoomControlOptions: false
+                    }
+                );
+                var service = new google.maps.StreetViewService;
+                service.getPanoramaByLocation(panorama.getPosition(), 50, function(panoData) {
+                    if (panoData != null) {
+                        var lookTo = panorama.getPosition();
+                        var panoCenter = panoData.location.latLng;
+                        var heading = google.maps.geometry.spherical.computeHeading(panoCenter, lookTo);
+                        var pov = panorama.getPov();
+                        pov.heading = heading;
+                        panorama.setPov(pov);
+
+                    } else {
+                        alert('not found');
+                    }
+                });
+            }
+		</script>
+		<script async defer
+				src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&callback=initialize">
+		</script>
 		<div class="line detail-base">
 			<div class="x4">
 				<div class="pic">
@@ -239,7 +271,7 @@ p, .p {margin-bottom: 0px; }
 
 			<!--优惠券数据开始-->
 			<if condition="!empty($coupon)">
-                <a href="<{:U('shop/coupon',array('coupon'=>$detail['coupon_id']))}>">
+				<a href="<{:U('shop/coupon',array('shop_id'=>$detail['shop_id']))}>">
 				    <span class="txt txt-little radius-little bg-red">劵</span> 商家优惠券下载
 				    <span class="float-right icon-angle-right"></span>
 			    </a>

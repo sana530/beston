@@ -1,11 +1,13 @@
 <include file="public:header"/>
-
+<script src="http://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSoyUbiTvaa1kbqgVQj43kv46SsaKvjSU&callback=initMap"></script>
 	<header class="top-fixed bg-yellow bg-inverse">
 		<div class="top-back">
 			<a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
 		</div>
 		<div class="top-title">
-			商家分类
+            <if condition="$order eq 2">推荐商家<else/>商家分类</if>
 		</div>
 		<div class="top-search" style="display:none;">
 			<form method="post" action="<{:U('shop/index')}>">
@@ -112,12 +114,16 @@
         </div>
         <div class="serch-bar-mask-bg"></div>
     </div>
+    <div style="position: fixed; top:90px; width: 100%; height: 250px;z-index: 2;">
+        <div id="map" style="width: 100%; height: 250px; "></div>
+    </div>
 
 	<div class="blank-40"></div>
     <style>
-	.container {
-    margin-top: 0rem;
-}
+        .container {
+            margin-top: 250px;
+            overflow: hidden;
+        }
 	</style>
 	<div class="container">
 		<div id="shop-list" class="shop-list"></div>

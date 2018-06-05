@@ -150,6 +150,28 @@ class ShopAction extends CommonAction{
             die('0');
         }
         $list = $Shop->where($map)->order($orderby)->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        if ($Page->firstRow == 0) {
+            $features_list = $Shop->where($map)->order($orderby)->limit(0,200)->select();
+            $features = '[';
+            $count = 0;
+            foreach ($features_list as $k => $val) {
+                $count ++;
+                $features .= '{position: new google.maps.LatLng('.$val['lat'].', '.$val['lng'].'),type: "info",shop_name:"'.$val['shop_name'].
+                    '",logo:"'.$val['logo'].'",shop_id:"'.$val['shop_id'].'"}';
+                if ($count < count($features_list)) {
+                    $features .= ',';
+                }
+            }
+            $features .= ']';
+            $zoom = (cookie('mapzoom')) ? cookie('mapzoom') : 14;
+            if ($keyword) {
+                $map_lat = $list[0]['lat'];
+                $map_lng = $list[0]['lng'];
+            } else {
+                $map_lat = (cookie('maplat')) ? cookie('maplat') : $lat;
+                $map_lng = (cookie('maplng')) ? cookie('maplng') : $lng;
+            }
+        }
         foreach ($list as $k => $val) {
             $list[$k]['d'] = getDistance($lat, $lng, $val['lat'], $val['lng']);
             $map = array('shop_id'=>$val['shop_id'], 'audit'=>1, 'closed'=>0, 'city_id' => $this->city_id, 'end_date' => array('EGT', TODAY));
@@ -166,7 +188,13 @@ class ShopAction extends CommonAction{
         foreach ($list as $k => $val) {
             $list[$k]['price'] = $shopdetails[$val['shop_id']]['price'];
         }
+        $listed = ($Page->firstRow != 0) ? 1 : 0;
+        $this->assign('listed', $listed);
         $this->assign('list', $list);
+        $this->assign('features', $features);
+        $this->assign('zoom', $zoom);
+        $this->assign('lat', $map_lat);
+        $this->assign('lng', $map_lng);
         $this->assign('page', $show);
         $this->display();
     }
@@ -235,11 +263,11 @@ class ShopAction extends CommonAction{
         $this->assign('work', $work);
         $weidian = D('WeidianDetails')->where(array('audit' => 1, 'city_id' => $this->city_id, 'closed' => 0))->order('id desc')->limit(0, 1)->select();
         $this->assign('weidian', $weidian);
-        $tuan = fetchCalldata(array('mdl'=>'Tuan', 'where'=>'shop_id = '.$shop_id.' AND audit=1 AND closed=0 AND end_date >= "'.TODAY.'" AND city_id = '.$this->city_id, 'limit'=>'0,4', 'cache'=>21600, 'order'=>'tuan_id desc'));
+        $tuan = fetchCalldata(array('mdl'=>'Tuan', 'where'=>'shop_id = '.$shop_id.' AND audit=1 AND closed=0 AND end_date >= "'.TODAY.'" AND city_id = '.$this->city_id, 'limit'=>'0,4', 'cache'=>3600, 'order'=>'tuan_id desc'));
         $this->assign('tuan', $tuan);
-        $goods = fetchCalldata(array('mdl'=>'Goods', 'where'=>'shop_id = '.$shop_id.' AND audit=1 AND closed=0 AND end_date >= "'.TODAY.'" AND city_id = '.$this->city_id, 'limit'=>'0,4', 'cache'=>21600, 'order'=>'goods_id desc'));
+        $goods = fetchCalldata(array('mdl'=>'Goods', 'where'=>'shop_id = '.$shop_id.' AND audit=1 AND closed=0 AND end_date >= "'.TODAY.'" AND city_id = '.$this->city_id, 'limit'=>'0,4', 'cache'=>3600, 'order'=>'goods_id desc'));
         $this->assign('goods', $goods);
-        $coupon = fetchCalldata(array('mdl'=>'Coupon', 'where'=>'shop_id = '.$shop_id.' AND audit=1 AND closed=0 AND expire_date >= "'.TODAY.'" AND city_id = '.$this->city_id, 'limit'=>'0,4', 'cache'=>21600, 'order'=>'coupon_id desc'));
+        $coupon = fetchCalldata(array('mdl'=>'Coupon', 'where'=>'shop_id = '.$shop_id.' AND audit=1 AND closed=0 AND is_online_show=1 AND expire_date >= "'.TODAY.'" AND city_id = '.$this->city_id, 'limit'=>'0,4', 'cache'=>3600, 'order'=>'coupon_id desc'));
         $this->assign('coupon', $coupon);
         $huodong = D('Activity')->order('activity_id desc ')->where(array('shop_id' => $shop_id, 'city_id' => $this->city_id, 'audit' => 1, 'closed' => 0, 'end_date' => array('EGT', TODAY), 'bg_date' => array('ELT', TODAY)))->select();
         $this->assign('huodong', $huodong);
@@ -259,8 +287,8 @@ class ShopAction extends CommonAction{
         $weidianid = $Weidian->where('shop_id=' . $shop_id . ' ')->find();
         $this->assign('weidian_id', $weidianid['id']);
         $this->assign('pic', $pic = D('Shoppic')->where(array('shop_id' => $shop_id))->order(array('pic_id' => 'desc'))->count());
-        $shopyouhui = D('Shopyouhui')->where(array('shop_id' => $shop_id, 'is_open' => 1, 'audit' => 1))->find();
-        $this->assign('shopyouhui', $shopyouhui);
+        //$shopyouhui = D('Shopyouhui')->where(array('shop_id' => $shop_id, 'is_open' => 1, 'audit' => 1))->find();
+        //$this->assign('shopyouhui', $shopyouhui);
         $this->mobile_title = $detail['shop_name'];
         $this->mobile_keywords = $detail['addr'] . ',' . $detail['tel'];
         $this->mobile_description = $detail['addr'];
@@ -597,7 +625,7 @@ class ShopAction extends CommonAction{
         $shop_id = (int) $this->_get('shop_id');
         $couponload = D('Coupon');
         import('ORG.Util.Page');
-        $map = array('closed' => 0, 'shop_id' => $shop_id, 'show_date' => array('ELT', TODAY));
+        $map = array('closed' => 0, 'shop_id' => $shop_id, 'is_online_show'=>1, 'show_date' => array('ELT', TODAY));
         $count = $couponload->where($map)->count();
         $Page = new Page($count, 5);
         $show = $Page->show();
@@ -747,7 +775,10 @@ class ShopAction extends CommonAction{
             if (D('Shop')->find(array('where' => array('user_id' => $this->uid)))) {
                 $this->fengmiMsg('您已经拥有一家店铺了！不能认领了！', U('store/index/index'));
             }
-            if (D('Shoprecognition')->where(array('user_id' => $this->uid))->find()) {
+            if ($recognition = D('Shoprecognition')->where(array('user_id' => $this->uid))->find()) {
+                if (($recognition['shop_id'] == $shop_id) && ($recognition['audit'] == 0)) {
+                    $this->fengmiMsg('恭喜，认领成功，等待管理员审核', U('mobile/shop/index'));
+                }
                 $this->fengmiMsg('您已经认领过一家商铺了，不能认领了哦！');
             }
             $data['user_id'] = (int) $this->uid;
