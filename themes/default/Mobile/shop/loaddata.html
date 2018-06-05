@@ -7,7 +7,10 @@
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: parseInt('<{$zoom}>'),
             center: new google.maps.LatLng('<{$lat}>', '<{$lng}>'),
-            mapTypeId: 'roadmap'
+            mapTypeId: 'roadmap',
+            zoomControl: false,
+            mapTypeControl: false,
+            streetViewControl: false
         });
 
         map.addListener('zoom_changed', function() {
@@ -48,7 +51,7 @@
                 infoWindow.open(map, marker);
             });
         });
-        var infowincontent = '<b>'+features[0].shop_name+'</b><br>'+'<div style="text-align: center;"><img style="width:100px;height:100px;" src="'+features[0].logo+'"/></div>';
+        var infowincontent = '<b class="button button-little bg-blue" style="margin-bottom: 5px;">'+features[0].shop_name+'</b><br>'+'<div style="text-align: center;"><img style="width:100px;height:100px;" src="'+features[0].logo+'"/></div>';
         infoWindow.setContent(infowincontent);
         infoWindow.open(map, markers[0]);
         new MarkerClusterer(map, markers, {imagePath:'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});

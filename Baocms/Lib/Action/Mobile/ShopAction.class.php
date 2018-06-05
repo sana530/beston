@@ -157,7 +157,7 @@ class ShopAction extends CommonAction{
             foreach ($features_list as $k => $val) {
                 $count ++;
                 $features .= '{position: new google.maps.LatLng('.$val['lat'].', '.$val['lng'].'),type: "info",shop_name:"'.$val['shop_name'].
-                    '",logo:"'.$val['logo'].'",shop_id:"'.$val['shop_id'].'"}';
+                    '",logo:"'.config_img($val['logo']).'",shop_id:"'.$val['shop_id'].'"}';
                 if ($count < count($features_list)) {
                     $features .= ',';
                 }

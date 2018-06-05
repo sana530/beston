@@ -1260,4 +1260,7 @@ ol,ul{list-style:none}
 .p_tabs li.card_down,.p_tabs li.cur,.p_tabs li.current{color:#ff9b42;border-bottom:2px solid #ff9b42}
 
 .cate-desc{font-size:11px !important;}
- .zopim{bottom:50px !important;}
+.zopim{bottom:50px !important;}
+
+/* google map */
+.gm-style-cc,.gmnoscreen {display: none}
