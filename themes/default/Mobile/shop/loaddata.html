@@ -2,6 +2,7 @@
 <script>
     var map;
     var infoWindow;
+    var last_request = Math.round((new Date()).getTime() / 1000);
     initMap();
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -10,7 +11,87 @@
             mapTypeId: 'roadmap',
             zoomControl: false,
             mapTypeControl: false,
-            streetViewControl: false
+            streetViewControl: false,
+            styles: [
+                {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+                {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+                {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+                {
+                    featureType: 'administrative.locality',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#d59563'}]
+                },
+                {
+                    featureType: 'poi',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#d59563'}]
+                },
+                {
+                    featureType: 'poi.park',
+                    elementType: 'geometry',
+                    stylers: [{color: '#263c3f'}]
+                },
+                {
+                    featureType: 'poi.park',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#6b9a76'}]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'geometry',
+                    stylers: [{color: '#38414e'}]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#212a37'}]
+                },
+                {
+                    featureType: 'road',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#9ca5b3'}]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'geometry',
+                    stylers: [{color: '#746855'}]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'geometry.stroke',
+                    stylers: [{color: '#1f2835'}]
+                },
+                {
+                    featureType: 'road.highway',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#f3d19c'}]
+                },
+                {
+                    featureType: 'transit',
+                    elementType: 'geometry',
+                    stylers: [{color: '#2f3948'}]
+                },
+                {
+                    featureType: 'transit.station',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#d59563'}]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'geometry',
+                    stylers: [{color: '#17263c'}]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'labels.text.fill',
+                    stylers: [{color: '#515c6d'}]
+                },
+                {
+                    featureType: 'water',
+                    elementType: 'labels.text.stroke',
+                    stylers: [{color: '#17263c'}]
+                }
+            ]
         });
 
         map.addListener('zoom_changed', function() {
@@ -35,10 +116,12 @@
             }
         };
 
+        var shop_ids = [];
         var features = <{$features}>;
         infoWindow = new google.maps.InfoWindow;
         var markers = [];
         features.forEach(function(feature) {
+            shop_ids.push(feature.shop_id);
             var marker = new google.maps.Marker({
                 position: feature.position,
                 map: map
@@ -55,6 +138,52 @@
         infoWindow.setContent(infowincontent);
         infoWindow.open(map, markers[0]);
         new MarkerClusterer(map, markers, {imagePath:'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+        map.addListener('center_changed', function() {
+            if ((Math.round((new Date()).getTime() / 1000) - last_request) > 1) {
+                last_request = Math.round((new Date()).getTime() / 1000);
+                var bounds =  map.getBounds();
+                var south = bounds.f.b;
+                var north = bounds.f.f;
+                var west = bounds.b.b;
+                var east = bounds.b.f;
+                $.ajax({
+                    type: "GET",
+                    url: "/mobile/shop/loadmakers",
+                    dataType: "json",
+                    data: {
+                        north: north,
+                        south: south,
+                        east: east,
+                        west: west,
+						shop_ids: shop_ids,
+						cat: "<{$cat}>",
+						keyword: "<{$keyword}>",
+						area: "<{$area}>",
+                        business: "<{$business}>"
+                    },
+                    success: function(datas) {
+                        if (datas.length != 0) {
+                            datas.forEach(function(data) {
+                                shop_ids.push(data.shop_id);
+                                var marker = new google.maps.Marker({
+                                    position: new google.maps.LatLng(data.lat,data.lng),
+                                    map: map
+                                });
+                                markers.push(marker);
+                                marker.addListener('click', function() {
+                                    var shopurl = "<{$host}>/mobile/shop/detail/shop_id/" + data.shop_id;
+                                    var infowincontent = '<div onclick="location.href=\''+shopurl+'\'"><b class="button button-little bg-blue" style="margin-bottom: 5px;">'+data.shop_name+'</b><br>'+'<div style="text-align: center;"><img style="width:100px;height:100px;" src="'+data.logo+'"/></div></div>';
+                                    infoWindow.setContent(infowincontent);
+                                    infoWindow.open(map, marker);
+                                });
+                            });
+                            new MarkerClusterer(map, markers, {imagePath:'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+                        }
+                    }
+                });
+            }
+        });
 
     }
 

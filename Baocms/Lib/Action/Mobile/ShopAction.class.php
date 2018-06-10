@@ -114,17 +114,21 @@ class ShopAction extends CommonAction{
             } else {
                 $map['cate_id'] = $cat;
             }
+            $this->assign('cat', $cat);
         }
         if ($keyword = urldecode($this->_param('keyword', 'htmlspecialchars'))) {
             $map['shop_name|addr'] = array('LIKE', '%' . $keyword . '%');
+            $this->assign('keyword', $keyword);
         }
         $area = (int) $this->_param('area');
         if ($area) {
             $map['area_id'] = $area;
+            $this->assign('area', $area);
         }
         $business = (int) $this->_param('business');
         if ($business) {
             $map['business_id'] = $business;
+            $this->assign('business', $business);
         }
         $order = (int) $this->_param('order');
         $lat = addslashes(cookie('lat'));
@@ -151,7 +155,7 @@ class ShopAction extends CommonAction{
         }
         $list = $Shop->where($map)->order($orderby)->limit($Page->firstRow . ',' . $Page->listRows)->select();
         if ($Page->firstRow == 0) {
-            $features_list = $Shop->where($map)->order($orderby)->limit(0,200)->select();
+            $features_list = $Shop->where($map)->order($orderby)->limit(0,50)->select();
             $features = '[';
             $count = 0;
             foreach ($features_list as $k => $val) {
@@ -197,6 +201,67 @@ class ShopAction extends CommonAction{
         $this->assign('lng', $map_lng);
         $this->assign('page', $show);
         $this->display();
+    }
+    public function loadmakers () {
+        $north = $this->_param('north','floatval');
+        $south = $this->_param('south','floatval');
+        $east = $this->_param('east','floatval');
+        $west = $this->_param('west','floatval');
+        $shop_ids = $this->_param('shop_ids');
+        $Shop = D('Shop');
+        import('ORG.Util.Page');
+        $map = array('closed' => 0, 'audit' => 1, 'city_id' => $this->city_id);
+        $cat = (int) $this->_param('cat');
+        if ($cat) {
+            $catids = D('Shopcate')->getChildren($cat);
+            if (!empty($catids)) {
+                $map['cate_id'] = array('IN', $catids);
+            } else {
+                $map['cate_id'] = $cat;
+            }
+        }
+        if ($keyword = urldecode($this->_param('keyword', 'htmlspecialchars'))) {
+            $map['shop_name|addr'] = array('LIKE', '%' . $keyword . '%');
+        }
+        $area = (int) $this->_param('area');
+        if ($area) {
+            $map['area_id'] = $area;
+        }
+        $business = (int) $this->_param('business');
+        if ($business) {
+            $map['business_id'] = $business;
+        }
+        $map['lat'] = array(array('gt',$south),array('lt',$north)) ;
+        $map['lng'] = array(array('gt',$west),array('lt',$east)) ;
+        $map['shop_id'] = array('NOT IN', array_values($shop_ids));
+        $order = (int) $this->_param('order');
+        $lat = addslashes(cookie('lat'));
+        $lng = addslashes(cookie('lng'));
+        if (empty($lat) || empty($lng)) {
+            $lat = $this->city['lat'];
+            $lng = $this->city['lng'];
+        }
+        switch ($order) {
+            case 2:
+                $orderby = array('orderby' => 'asc', 'ranking' => 'desc');
+                break;
+            default:
+                $orderby = " (ABS(lng - '{$lng}') +  ABS(lat - '{$lat}') ) asc ";
+                break;
+        }
+
+        $features_list = $Shop->where($map)->order($orderby)->limit(0,50)->select();
+        $features = array();
+        foreach ($features_list as $k => $val) {
+            $features[$k]['lat'] = $val['lat'];
+            $features[$k]['lng'] = $val['lng'];
+            $features[$k]['type'] = $val['info'];
+            $features[$k]['shop_name'] = $val['shop_name'];
+            $features[$k]['logo'] = config_img($val['logo']);
+            $features[$k]['shop_id'] = $val['shop_id'];
+
+        }
+        echo json_encode($features);
     }
     public function detail(){
         $shop_id = (int) $this->_get('shop_id');
