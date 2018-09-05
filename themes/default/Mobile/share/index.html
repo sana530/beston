@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <title><{$nickname}>邀请您加入<{$CONFIG.site.sitename}></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <if condition="$CONFIG[site][concat] neq 1">
+        <link rel="stylesheet" href="/static/default/wap/css/base.css">
+        <link rel="stylesheet" href="/static/default/wap/css/mcenter.css"/>
+        <link rel="stylesheet" href="/static/default/wap/css/intel.css">
+        <link rel="stylesheet" href="/static/default/wap/css/main.css">
+        <script src="/static/default/wap/js/jquery.js"></script>
+        <script src="/static/default/wap/js/intel.js"></script>
+        <script src="/static/default/wap/js/base.js"></script>
+        <script src="/static/default/wap/other/layer.js"></script>
+        <script src="/static/default/wap/other/roll.js"></script>
+        <script src="/static/default/wap/js/public.js?V=3"></script>
+        <script src="/static/default/wap/js/mobile_common.js"></script>
+        <script src="/static/default/wap/js/dialog.js"></script>
+        <else />
+        <link rel="stylesheet" href="/static/default/wap/css/??base.css,mcenter.css,main.css" />
+        <script src="/static/default/wap/js/??jquery.js,base.js,roll.js,layer.js,public.js,dialog.js"></script>
+    </if>
+    <script>
+        var zopim_user_name = "<{$MEMBER['nickname']}>";
+        var zopim_user_email = "<{$MEMBER['email']}>";
+        var zopim_user_phone = "<{$MEMBER['mobile']}>";
+    </script>
+    <script src="__PUBLIC__/js/google.js?V=3"></script>
+    <include file='../Public/weixin/share'/>
+</head>
+<body>
+<header class="top-fixed bg-yellow bg-inverse">
+    <div class="top-back">
+        <a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+    </div>
+    <div class="top-title">
+        推广页面
+    </div>
+    <div class="top-signed">
+        <include file="public:message"/>
+    </div>
+</header>
+
+<div id="main" style="padding: 20px;">
+    <div id="qrcode_img">
+        <img src="<{:config_img($qrcode)}>" style="width:80%; margin-left:10%;" >
+    </div>
+    <button class="button button-block button-big bg-dot share-button" data-theme="slide-top">点击分享给好友</button>
+    <div style="text-align:center; margin-top: 20px;">
+        <h1 style="display:none">
+            <p>1. 您必须关注了<{$CONFIG.site.sitename}>公众号，分享才可获得红包奖励。</p>
+            <p>2. 将该页面分享给好友，好友通过识别该二维码初次关注了<{$CONFIG.site.sitename}>公众号，则您跟好友可得到红包奖励。</p>
+            <if condition="$me"><p>3. 好友通过扫一扫该页面二维码初次关注了<{$CONFIG.site.sitename}>公众号，则您跟好友可得到红包奖励。。</p></if><br/><br/>
+            <p>注：最终解释权归<{$CONFIG.site.sitename}>所有。</p>
+        </h1>
+        <h5 style="display:none">分享有礼</h5>
+        <a href="javascript:;" onclick="liclick(this);"><span style="color:#2fbdaa">点击查看活动细则</span></a>
+    </div>
+</div>
+
+<!--弹出 start-->
+<div id="menuDetail" class="menu_detail">
+    <dl style="margin-top:15px; margin-right:15px;scrollbar-track-color:red;" >
+        <div class="info" style="overflow:scroll; height:276px; "></div>
+    </dl>
+</div>
+<!--end-->
+
+<div class="share-content">
+    <!--MOB SHARE BEGIN-->
+    <div class="-mob-share-ui -mob-share-ui-theme" style="display: none">
+        <ul class="-mob-share-list">
+            <li class="-mob-share-weixin"><p>微信</p></li>
+        </ul>
+        <div class="-mob-share-close">取消</div>
+    </div>
+
+    <div class="-mob-share-ui-bg"></div>
+
+    <script>
+        // 同一网页下只能有一种分享效果，否则会冲突
+        // 所以这里把ui节点先复制起来，点其中一个效果时将之前的删除
+        var ui = getElementsByClassName( "-mob-share-ui" )[0];
+        var uiTemplate = ui.cloneNode( true );
+        var uiCurrent = ui;
+
+        var buttons = getElementsByClassName("share-button" );
+        for( var i = 0, len = buttons.length; i < len; i++ ) {
+            var btn = buttons[ i ];
+            btn.onclick = function() {
+                if( uiCurrent ) {
+                    uiCurrent.parentNode.removeChild( uiCurrent );
+                }
+                uiCurrent = uiTemplate.cloneNode( true );
+                var dataTheme = this.getAttribute( "data-theme" );
+                var theme = "-mob-share-ui-theme-" + this.getAttribute( "data-theme" );
+                addClass( uiCurrent, theme );
+                if( dataTheme === "slide-left" || dataTheme === "slide-right" ) {
+                    getElementsByClassName( "-mob-share-close", uiCurrent )[0].style.display = "none";
+                }
+                document.body.appendChild( uiCurrent );
+                mobShare.ui.init();
+                mobShare.ui.open();
+            };
+        }
+
+        function getElementsByClassName( classname, main ) {
+            var main = main || document;
+            if( main.getElementsByClassName ) {
+                return main.getElementsByClassName( classname );
+            }
+            var a = [];
+            var re = new RegExp( '(^| )' + classname + '( |$)' );
+            var els = main.getElementsByTagName( "*" );
+            for( var i = 0, j = els.length; i < j; i++ ) {
+                if( re.test( els[i].className ) ) {
+                    a.push( els[i] );
+                }
+            }
+            return a;
+        };
+
+        function hasClass( ele, cls ) {
+            return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+        }
+
+        function addClass( ele, cls ) {
+            if (!hasClass(ele, cls)) {
+                ele.className += " " + cls;
+            }
+        }
+    </script>
+
+    <script id="-mob-share" src="https://f1.webshare.mob.com/code/mob-share.js?appkey=5bda9710bb57"></script> <!-- 5bda9710bb57 -->
+    <!--MOB SHARE END-->
+</div>
+
+<include file="public:footer"/>
+
+<script type="text/javascript">
+    var _wraper = $('#menuDetail');
+    var dialogTarget;
+    function liclick(l){
+        var _this = $(l),
+        F = function(str){return _this.parent().find(str);},
+        title = F('h5').text();
+        info = F('h1').html();
+        _wraper.find('.info').html(info);
+        _wraper.parents('.dialog').find('.dialog_tt').text(title);
+        dialogTarget = _this;
+        _wraper.dialog({title: title, closeBtn: true});
+    }
+</script>

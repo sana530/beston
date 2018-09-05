@@ -110,23 +110,54 @@
                             <img id="photo_img" width="200" height="100"  src="__ROOT__/attachs/<{$CONFIG.weixin.photo|default='default.jpg'}>" />
                             建议尺寸360x200
                         </div>
-                <js file='__PUBLIC__/js/uploadify/jquery.uploadify.min.js'/>
-                <link rel="stylesheet" href="__PUBLIC__/js/uploadify/uploadify.css">
-                <script>
-                    $("#photo_file").uploadify({
-                        'swf': '__PUBLIC__/js/uploadify/uploadify.swf?t=<{$nowtime}>',
-                        'uploader': '<{:U("app/upload/uploadify",array("model"=>"setting"))}>',
-                        'cancelImg': '__PUBLIC__/js/uploadify/uploadify-cancel.png',
-                        'buttonText': '上传图片',
-                        'fileTypeExts': '*.gif;*.jpg;*.png',
-                        'queueSizeLimit': 1,
-                        'onUploadSuccess': function (file, data, response) {
-                            $("#data_photo").val(data);
-                            $("#photo_img").attr('src', '__ROOT__/attachs/' + data).show();
-                        }
-                    });
-                </script>
-                </td>
+                        <js file='__PUBLIC__/js/uploadify/jquery.uploadify.min.js'/>
+                        <link rel="stylesheet" href="__PUBLIC__/js/uploadify/uploadify.css">
+                        <script>
+                            $("#photo_file").uploadify({
+                                'swf': '__PUBLIC__/js/uploadify/uploadify.swf?t=<{$nowtime}>',
+                                'uploader': '<{:U("app/upload/uploadify",array("model"=>"setting"))}>',
+                                'cancelImg': '__PUBLIC__/js/uploadify/uploadify-cancel.png',
+                                'buttonText': '上传图片',
+                                'fileTypeExts': '*.gif;*.jpg;*.png',
+                                'queueSizeLimit': 1,
+                                'onUploadSuccess': function (file, data, response) {
+                                    $("#data_photo").val(data);
+                                    $("#photo_img").attr('src', '__ROOT__/attachs/' + data).show();
+                                }
+                            });
+                        </script>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt" >公众号红包apikey：</td>
+                    <td class="rgTdBt">
+                        <input type="text" name="data[hongbao_apikey]" value="<{$CONFIG.weixin.hongbao_apikey}>" class="scAddTextName " />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt" >关注时回复的红包提示：</td>
+                    <td class="rgTdBt">
+                        <textarea name="data[hongbao_subscribe_description]" cols="50" rows="5"><{$CONFIG.weixin.hongbao_subscribe_description}></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt"><p class="tuanfabu_t">红包随机金额区间：</p></td>
+                    <td class="rgTdBt">
+                        <span>
+                        最低 <input type="text" name="data[mini_amount]" value="<{:round($CONFIG.weixin.hongbao_mini_amount/100,2)}>" class="manageInput" /> －
+                        最高 <input type="text" name="data[max_amount]" value="<{:round($CONFIG.weixin.hongbao_max_amount/100,2)}>" class="manageInput" />
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt"><p class="tuanfabu_t">红包难度系数：</p></td>
+                    <td class="rgTdBt"><div class="tuanfabu_nr">
+                        <span>
+                        <input type="text" name="data[difficulty]" value="<{$hongbao['difficulty']}>" class="manageInput" />
+                        <code>数字越高，难度越大！一般5-10之间是比较合理的难度</code>
+                        </span>
+                    </div></td>
+                </tr>
             </table>
             <div class="smtQr"><input type="submit" value="确认添加" class="smtQrIpt" /></div>
         </form>

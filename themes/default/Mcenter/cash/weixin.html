@@ -1,0 +1,45 @@
+<include file='public:header'/>
+<link rel="stylesheet" href="/static/default/wap/css/housekeeping.css"/>
+	<link href="/static/default/wap/other/jquery-ui.css" rel="stylesheet" />
+	<script src="/static/default/wap/other/jquery-ui.js"></script>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			提取红包
+		</div>
+	</header>
+
+<div id="main" style="padding: 20px;">
+	<div class="blank-60"></div>
+	<img src="__ROOT__/static/default/wap/other/skin/default/loading-0.gif" style="width:20%; margin-left:40%;"/>
+	<div class="blank-40"></div>
+	<div style="text-align:center;" id="des">请耐心等待，务必不要关闭该页面！</div>
+</div>
+</div>
+
+<include file="public:footer"/>
+
+
+<script>
+    $(document).ready(function(){
+        $.post('<{:U("cash/weixin")}>', {money:'all'}, function(data) {
+            $('#main img').attr('src', '');
+            $('#des').html('');
+            var json = data;
+            if (json.error == 0) {
+                location.href = json.url;
+            } else {
+                layer.msg(json.msg, {icon:2, time:6000, area:'300px'}, function () {
+                    if (json.url) {
+                        location.href = json.url;
+					} else {
+
+					}
+                });
+            }
+        }, 'JSON');
+    });
+</script>
+

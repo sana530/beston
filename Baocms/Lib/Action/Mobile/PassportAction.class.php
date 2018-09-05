@@ -311,7 +311,7 @@ class PassportAction extends CommonAction
             $connect = $data;
             $connect['connect_id'] = D('Connect')->add($data);
         } else {
-            D('Connect')->save(array('connect_id' => $connect['connect_id'], 'token' => $data['token'], 'nickname' => $data['nickname']));
+            D('Connect')->save(array('connect_id' => $connect['connect_id'], 'token' => $data['token'], 'nickname' => $data['nickname'], 'headimgurl' => $data['headimgurl']));
         }
         if (empty($connect['uid'])) {
             session('connect', $connect['connect_id']);

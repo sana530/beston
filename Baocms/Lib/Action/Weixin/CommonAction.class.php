@@ -8,14 +8,12 @@ class CommonAction extends Action{
     protected $weixin = null;
     protected function _initialize() {
         //SHOP_ID 为空的时候
-        $this->_CONFIG = D('Setting')->fetchAll();
         define('__HOST__', 'http://' . $_SERVER['HTTP_HOST']);
         $this->shop_id = empty($_GET['shop_id']) ? 0 : (int) $_GET['shop_id'];
         if (!empty($this->shop_id)) {
             $this->shopdetails = D('Shopdetails')->find($this->shop_id);
         }
         $this->_CONFIG = D('Setting')->fetchAll();
-        define('__HOST__', 'http://' . $_SERVER['HTTP_HOST']);
         $this->assign('CONFIG', $this->_CONFIG);
         $this->assign('ctl', strtolower(MODULE_NAME));
         //主要方便调用

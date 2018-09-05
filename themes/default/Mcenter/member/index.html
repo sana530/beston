@@ -1,56 +1,57 @@
 <include file="public:header"/>
 <style>
-.icon-sign-out, .top-fixed .top-back i { font-size: 18px;}
-.top-fixed {border-bottom: none;}
-.top-fixed .top-search input {border-radius:2px;}
-.top-fixed .top-share, .top-fixed .top-back {padding-right: 0px;}
-.top-fixed .top-title {font-size: 14px;}
-.top-fixed .top-share a {width: 50px !important;}
-p, .p {margin-bottom: 0px;}
-.member-top { margin-top: 0px;}
+    .icon-sign-out, .top-fixed .top-back i { font-size: 18px;}
+    .top-fixed {border-bottom: none;}
+    .top-fixed .top-search input {border-radius:2px;}
+    .top-fixed .top-share, .top-fixed .top-back {padding-right: 0px;}
+    .top-fixed .top-title {font-size: 14px;}
+    .top-fixed .top-share a {width: 50px !important;}
+    p, .p {margin-bottom: 0px;}
+    .member-top { margin-top: 0px;}
 </style>
 
-	<header class="top-fixed bg-yellow bg-inverse transparent" id="header">
-		<div class="top-back">
-			<a id="search-btn" href="javascript:void(0);"><i class="icon-search"></i></a>
-		</div>
-		<div class="top-title">
-			会员中心
-		</div>
-        <div class="top-search" style="display:none;">
-			<form method="post" action="<{:U('mobile/all/index')}>">
-				<input name="keyword" placeholder="输入关键字"  />
-				<button type="submit" class="icon-search"></button>
-			</form>
-		</div>
-		<div class="top-share">
-			<include file="public:message"/>
-		</div>
-	</header>
-
+<header class="top-fixed bg-yellow bg-inverse transparent" id="header">
+    <div class="top-back">
+        <a id="search-btn" href="javascript:void(0);"><i class="icon-search"></i></a>
+    </div>
+    <div class="top-title">
+        会员中心
+    </div>
+    <div class="top-search" style="display:none;">
+        <form method="post" action="<{:U('mobile/all/index')}>">
+            <input name="keyword" placeholder="输入关键字"  />
+            <button type="submit" class="icon-search"></button>
+        </form>
+    </div>
+    <div class="top-share">
+        <include file="public:message"/>
+    </div>
+</header>
 
 <div class="member-top">
-<div class="member-info">
-<div class="user-avatar"> 
-<img src="<{:config_img($MEMBER['face'])}>"> 
-</div>
-<div class="user-name"> 
-<span>
+    <div class="member-info">
+        <div class="user-avatar">
+            <img src="<{:config_img($MEMBER['face'])}>">
+        </div>
+        <div class="user-name">
+            <span>
 				<if condition="!empty($MEMBER['nickname'])">
                 <{$MEMBER.nickname}> 
                 <else/>
                 <{$MEMBER.account}> 
                 </if>
-                <sup>VIP <{$MEMBER['rank_id']}></sup></span> 
-</div>
-</div>
-<div class="member-collect">
-<span><a href="<{:u('mobile/jifen/index')}>"><em><{$MEMBER.integral}></em><p>积分</p></a> </span>
-<span><a href="<{:u('mobile/favorites/index')}>"><i class="goods-browse"></i><p>足迹</p></a> </span>
-</div> 
+                <sup>VIP <{$MEMBER['rank_id']}></sup>
+            </span>
+        </div>
+    </div>
+    <div class="member-collect">
+        <span><a href="<{:u('logs/moneylogs')}>"><em><{:round($MEMBER['money']/100,2)}></em><p>余额</p></a></span>
+        <span><a href="<{:u('mobile/jifen/index')}>"><em><{$MEMBER.integral}></em><p>积分</p></a> </span>
+        <span><a href="<{:u('mobile/favorites/index')}>"><i class="goods-browse"></i><p>足迹</p></a> </span>
+    </div>
 </div>
 
-  <script type="text/javascript">
+<script type="text/javascript">
 	$(function(){
 		$("#search-btn").click(function(){
 			if($(".top-search").css("display")=='block'){
@@ -91,36 +92,32 @@ p, .p {margin-bottom: 0px;}
 			});
 		});
 	});
-	
-
-	</script>  
-    
+</script>
 
 <div class="member-center">
-      <dl class="mt5">
+    <dl class="mt5">
         <dd>
-          <ul id="order_ul">
-              <li><a href="<{:U('tuan/index')}>"><i class="icon-bookmark-o"></i><p>现金券</p></a></li>
-              <if condition="$open_mall eq 1">
-              <li><a href="<{:LinkTo('goods/index',array('aready'=>1))}>"><i class="icon-cart-plus"></i><p>购物订单</p></a></li>
-              </if>
-              <if condition="$operation['ele'] eq 1">
-              <li><a href="<{:U('eleorder/index')}>"><i class="icon-cutlery"></i><p>外卖订单</p></a></li>
-              </if>
-              <if condition="$operation['booking'] eq 1">
-              <li><a href="<{:LinkTo('booking/index')}>"><i class="icon-tty"></i><p>订座</p></a></li>
-              </if>
-              <if condition="$operation['money'] eq 1">
-              <li><a href="<{:U('breaks/index')}>"><i class="icon-history"></i><p>买单</p></a></li>
-              </if>
-          </ul>
+            <ul id="order_ul">
+                <li><a href="<{:U('tuan/index')}>"><i class="icon-bookmark-o"></i><p>现金券</p></a></li>
+                <if condition="$open_mall eq 1">
+                <li><a href="<{:LinkTo('goods/index',array('aready'=>1))}>"><i class="icon-cart-plus"></i><p>购物订单</p></a></li>
+                </if>
+                <if condition="$operation['ele'] eq 1">
+                <li><a href="<{:U('eleorder/index')}>"><i class="icon-cutlery"></i><p>外卖订单</p></a></li>
+                </if>
+                <if condition="$operation['booking'] eq 1">
+                <li><a href="<{:LinkTo('booking/index')}>"><i class="icon-tty"></i><p>订座</p></a></li>
+                </if>
+                <if condition="$operation['money'] eq 1">
+                <li><a href="<{:U('breaks/index')}>"><i class="icon-history"></i><p>买单</p></a></li>
+                </if>
+            </ul>
         </dd>
-      </dl>
-      
+    </dl>
 </div>
-    
-    
+
 <div class="blank-10 bg"></div>
+
 <div class="panel-list">
 	<ul>
         <li style="display:none;"><a href="<{:U('information/index')}>"><span class="icon-gears"></span>账户管理<i class="icon-angle-right"></i></a></li>
@@ -130,8 +127,8 @@ p, .p {margin-bottom: 0px;}
         </if>
 
         <php>
-        $worker = D('Shopworker')->where(array('user_id'=>$MEMBER['user_id']))->find();
-        $user_delivery = D('Delivery')->where(array('user_id'=>$MEMBER['user_id'],'audit'=>1,'closed'=>0))->find();
+            $worker = D('Shopworker')->where(array('user_id'=>$MEMBER['user_id']))->find();
+            $user_delivery = D('Delivery')->where(array('user_id'=>$MEMBER['user_id'],'audit'=>1,'closed'=>0))->find();
         </php>
         <if condition="!empty($worker)">
             <li><a href="<{:U('worker/index/index')}>"><span class="icon-paper-plane-o"></span>店员中心登录<font>（<{$worker['name']}>）</font><i class="icon-angle-right"></i></a></li>
@@ -147,17 +144,12 @@ p, .p {margin-bottom: 0px;}
         <li><a href="<{:u('money/collectioncode')}>"><span class="icon-qrcode"></span>收款二维码<i class="icon-angle-right"></i></a></li>
         </if>
 	</ul>
-
 </div>
 
 <div class="blank-10 bg"></div>
 
-
-
 <div class="panel-list">
-
 	<ul>
-
 		<li>
 			<a href="<{:U('tuancode/index')}>">
 				<span class="icon-credit-card"></span>
@@ -290,13 +282,13 @@ p, .p {margin-bottom: 0px;}
         <li><a href="<{:U('express/index')}>"><span class="icon-plane"></span>我的快递&nbsp; <i class="icon-angle-right"></i></a></li>
         </if>
 
-        <li></li>
 	</ul>
-
 </div>
+
 <div class="blank-10"></div>
+
 <div class="container text-center">
-		<a class="button button-block button-big bg-dot" href="<{:u('mobile/passport/logout')}>">退出后台</a>
+    <a class="button button-block button-big bg-dot" href="<{:u('mobile/passport/logout')}>">退出后台</a>
 </div>
 
 <include  file='public:footer'/>

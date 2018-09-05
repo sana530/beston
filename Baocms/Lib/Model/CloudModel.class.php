@@ -50,5 +50,12 @@ class CloudModel extends CommonModel{
         }
     }
 
+    public function GetCountryCookie() {
+        if (!cookie('country')) {
+            $ip_info = file_get_contents_url('http://ip-api.com/json/'.get_client_ip());
+            cookie('country', $ip_info->country, 3600*24*30);
+        }
+        return cookie('country');
+    }
 		
 }

@@ -124,7 +124,6 @@ class WeixinModel {
             $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' .
                 $this->config['weixin']['appid'] . '&secret=' .
                 $this->config['weixin']['appsecret'];
-            //var_dump($this->config['weixin']);
             $result = $this->curl->get($url);
             $result = json_decode($result, true);
             if (!empty($result['errcode'])) return;
@@ -144,7 +143,7 @@ class WeixinModel {
             $id = D('Weixinqrcode')->add(array('soure_id'=>$soure_id,'type'=>$type));
             $str = $id;
         }
-        
+
         $data = array(
             'action_name' => 'QR_LIMIT_SCENE',
             'action_info' =>array(
@@ -421,6 +420,37 @@ class WeixinModel {
             }
         }
         return  $img;
+    }
+
+    /**
+     * 微信自动注册为用户
+     * @param  array    $data
+     * @return string   $return
+     */
+    public function oa_register($data)
+    {
+        //添加Connect记录
+        $connect = $data;
+        $connect['connect_id'] = D('Connect')->add($data);
+
+        // 用户数据整理
+        $host = explode('.', $this->_CONFIG['site']['host']);
+        $account = uniqid() . '@' . $host[1] . '.' . $host[2];
+        if ($data['nickname'] == '') {
+            $nickname = $data['type'] . $connect['connect_id'];
+        } else {
+            $nickname = $data['nickname'];
+        }
+        $user = array('account' => $account, 'password' => rand(10000000, 999999999), 'nickname' => $nickname, 'ext0' => $account, 'face' => $data['headimgurl'], 'token' => $data['token'], 'reg_time' => NOW_TIME, 'reg_ip' => get_client_ip());
+        //注册用户资料
+        if (!D('Passport')->register($user)) {
+            return false;
+        }
+        // 注册第三方接口
+        $token = D('Passport')->getToken();
+        $connect['uid'] = $token['uid'];
+        D('Connect')->save(array('connect_id' => $connect['connect_id'], 'uid' => $connect['uid']));
+
     }
 
 }

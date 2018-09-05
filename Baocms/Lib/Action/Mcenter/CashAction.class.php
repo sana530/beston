@@ -65,6 +65,58 @@ class CashAction extends CommonAction{
             $this->display();
         }
     }
+    public function weixin() {
+        if ($this->isAjax()) {
+            $Users = D('Users');
+            $uid = $this->uid;
+            $user = $this->member;
+            $money = $user['money'];
+            if ($money < 30) {
+                $return['error'] = 1;
+                $return['msg'] = '您现在只有' . $user['money'] / 100 . '元，提取红包最低不能小于0.3元哦！读文章写评论都有几率得奖励的！';
+                $return['url'] = U('mobile/news/index');
+            } elseif (!IS_WEIXIN) {
+                $return['error'] = 2;
+                $return['msg'] = '只有在微信中才能领红包哦！';
+            } else {
+                $return['error'] = 0;
+                $time = NOW_TIME;
+                $title = $this->_CONFIG['site']['sitename'] . '送红包';
+                $wishing = '读文章写评论都有几率得随机奖励的哦！' . $this->_CONFIG['site']['sitename'] . '有你更精彩！';
+                $data = D('Weixinhongbao')->get_hongbao_url($money, $time, $title, $wishing);
+                if ($data['error'] != 0) {
+                    //生成红包链接错误时，返还错误信息
+                    $return['error'] = $data['error'];
+                    $return['msg'] = $data['result'];
+                } else {
+                    //成功生成红包链接是，返还链接地址
+                    $return['error'] = 0;
+                    $return['url'] = $data['result'];
+
+                    //记录领取红包记录
+                    $arr = array();
+                    $arr['user_id'] = $this->uid;
+                    $arr['money'] = $money;
+                    $arr['type'] = user;
+                    $arr['addtime'] = $time;
+                    $arr['account'] = $this->member['account'];
+                    $arr['bank_name'] = 'weixin';
+                    $arr['bank_num'] = '';
+                    $arr['bank_realname'] = '';
+                    $arr['bank_branch'] = '';
+                    D('Userscash')->add($arr);
+                    $Users->addMoney($uid, -$money, '领取微信红包');  //扣除余额
+                    D('Weixintmpl')->weixin_cash_user($uid, 1); //微信通知会员余额变动：1会员申请
+                }
+            }
+            if ($return['error'] != 1 && $return['error'] != 0) {
+                $return['url'] = U('member/index');
+            }
+            die(json_encode($return));
+        } else {
+            $this->display();
+        }
+    }
     public function cashlog(){
         $this->display();
     }

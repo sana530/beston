@@ -8,7 +8,7 @@
 .member-info .user-name span{font-weight:lighter;font-size:14px;line-height:19.2px;height:19.2px;position:relative;z-index:1}
 .member-info .user-name sup{font-size:12px;line-height:16px;background-color:#ED5564;display:block;height:16px;padding:0 1.6px;margin-left:3.2px;border-radius:1.6px;position:absolute;z-index:1;top:0;right:-36.8px;box-shadow:1px 1px 1px rgba(0,0,0,0.15)}
 .member-collect{font-size:0;height:48px;filter:progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr='#19000000',endColorstr='#19000000');background:rgba(0,0,0,0.1);position:absolute;bottom:0;left:0;right:0}
-.member-collect span{display:inline-block;width:25%;height:32px;padding:8px 0}
+.member-collect span{display:inline-block;width:33.33%;height:32px;padding:8px 0}
 .member-collect span a{display:block}
 .member-collect span em{font-weight:lighter;font-size:14px;color:#FFF;line-height:16px;text-align:center;vertical-align:top;display:inline-block;min-width:16px;height:16px;margin:0 auto}
 .member-collect span p{font-size:12px;line-height:16px;color:#FFF;height:16px}

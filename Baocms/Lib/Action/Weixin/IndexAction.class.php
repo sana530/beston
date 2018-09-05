@@ -55,7 +55,6 @@ class IndexAction extends CommonAction
             return;
         }
 
-
         if ($this->shop_id == 0) {
             $key = explode(' ', $data['Content']);
             $keyword = D('Weixinkeyword')->checkKeyword($key[0]);
@@ -345,12 +344,18 @@ class IndexAction extends CommonAction
                 die;
             }
             $type = $detail['type'];
+            //file_put_contents('/www/web/bao_baocms_cn/public_html/Baocms/Lib/Action/Weixin/bbb.txt', var_export($content, true));
+            $result = D('Connect')->getConnectByOpenid('weixin', $data['data']['FromUserName']);    //查看此微信号是否已从平台注册过
+            if (empty($result)) {
+                //如果此微信号未从平台注册, 则利用其open_id先为其生成一个会员，后期登陆的时候再调用其信息补充头像昵称等信息
+                $register = array('type' => 'weixin', 'open_id' => $data['data']['FromUserName'], 'token' => '', 'nickname' => '', 'headimgurl' => '');
+                D('Weixin')->oa_register($register);
+                $result = D('Connect')->getConnectByOpenid('weixin', $data['data']['FromUserName']);
+            }
             if ($type == 1) {
                 $shop_id = $detail['soure_id'];
                 $shop = D('Shop')->find($shop_id);
                 $content[] = array($shop['shop_name'], $shop['addr'], $this->getImage($shop['photo']), __HOST__ . '/mobile/shop/detail/shop_id/' . $shop_id . '.html');
-                //file_put_contents('/www/web/bao_baocms_cn/public_html/Baocms/Lib/Action/Weixin/bbb.txt', var_export($content, true));
-                $result = D('Connect')->getConnectByOpenid('weixin', $data['data']['FromUserName']);
                 if (!empty($result)) {
                     $user_id = $result['uid'];
                     $ymd = date('Y-m-d', NOW_TIME);
@@ -369,14 +374,11 @@ class IndexAction extends CommonAction
                         }
                     }
                 }
-                $this->weixin->response($content, 'news');
             } elseif ($type == 2) {
                 //抢购
                 $tuan_id = $detail['soure_id'];
                 $tuan = D('Tuan')->find($tuan_id);
                 $content[] = array($tuan['title'], $tuan['intro'], $this->getImage($tuan['photo']), __HOST__ . '/mobile/tuan/detail/tuan_id/' . $tuan_id . '.html');
-                file_put_contents('/www/web/bao_baocms_cn/public_html/Baocms/Lib/Action/Weixin/bbb.txt', var_export($content, true));
-                $result = D('Connect')->getConnectByOpenid('weixin', $data['data']['FromUserName']);
                 if (!empty($result)) {
                     $user_id = $result['uid'];
                     $ymd = date('Y-m-d', NOW_TIME);
@@ -395,15 +397,12 @@ class IndexAction extends CommonAction
                         }
                     }
                 }
-                $this->weixin->response($content, 'news');
             } elseif ($type == 3) {
                 //购物
                 $goods_id = $detail['soure_id'];
                 $goods = D('Goods')->find($goods_id);
                 $shops = D('Shop')->find($goods['shop_id']);
                 $content[] = array($goods['title'], $shops['shop_name'], $this->getImage($goods['photo']), __HOST__ . '/mobile/mall/detail/goods_id/' . $goods_id . '.html');
-                //file_put_contents('/www/web/bao_baocms_cn/public_html/Baocms/Lib/Action/Weixin/bbb.txt', var_export($content, true));
-                $result = D('Connect')->getConnectByOpenid('weixin', $data['data']['FromUserName']);
                 if (!empty($result)) {
                     $user_id = $result['uid'];
                     $ymd = date('Y-m-d', NOW_TIME);
@@ -422,6 +421,29 @@ class IndexAction extends CommonAction
                         }
                     }
                 }
+            } elseif ($type == 4) {
+                //会员推荐
+                $content = false;
+                if (!empty($result)) {
+                    $user_id = $result['uid'];
+                    $ymd = date('Y-m-d', NOW_TIME);
+                    $ymdarr = explode('-', $ymd);
+                    if (!($de = D('Census')->where(array('user_id' => $user_id))->find())) {
+                        $datac = array('user_id' => $user_id, 'year' => $ymdarr[0], 'month' => $ymdarr[1], 'day' => $ymdarr[2]);
+                        D('Census')->add($datac);
+                    }
+                }
+            }
+            if (!$result['follow_time']) {
+                //如果是首次关注公众号，则发送关注送红包提示消息
+                D('Weixin')->custom_send($this->_CONFIG['weixin']['hongbao_subscribe_description'], $data['data']['FromUserName']);
+            }
+            D('Connect')->save(array('connect_id' => $result['connect_id'],
+                'follow_type' => $type,
+                'follow_id' => $detail['soure_id'],
+                'is_weixin_followed' => 1,
+                'follow_time'=>NOW_TIME));  //将关注方式，关注时间等信息更新
+            if ($content) {
                 $this->weixin->response($content, 'news');
             }
         }

@@ -343,6 +343,40 @@ class WeixintmplModel extends CommonModel{
 			return $goods_name;
 		 
     }
+
+    //系统奖励余额变化通知
+    public function weixin_reward_balance_user($log_id){
+        $logs = D('Weixinhongbaorecord')->find($log_id);
+        $config_site_url = 'http://' . $_SERVER['HTTP_HOST'] . '/mcenter/logs/moneylogs';
+        if ($logs['type'] == 1){
+            $type_name = '关注公众号';
+        } elseif ($logs['type'] == 2) {
+            $type_name = '分享好友';
+        } elseif ($logs['type'] == 3) {
+            $type_name = '阅读文章';
+        } elseif ($logs['type'] == 4) {
+            $type_name = '评论';
+        }
+        $config = D('Setting')->fetchAll();
+        $users = D('Users')->find($logs['user_id']);
+        $price = round($logs['money'] / 100, 2);
+        $balance = round($users['money'] / 100, 2);
+        include_once "Baocms/Lib/Net/Wxmesg.class.php";
+        $_data_balance = array(
+            'url' => $config_site_url,
+            'topcolor' => '#F55555',
+            'first' => '您的账户余额发生变动，信息如下：',
+            'remark' => '如对上述余额变动有异议，请联系'.$config['site']['sitename'].'客服人员协助处理。' . $config['site']['tel'],
+            'accountType' => $config['site']['sitename'].'会员账户',
+            'operateType' => $type_name.'奖励',
+            'operateInfo' => '感谢您参加'.$type_name.'有奖活动',
+            'price' => $price . '元',
+            'balance' => $balance . '元'
+        );
+        $balance_data = Wxmesg::pay($_data_balance);
+        $return = Wxmesg::net($logs['user_id'], 'OPENTM205454780', $balance_data);
+        return true;
+    }
 	
 	//支付成功余额变化通知
     public function weixin_pay_balance_user($log_id){
